@@ -68,7 +68,7 @@ end
 -- ======================================================================
 -- join - Join indexed table entries into string with specified seprator
 -- ======================================================================
-function table.join( aTable, sep)
+function table.concat( aTable, sep)
 	local newString = aTable[1]
 	
 	for i=2, #aTable do
@@ -110,7 +110,7 @@ function string:getWords( index, endindex )
 		tmpTable[i-offset] = aTable[i]
 	end
 
-	local tmpString = table.join(tmpTable, " ")
+	local tmpString = table.concat(tmpTable, " ")
 
 	return tmpString
 end

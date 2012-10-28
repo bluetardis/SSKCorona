@@ -77,14 +77,14 @@ sampleManager = require("sampleMgr")
 --sampleManager:addSample("WIP", "Sprites Mgr", "ssk_sampler.sprites", true )
 
 
-
-
 -- =============================================
 -- Current WIP (move to proper location after testing)
 -- =============================================
 --sampleManager:addSample("Template", "Template 1", "ssk_sampler._templates.template1_logic", true )
 --sampleManager:addSample("Template", "Template 2", "ssk_sampler._templates.template2_logic", true )
 
+
+sampleManager:addSample("Forums Help", "121028 - Visually vibrating object", "ssk_sampler.forumhelp.121028_vibrating_object", true)
 --sampleManager:addSample("SSK Feature Testing", "Path Following", "ssk_sampler.featureTesting.c_components.pathfollowing" )
 
 
@@ -419,6 +419,9 @@ local monitorMem = function()
 end
 
 --monitorMem()
+
+
+
 
 
 print("\n****************************************************************")

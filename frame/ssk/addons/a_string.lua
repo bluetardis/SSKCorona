@@ -125,7 +125,7 @@ function string:getWords( index, endindex )
 		tmpTable[i-offset] = aTable[i]
 	end
 
-	local tmpString = table.join(tmpTable, " ")
+	local tmpString = table.concat(tmpTable, " ")
 
 	return tmpString
 end
@@ -152,7 +152,7 @@ function string:setWord( index, replace )
 	local index = index or 1
 	local aTable = self:split(" ")
 	aTable[index] = replace
-	local tmpString = table.join(aTable, " ")
+	local tmpString = table.concat(aTable, " ")
 	return tmpString
 end
 
@@ -228,7 +228,7 @@ function string:getFields( index, endindex )
 		tmpTable[i-offset] = aTable[i]
 	end
 
-	local tmpString = table.join(tmpTable, "\t")
+	local tmpString = table.concat(tmpTable, "\t")
 
 	return tmpString
 end
@@ -255,7 +255,7 @@ function string:setField( index, replace )
 	local index = index or 1
 	local aTable = self:split("\t")
 	aTable[index] = replace
-	local tmpString = table.join(aTable, "\t")
+	local tmpString = table.concat(aTable, "\t")
 	return tmpString
 end
 
@@ -330,7 +330,7 @@ function string:getRecords( index, endindex )
 		tmpTable[i-offset] = aTable[i]
 	end
 
-	local tmpString = table.join(tmpTable, "\n")
+	local tmpString = table.concat(tmpTable, "\n")
 
 	return tmpString
 end
@@ -361,7 +361,7 @@ function string:setRecord( index, replace )
 	local index = index or 1
 	local aTable = self:split("\n")
 	aTable[index] = replace
-	local tmpString = table.join(aTable, "\n")
+	local tmpString = table.concat(aTable, "\n")
 	return tmpString
 end
 

@@ -14,43 +14,11 @@
 -- =============================================================
 -- Last Modified: 29 AUG 2012
 -- =============================================================
---EFM add LERPING LIBRARY?
-
 --local debugLevel = 1 -- Comment out to get global debugLevel from main.cs
 local dp = ssk.debugprinter.newPrinter( debugLevel )
 local dprint = dp.print
 
---[[ 
-function math2do.add( objA, objB )
-function math2do.sub( objA, objB )
-function math2do.dot( objA, objB )
-function math2do.scale( obj, s )
-function math2do.normalize( obj )
-function math2do.vector2Angle( objA, objB )
-function math2do.tweenAngle( objA, objB )
-function math2do.tweenDist( objA, objB )
-function math2do.tweenData( objA, objB )
-
-function math2do.getFacingVector( displayObject  )
---]]
-
---[[  NEW variant
-math2d.add( objA, objB [, altRet] ) or add( x1, y1, x2, y2 [, altRet] )
-
-function math2do.sub( objA, objB )
-function math2do.dot( objA, objB )
-function math2do.scale( obj, s )
-function math2do.normalize( obj )
-function math2do.vector2Angle( objA, objB )
-function math2do.tweenAngle( objA, objB )
-function math2do.tweenDist( objA, objB )
-function math2do.tweenData( objA, objB )
-
-function math2do.getFacingVector( displayObject  )
---]]
-
-
---[[
+--[[  All standard math functions
 math.abs   math.acos  math.asin  math.atan math.atan2 math.ceil
 math.cos   math.cosh  math.deg   math.exp  math.floor math.fmod
 math.frexp math.huge  math.ldexp math.log  math.log10 math.max
