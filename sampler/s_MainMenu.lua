@@ -102,7 +102,7 @@ function scene:createScene( event )
 	local subCategories = sampleManager:getSubcategories( categories[1] )
 
 	subCategoryButton = ssk.buttons:presetPush( screenGroup, "yellowGradient", centerX-35, curY, 380, 40, 
-		subCategories[1], ssk.sbc.tableRoller_CB, { fontSize = 18, textOffset = {0,1} } )
+		subCategories[1], ssk.sbc.tableRoller_CB, { fontSize = 15, textOffset = {0,1} } )
 	
 	ssk.sbc.prep_tableRoller( subCategoryButton, subCategories, onSubCategory ) 
 

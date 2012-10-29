@@ -83,15 +83,16 @@ sampleManager = require("sampleMgr")
 --sampleManager:addSample("Template", "Template 1", "ssk_sampler._templates.template1_logic", true )
 --sampleManager:addSample("Template", "Template 2", "ssk_sampler._templates.template2_logic", true )
 
-
-sampleManager:addSample("Forums Help", "121028 - Visually vibrating object", "ssk_sampler.forumhelp.121028_vibrating_object", true)
 --sampleManager:addSample("SSK Feature Testing", "Path Following", "ssk_sampler.featureTesting.c_components.pathfollowing" )
 
+
+sampleManager:addSample("Forums Help", "121029 - ... changing .. orientation (alternative)", "ssk_sampler.forumhelp.121029_manually_changing_screen_orientation", true)
 
 -- =============================================
 -- Forums Help (EFM add forum entry links in each example)
 -- =============================================
-sampleManager:addSample("Forums Help", "121027 - Touch does not end ... offscreen", "ssk_sampler.forumhelp.121027_touch_does_not_end_offscreen", true)
+sampleManager:addSample("Forums Help", "121028 - Visually vibrating object", "ssk_sampler.forumhelp.121028_vibrating_object")
+sampleManager:addSample("Forums Help", "121027 - Touch does not end ... offscreen", "ssk_sampler.forumhelp.121027_touch_does_not_end_offscreen" )
 sampleManager:addSample("Forums Help", "121023 - Dragging objects ... like a puzzle", "ssk_sampler.forumhelp.121023_dragging-objects-specific-location-puzzle")
 sampleManager:addSample("Forums Help", "121020 - Getting Sprite to Jump Forward", "ssk_sampler.forumhelp.121020_sprite_jump_forward" )
 sampleManager:addSample("Forums Help", "121015 - Display ellipse with an angle", "ssk_sampler.forumhelp.121015_display_ellipse_with_angle" )
