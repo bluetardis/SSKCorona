@@ -351,7 +351,7 @@ doFire = function()
 									  { isBullet=false, isSensor=true, isFixedRotation = false, friction = 0.0, bounce = 0.0,
 									    colliderName = "playerBullet", calculator= myCC, radius = 2} )
 
-	local tmpVec = ssk.math2d.getFacingVector( thePlayer )
+	local tmpVec = ssk.math2d.angle2Vector( thePlayer.rotation, true )
 	local vx,vy = thePlayer:getLinearVelocity()
 	local playerVel = ssk.math2d.length(vx,vy)
 

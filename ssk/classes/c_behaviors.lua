@@ -23,6 +23,23 @@ behaviorsManager = {}
 
 behaviorsManager.knownBehaviors = {}
 
+--[[
+h behaviors:registerBehavior
+d Registers new behavior class with behaviors manager.
+s behaviors:registerBehavior( behaviorName, behaviorObject )	
+s * behaviorName - String containing name of behavior.
+s * behaviorObject - New behavior object (singleton or instance variant).
+r None.
+e public = {}
+e public._behaviorName = "mover_dragDrop"
+e
+e function public:onAttach( obj, params )
+e    -- ...
+e end
+e
+e ssk.behaviors:registerBehavior( public._behaviorName, public ) 
+e
+--]]
 function behaviorsManager:registerBehavior( behaviorName, behaviorObject )	
 	dprint(1,"behaviorsManager:registerBehavior( \"" .. behaviorName .. "\" , " .. tostring(behaviorObject) .. " )" )	
 	if(self.knownBehaviors[behaviorName] ~= nil) then
@@ -35,6 +52,15 @@ function behaviorsManager:registerBehavior( behaviorName, behaviorObject )
 	self.knownBehaviors[behaviorName] = behaviorObject
 end
 
+--[[
+h behaviors:attachBehavior
+d Attaches a behavior to a display object.
+s behaviors:attachBehavior( obj, behaviorName [, params ])
+s * obj - Reference to display object.
+s * behaviorName - String containing name of behavior.
+s * params - (optional) Extra parameters specific to configuring the named behavior.
+r ''true'' if behavior attached successfully, ''false'' otherwise.
+--]]
 function behaviorsManager:attachBehavior( obj, behaviorName, params )
 	dprint(2,"behaviorsManager:attachBehavior(",obj, behaviorName , ")" )	
 
@@ -72,6 +98,15 @@ function behaviorsManager:attachBehavior( obj, behaviorName, params )
 	return true
 end
 
+--[[
+h behaviors:attachBehaviors
+d Attaches one or more behaviors to a display object.
+d Note: Behaviors attached in this fashion cannot take optional parameters.
+s behaviors:attachBehaviors( obj, behaviorsTable )
+s * obj - Reference to display object.
+s * behaviorsTable - Table containing one or more string name(s) of behaviors.
+r ''true'' if behavior(s) attached successfully, ''false'' otherwise.
+--]]
 function behaviorsManager:attachBehaviors( obj, behaviorsTable )
 	dprint(2,"behaviorsManager:attachBehaviors(",obj, behaviorsTable , ")" )	
 
@@ -84,6 +119,13 @@ function behaviorsManager:attachBehaviors( obj, behaviorsTable )
 	return retval
 end
 
+--[[
+h behaviors:detachBehaviors
+d Detaches all previously attached a behaviors from a display object.
+s behaviors:detachBehaviors( obj )
+s * obj - Reference to display object.
+r ''true'' if behaviors detached successfully, ''false'' otherwise.
+--]]
 function behaviorsManager:detachBehaviors( obj )
 	dprint(2,"behaviorsManager:detachBehaviors(",obj , ")" )	
 	if( not obj._behaviorsAttached ) then
@@ -101,6 +143,13 @@ function behaviorsManager:detachBehaviors( obj )
 	return true
 end
 
+--[[
+h behaviors:hasBehaviors
+d Tests an object to see if it has one or more behaviors attached.
+s behaviors:hasBehaviors( obj )
+s * obj - Reference to display object.
+r ''true'' if behaviors are attached, ''false'' otherwise.
+--]]
 function behaviorsManager:hasBehaviors( obj )
 	if( not obj._behaviorsAttached ) then
 		return false

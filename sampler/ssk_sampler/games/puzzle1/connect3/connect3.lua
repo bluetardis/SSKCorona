@@ -152,7 +152,7 @@ addInterfaceElements = function()
 
 	tmpButton = ssk.buttons:presetPush( layers.interfaces, "B_Button", screenRight+30, screenBot-25, 42, 42, "", onResetBoard )
 
-	gameLabel = ssk.labels:presetLabel( layers.interfaces, "default", "Basic Match-3", centerX, h - 20, { fontSize = 24 } )
+	gameLabel = ssk.labels:presetLabel( layers.interfaces, "default", "Basic Connect-3", centerX, h - 20, { fontSize = 24 } )
 
 	scoreHUD = ssk.huds:createNumericScoreHUD( centerX, 20, 9, "default", layers.interfaces, {fontSize = 24, color = _WHITE_ })
 	scoreHUD:set(0)

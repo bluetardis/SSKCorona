@@ -28,6 +28,7 @@ local inDescription = false
 local inSyntax = false
 local inReturns = false
 local inExample = false
+local inExample2 = false
 local inSeeAlso = false
 
 -- Parsing functions
@@ -35,9 +36,11 @@ local newOutfile
 local newBlock
 local headerLine
 local descriptionLine
+local descriptionLine2
 local syntaxLine
 local returnsLine
 local exampleLine
+local exampleLine2
 local seeAlsoLine
 local endBlock
 
@@ -64,21 +67,6 @@ function string:split(tok)
 	end
 	return t
 end
-
--- ======================================================================
--- join - Join indexed table entries into string with specified seprator
--- ======================================================================
-function table.concat( aTable, sep)
-	local newString = aTable[1]
-	
-	for i=2, #aTable do
-		newString = newString .. sep .. aTable[i]
-	end
-
-	return newString
-end
-
-
 
 -- ======================================================================
 -- getWord - Gets indexed word from string, where words are separated by a single space (' ').
@@ -116,7 +104,6 @@ function string:getWords( index, endindex )
 end
 
 
-
 _G.require = function( ... )
 
 	newOutfile( arg[1] )
@@ -149,6 +136,9 @@ _G.require = function( ... )
 				elseif( firstWord == "d" ) then
 					descriptionLine( lines:getWords(2) )
 
+				elseif( firstWord == "d2" ) then
+					descriptionLine2( lines:getWords(2) )
+
 				elseif( firstWord == "s" ) then
 					syntaxLine( lines:getWords(2) )
 
@@ -157,6 +147,10 @@ _G.require = function( ... )
 
 				elseif( firstWord == "e" ) then
 					exampleLine( lines:getWords(2) )
+
+				elseif( firstWord == "e2" ) then
+					exampleLine2( lines:getWords(2) )
+
 
 				elseif( firstWord == "a" ) then
 					seeAlsoLine( lines:getWords(2) )
@@ -209,6 +203,7 @@ newOutfile = function ( fileName )
 	inSyntax = false
 	inReturns = false
 	inExample = false
+	inExample2 = false
 	inSeeAlso = false
 
 end
@@ -221,6 +216,7 @@ newBlock = function ( inFile )
 	inSyntax = false
 	inReturns = false
 	inExample = false
+	inExample2 = false
 	inSeeAlso = false
 
 end
@@ -239,10 +235,19 @@ descriptionLine = function ( line )
 	print("Definition Line")
 	isOutFileOpen()
 
-	if( inExample ) then
+	if( inExample or inExample2 ) then
 		inExample = false
+		inExample2 = false
 		outFile:write( "</syntaxhighlight></big>\n" )
 	end
+
+	if(not line) then line = "" end
+	outFile:write( line .. "\n" )
+end
+
+descriptionLine2 = function ( line ) 
+	print("Description Line 2")
+	isOutFileOpen()
 
 	if(not line) then line = "" end
 	outFile:write( line .. "\n" )
@@ -291,6 +296,20 @@ exampleLine = function ( line )
 	end
 end
 
+exampleLine2 = function ( line ) 
+	print("Example Line 2")
+	isOutFileOpen()
+	if(not line) then line = "" end
+
+	if(inExample2) then
+		outFile:write( line .. "\n" )
+	else
+		inExample2 = true
+		outFile:write( "<big><syntaxhighlight lang=\"cpp\">\n" )
+		outFile:write( line .. "\n" )
+	end
+end
+
 seeAlsoLine = function ( line ) 
 	print("See Also Line")
 	isOutFileOpen()
@@ -299,8 +318,9 @@ seeAlsoLine = function ( line )
 	if(inSeeAlso) then
 		outFile:write( line .. "\n" )
 	else
-		if( inExample ) then
+		if( inExample or inExample2 ) then
 			inExample = false
+			inExample2 = false
 			outFile:write( "</big></syntaxhighlight>" )
 		end
 		inSeeAlso = true
@@ -310,8 +330,9 @@ seeAlsoLine = function ( line )
 end
 
 endBlock = function ( ) 
-	if( inExample ) then
+	if( inExample or inExample2 ) then
 		inExample = false
+		inExample2 = false
 		outFile:write( "</syntaxhighlight></big>" )
 	end
 
@@ -322,32 +343,3 @@ endBlock = function ( )
 end
 
 
-
-
-
-
---[[
-	local fileName = arg[1] -- .. ".txt"
-	fileName = fileName:gsub( "%.", "_") .. ".txt"
-	
-	-- io.open opens a file at path. returns nil if no file found
-	local path = system.pathForFile( fileName, system.DocumentsDirectory )
-	local fh   = io.open( path, "w" )
-
-	if fh then
-		print( "Created file" )
-	else
-		print( "Create file failed!" )
-	end
-	
-	local numbers = {1,2,3,4,5,6,7,8,9}
-	fh:write( "Feed me data!\n", numbers[1], numbers[2], "\n" )
-
-	for _,v in ipairs( numbers ) do 
-		fh:write( v, " " )
-	end
-
-	fh:write( "\nNo more data\n" )
-
-	io.close( fh )
---]]

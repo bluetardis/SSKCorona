@@ -15,10 +15,37 @@
 -- Last Modified: 29 AUG 2012
 -- =============================================================
 
---[[
 
-function math.pointInRect( pointX, pointY, left, top, width, height )
-	
+--[[
+h math.pointInRect
+d Tests if a point is within the bounds of the specified rectangle.
+s math.pointInRect( pointX, pointY, left, top, width, height )
+s * pointX - x-position of point
+s * pointY - y-position of point
+s * left - Left-most x-position of rectangle.
+s * top - Top-most y-position of rectangle.
+s * width - Rectangle width.
+s * height - Rectangle height.
+r ''true' if point is within (or on edge) of rectangle, ''false'' otherwise.
+e local pointA = { x=10, y=10 }
+e local pointB = { x=10, y=11 }
+e
+e if( math.pointInRect( pointA.x, pointA.y, 0, 0, 10, 10 ) ) then
+e    print("Point A is in the rectangle.")
+e else 
+e    print("Point A is not in the rectangle.")
+e end
+e
+e if( math.pointInRect( pointB.x, pointB.y, 0, 0, 10, 10 ) ) then
+e    print("Point B is in the rectangle.")
+e else 
+e    print("Point B is not in the rectangle.")
+e end
+e
+d
+d Prints:<br>
+d Point A is in the rectangle.<br>
+d Point B is not in the rectangle.<br>
 --]]
 
 

@@ -20,7 +20,7 @@ print("*********************** \\/\\/ main.cs \\/\\/ **********************")
 print("****************************************************************\n\n")
 io.output():setvbuf("no") -- Don't use buffer for console messages
 
---require("ssk.autodoc")                            -- Auto documents SSK library as they are loaded (NORMALLY NOT LOADED)
+require("ssk.autodoc")                            -- Auto documents SSK library as they are loaded (NORMALLY NOT LOADED)
 
 ----------------------------------------------------------------------
 --	1.							GLOBALS								--
@@ -421,7 +421,23 @@ end
 
 --monitorMem()
 
+ local x1,y1 = 10,10
+ local x2,y2 = 15,-10
 
+ local nx1,ny1,nx2,ny2 = ssk.math2d.normals( x1, y1 )        -- Return four numbers
+ local vec1, vec2      = ssk.math2d.normals( x1, y1, true )  -- Return two tables
+
+ print("Results: ", nx1,ny1,nx2,ny2 )             -- Print the numbers
+ print("Results: ", vec1.x,vec1.y,vec2.x,vec2.y ) -- Print the table fields
+
+ local obj1 = { x = 100, y = 100 }
+ local obj2 = { x = 50,  y = -50 }
+
+ local vec1,vec2       = ssk.math2d.normals( obj1 )       -- Return two tables
+ local nx1,ny1,nx2,ny2 = ssk.math2d.normals( obj1, true ) -- Return four numbers
+
+print("Results: ", vec1.x,vec1.y,vec2.x,vec2.y ) -- Print the table fields
+print("Results: ", nx1,ny1,nx2,ny2 )             -- Print the numbers
 
 
 
