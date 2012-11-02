@@ -1,18 +1,18 @@
 -- =============================================================
--- Copyright Roaming Gamer, LLC.
+-- Copyright Roaming Gamer, LLC. 2009-2012 
 -- =============================================================
--- SSK Sampler Main Menu
+-- SSKCorona Sampler Main Menu
 -- =============================================================
 -- Short and Sweet License: 
--- 1. You may use anything you find in the SSK library and sampler to make apps and games for free or $$.
--- 2. You may not sell or distribute SSK or the sampler as your own work.
+-- 1. You may use anything you find in the SSKCorona library and sampler to make apps and games for free or $$.
+-- 2. You may not sell or distribute SSKCorona or the sampler as your own work.
 -- 3. If you intend to use the art or external code assets, you must read and follow the licenses found in the
 --    various associated readMe.txt files near those assets.
 --
--- Credit?:  Mentioning SSK and/or Roaming Gamer, LLC. in your credits is not required, but it would be nice.  Thanks!
+-- Credit?:  Mentioning SSKCorona and/or Roaming Gamer, LLC. in your credits is not required, but it would be nice.  Thanks!
 --
 -- =============================================================
--- Last Modified: 29 AUG 2012
+--
 -- =============================================================
 
 local storyboard = require( "storyboard" )
@@ -28,13 +28,9 @@ local dprint = dp.print
 -- Variables
 local screenGroup
 local backImage 
-local currentPlayerNameLabel
-
-local rowY
 
 -- Callbacks/Functions
 local onMainMenu
-
 
 ----------------------------------------------------------------------
 --	Scene Methods:
@@ -50,39 +46,32 @@ local onMainMenu
 function scene:createScene( event )
 	screenGroup = self.view
 
-	if(system.orientation == "portrait") then		
-		backImage   = ssk.display.backImage( screenGroup, "RGSplash2_Portrait.jpg", true ) 
-	elseif(system.orientation == "landscapeRight") then
-		backImage   = ssk.display.backImage( screenGroup, "RGSplash2_Landscape.jpg", true ) 
-	end
+	-- Background Image
+	backImage   = ssk.display.backImage( screenGroup, "protoBack2.png", true ) 
 	
 
+	-- ==========================================
+	-- Buttons and Labels
+	-- ==========================================
+	local curY = centerY
 	local tmpButton
-	local tmpTxt
+	local tmpLabel
 
-	-- Game Title
-	tmpTxt = ssk.labels:presetLabel( screenGroup, "headerLabel", "Splash/Loading", centerX, centerY, { fontSize = 32 } )
+	-- Screen Name
+	ssk.labels:presetLabel( screenGroup, "default", "Splash/Loading", centerX, curY, { fontSize = 32 } )
 
-	-- ==========================================
-	-- Labels
-	-- ==========================================
-	--
-	-- RG Button
-	--
+	-- RG Badge
 	if(system.orientation == "portrait") then		
-		ssk.buttons:presetPush( screenGroup, "RGButton", w-30, h-60, 40, 40, "", onRG  )
+		ssk.buttons:presetPush( screenGroup, "RGButton", w-30, h-60, 40, 40, "", nil  )
 
 	elseif(system.orientation == "landscapeRight") then
-		ssk.buttons:presetPush( screenGroup, "RGButton", w-30, h-30, 40, 40, "", onRG  )
+		ssk.buttons:presetPush( screenGroup, "RGButton", w-30, h-30, 40, 40, "", nil  )
 	end
 
-
-	--
 	-- Made With Label
-	--
-	tmpTxt = ssk.labels:presetLabel( screenGroup, "centeredLabel", 
-	                                 "Made with 'SSK' by Roaming Gamer, LLC.", 
-									 centerX, h-20, { textColor = _WHITE_ } )
+	ssk.labels:presetLabel( screenGroup, "default", 
+	                        "Made with 'SSKCorona' by Roaming Gamer, LLC.",
+							centerX, h-20, { textColor = _WHITE_ } )
 
 end
 

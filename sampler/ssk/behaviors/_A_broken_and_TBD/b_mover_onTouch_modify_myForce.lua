@@ -6,7 +6,7 @@
 --   ended or cancelled: Subtract fixed force[X,Y] to moveObj.myForce[X,Y]
 -- Behavior Type: Instance
 -- =============================================================
--- Last Modified: 01 AUG 2012
+--
 -- =============================================================
 --local debugLevel = 1 -- Comment out to get global debugLevel from main.cs
 local dp = ssk.debugprinter.newPrinter( debugLevel )

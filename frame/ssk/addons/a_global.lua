@@ -1,18 +1,18 @@
 -- =============================================================
--- Copyright Roaming Gamer, LLC.
+-- Copyright Roaming Gamer, LLC. 2009-2012 
 -- =============================================================
 -- Various Global Functions
 -- =============================================================
 -- Short and Sweet License: 
--- 1. You may use anything you find in the SSK library and sampler to make apps and games for free or $$.
--- 2. You may not sell or distribute SSK or the sampler as your own work.
+-- 1. You may use anything you find in the SSKCorona library and sampler to make apps and games for free or $$.
+-- 2. You may not sell or distribute SSKCorona or the sampler as your own work.
 -- 3. If you intend to use the art or external code assets, you must read and follow the licenses found in the
 --    various associated readMe.txt files near those assets.
 --
--- Credit?:  Mentioning SSK and/or Roaming Gamer, LLC. in your credits is not required, but it would be nice.  Thanks!
+-- Credit?:  Mentioning SSKCorona and/or Roaming Gamer, LLC. in your credits is not required, but it would be nice.  Thanks!
 --
 -- =============================================================
--- Last Modified: 29 AUG 2012
+--
 -- =============================================================
 
 -- Return first argument that is not nil
@@ -32,6 +32,21 @@ function _G.isDisplayObject( obj )
 	return false
 end
 
+---============================================================
+-- Return a non-repeating random color
+-- 
+local lastColor = {}
+local allColors = _G.allColors
+local random = math.random
+function _G.randomColor( )
+	local curColor = allColors[random(1, #allColors)]
+	while(curColor == lastColor) do
+		curColor = allColors[random(1, #allColors)]
+	end
+
+	lastColor = curColor
+	return curColor
+end
 
 ---============================================================
 -- Calculate Pascal's triangle to 'n' rows and return as a sequence

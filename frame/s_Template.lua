@@ -2,7 +2,7 @@
 -- s_Template.lua 
 -- Scene Template
 -- =============================================================
--- Last Modified: 23 JUL 2012
+--
 -- =============================================================
 local storyboard = require( "storyboard" )
 local scene      = storyboard.newScene()

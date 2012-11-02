@@ -1,18 +1,18 @@
 -- =============================================================
--- Copyright Roaming Gamer, LLC.
+-- Copyright Roaming Gamer, LLC. 2009-2012 
 -- =============================================================
--- SSK Globals
+-- SSKCorona Globals
 -- =============================================================
 -- Short and Sweet License: 
--- 1. You may use anything you find in the SSK library and sampler to make apps and games for free or $$.
--- 2. You may not sell or distribute SSK or the sampler as your own work.
+-- 1. You may use anything you find in the SSKCorona library and sampler to make apps and games for free or $$.
+-- 2. You may not sell or distribute SSKCorona or the sampler as your own work.
 -- 3. If you intend to use the art or external code assets, you must read and follow the licenses found in the
 --    various associated readMe.txt files near those assets.
 --
--- Credit?:  Mentioning SSK and/or Roaming Gamer, LLC. in your credits is not required, but it would be nice.  Thanks!
+-- Credit?:  Mentioning SSKCorona and/or Roaming Gamer, LLC. in your credits is not required, but it would be nice.  Thanks!
 --
 -- =============================================================
--- Last Modified: 05 OCT 2012
+--
 -- =============================================================
 
 
@@ -31,7 +31,7 @@ _G.debugLevel = 1
 _G.isTutorialDistro = true -- I can't distribute some 'paid' assets with the kit, so this
                          -- flag is used to select alternative assets for the source distro version.
 _G.liteVersion = false
-_G.releaseDate  = "29 OCT 2012"
+_G.releaseDate  = "02 NOV 2012"
 
 -- Resource directories (images, sounds, etc.)
 _G.imagesDir = "images/"
@@ -74,22 +74,23 @@ _G.olderVersion = tonumber(string.sub( platformVersion, 1, 1 )) < 4
 
 -- easy color codes and string translations
 _G.colorNames = {}
+_G.allColors = {}
 _G._TRANSPARENT_ = {0, 0, 0, 0}; _G.colorNames[_TRANSPARENT_] = "TRANSPARENT"
 
-_G._WHITE_ = {255, 255, 255, 255}; _G.colorNames[_WHITE_] = "WHITE"
-_G._BLACK_ = {  0,   0,   0, 255}; _G.colorNames[_BLACK_] = "BLACK"
+_G._WHITE_ = {255, 255, 255, 255}; _G.colorNames[_WHITE_] = "WHITE";_G.allColors[#_G.allColors+1] = _G._WHITE_
+_G._BLACK_ = {  0,   0,   0, 255}; _G.colorNames[_BLACK_] = "BLACK";_G.allColors[#_G.allColors+1] = _G._BLACK_
 
-_G._GREY_      = {128, 128, 128, 255}; _G.colorNames[_GREY_] = "GREY"
-_G._DARKGREY_  = { 64,  64,  64, 255}; _G.colorNames[_DARKGREY_] = "DARKGREY"
-_G._LIGHTGREY_ = {192, 192, 192, 255}; _G.colorNames[_LIGHTGREY_] = "LIGHTGREY"
+_G._GREY_      = {128, 128, 128, 255}; _G.colorNames[_GREY_] = "GREY";_G.allColors[#_G.allColors+1] = _G._GREY_
+_G._DARKGREY_  = { 64,  64,  64, 255}; _G.colorNames[_DARKGREY_] = "DARKGREY";_G.allColors[#_G.allColors+1] = _G._DARKGREY_
+_G._LIGHTGREY_ = {192, 192, 192, 255}; _G.colorNames[_LIGHTGREY_] = "LIGHTGREY";_G.allColors[#_G.allColors+1] = _G._LIGHTGREY_
 
-_G._RED_   = {255,   0,   0, 255}; _G.colorNames[_RED_] = "RED"
-_G._GREEN_ = {  0, 255,   0, 255}; _G.colorNames[_GREEN_] = "GREEN"
-_G._BLUE_  = {  0,   0, 255, 255}; _G.colorNames[_BLUE_] = "BLUE"
+_G._RED_   = {255,   0,   0, 255}; _G.colorNames[_RED_] = "RED";_G.allColors[#_G.allColors+1] = _G._RED_
+_G._GREEN_ = {  0, 255,   0, 255}; _G.colorNames[_GREEN_] = "GREEN";_G.allColors[#_G.allColors+1] = _G._GREEN_
+_G._BLUE_  = {  0,   0, 255, 255}; _G.colorNames[_BLUE_] = "BLUE";_G.allColors[#_G.allColors+1] = _G._BLUE_
 
-_G._YELLOW_       = {0xff, 0xff,    0, 255}; _G.colorNames[_YELLOW_] = "YELLOW"
-_G._ORANGE_       = {0xff, 0x66,    0, 255}; _G.colorNames[_ORANGE_] = "ORANGE"
-_G._BRIGHTORANGE_ = {0xff, 0x99,    0, 255}; _G.colorNames[_BRIGHTORANGE_] = "BRIGHTORANGE"
-_G._PURPLE_       = {0xa0, 0x20, 0xf0, 255}; _G.colorNames[_PURPLE_] = "PURPLE"
-_G._PINK_         = {0xff, 0x6e, 0xc7, 255}; _G.colorNames[_PINK_] = "PINK"
+_G._YELLOW_       = {0xff, 0xff,    0, 255}; _G.colorNames[_YELLOW_] = "YELLOW";_G.allColors[#_G.allColors+1] = _G._YELLOW_
+_G._ORANGE_       = {0xff, 0x66,    0, 255}; _G.colorNames[_ORANGE_] = "ORANGE";_G.allColors[#_G.allColors+1] = _G._ORANGE_
+_G._BRIGHTORANGE_ = {0xff, 0x99,    0, 255}; _G.colorNames[_BRIGHTORANGE_] = "BRIGHTORANGE";_G.allColors[#_G.allColors+1] = _G._BRIGHTORANGE_
+_G._PURPLE_       = {0xa0, 0x20, 0xf0, 255}; _G.colorNames[_PURPLE_] = "PURPLE";_G.allColors[#_G.allColors+1] = _G._PURPLE_
+_G._PINK_         = {0xff, 0x6e, 0xc7, 255}; _G.colorNames[_PINK_] = "PINK";_G.allColors[#_G.allColors+1] = _G._PINK_
 

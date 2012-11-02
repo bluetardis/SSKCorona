@@ -6,7 +6,7 @@
 -- Downloaded from this link: http://www.infuseddreams.com/apps/pngLib.zip
 -- Found in this thread: http://developer.coronalabs.com/forum/2012/05/16/pnglib-extract-data-png-files-width-height-color-depth-etc
 -- =============================================================
--- Last Modified: 22 OCT 2012
+--
 -- =============================================================
 
 local pngLib = {}

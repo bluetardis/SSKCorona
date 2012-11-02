@@ -1,18 +1,18 @@
 -- =============================================================
--- Copyright Roaming Gamer, LLC.
+-- Copyright Roaming Gamer, LLC. 2009-2012
 -- =============================================================
 -- main.lua
 -- =============================================================
 -- Short and Sweet License: 
--- 1. You may use anything you find in the SSK library and sampler to make apps and games for free or $$.
--- 2. You may not sell or distribute SSK or the sampler as your own work.
+-- 1. You may use anything you find in the SSKCorona library and sampler to make apps and games for free or $$.
+-- 2. You may not sell or distribute SSKCorona or the sampler as your own work.
 -- 3. If you intend to use the art or external code assets, you must read and follow the licenses found in the
 --    various associated readMe.txt files near those assets.
 --
--- Credit?:  Mentioning SSK and/or Roaming Gamer, LLC. in your credits is not required, but it would be nice.  Thanks!
+-- Credit?:  Mentioning SSKCorona and/or Roaming Gamer, LLC. in your credits is not required, but it would be nice.  Thanks!
 --
 -- =============================================================
--- Last Modified: 29 AUG 2012
+-- 
 -- =============================================================
 
 print("\n\n\n****************************************************************")
@@ -20,7 +20,7 @@ print("*********************** \\/\\/ main.cs \\/\\/ **********************")
 print("****************************************************************\n\n")
 io.output():setvbuf("no") -- Don't use buffer for console messages
 
---require("ssk.autodoc")                            -- Auto documents SSK library as they are loaded (NORMALLY NOT LOADED)
+--require("ssk.autodoc")                            -- Auto documents SSKCorona library as they are loaded (NORMALLY NOT LOADED)
 
 ----------------------------------------------------------------------
 --	1.							GLOBALS								--
@@ -65,14 +65,14 @@ physics.start()
 --physics.setGravity(0,0)
 --physics.setDrawMode( "hybrid" )
 
--- SSK Libraries
+-- SSKCorona Libraries
 require("ssk.loadSSK")
 
 -- Game Specific Modules
 sampleManager = require("sampleMgr")
 
 --
--- 'Register' SSK Samples (EFM need secondary subcategory or better indexing method)
+-- 'Register' SSKCorona Samples (EFM need secondary subcategory or better indexing method)
 --
 --sampleManager:addSample("WIP", "Sprites Mgr", "ssk_sampler.sprites", true )
 
@@ -83,7 +83,7 @@ sampleManager = require("sampleMgr")
 --sampleManager:addSample("Template", "Template 1", "ssk_sampler._templates.template1_logic", true )
 --sampleManager:addSample("Template", "Template 2", "ssk_sampler._templates.template2_logic", true )
 
---sampleManager:addSample("SSK Feature Testing", "Path Following", "ssk_sampler.featureTesting.c_components.pathfollowing" )
+--sampleManager:addSample("SSKCorona Feature Testing", "Path Following", "ssk_sampler.featureTesting.c_components.pathfollowing" )
 
 
 sampleManager:addSample("Forums Help", "121029 - ... changing .. orientation (alternative)", "ssk_sampler.forumhelp.121029_manually_changing_screen_orientation", true)
@@ -102,92 +102,92 @@ sampleManager:addSample("Forums Help", "120815 - Looking to make drawer", "ssk_s
 
 
 -- =============================================
--- SSK Feature Testing (i.e. Validation)
+-- SSKCorona Feature Testing (i.e. Validation)
 -- =============================================
 -- ==
 -- Behavior Tests
 -- ==
-sampleManager:addSample("SSK Feature Testing", "Drag-n-Drop", "ssk_sampler.featureTesting.c_components.dragNDrop_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Drag-n-Drop", "ssk_sampler.featureTesting.c_components.dragNDrop_logic" )
 
 -- ==
 -- Component Tests
 -- ==
 -- Facing
-sampleManager:addSample("SSK Feature Testing", "Face Point (Touch)", "ssk_sampler.featureTesting.c_components.faceTouch_logic" )
-sampleManager:addSample("SSK Feature Testing", "Face Point (Touch) @ Fixed Rate", "ssk_sampler.featureTesting.c_components.faceTouchFixedRate_logic" ) 
+sampleManager:addSample("SSKCorona Feature Testing", "Face Point (Touch)", "ssk_sampler.featureTesting.c_components.faceTouch_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Face Point (Touch) @ Fixed Rate", "ssk_sampler.featureTesting.c_components.faceTouchFixedRate_logic" ) 
 
 -- Moving
-sampleManager:addSample("SSK Feature Testing", "Move To Point (Touch)", "ssk_sampler.featureTesting.c_components.moveToTouch_logic" )
-sampleManager:addSample("SSK Feature Testing", "Move To Point (Touch) @ Fixed Rate", "ssk_sampler.featureTesting.c_components.moveToTouchFixedRate_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Move To Point (Touch)", "ssk_sampler.featureTesting.c_components.moveToTouch_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Move To Point (Touch) @ Fixed Rate", "ssk_sampler.featureTesting.c_components.moveToTouchFixedRate_logic" )
 
 -- Aiming (EFM broken; math?; behaviors?)
-sampleManager:addSample("SSK Feature Testing", "Aim At Object #1", "ssk_sampler.featureTesting.c_components.aimAtObject_logic" ) 
-sampleManager:addSample("SSK Feature Testing", "Aim At Object #2 (Distance Limit)", "ssk_sampler.featureTesting.c_components.aimAtObject2_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Aim At Object #1", "ssk_sampler.featureTesting.c_components.aimAtObject_logic" ) 
+sampleManager:addSample("SSKCorona Feature Testing", "Aim At Object #2 (Distance Limit)", "ssk_sampler.featureTesting.c_components.aimAtObject2_logic" )
 
 -- Wrapping
-sampleManager:addSample("SSK Feature Testing", "Wrap Point (Screen Wrap)", "ssk_sampler.featureTesting.c_components.wrapping1_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Wrap Point (Screen Wrap)", "ssk_sampler.featureTesting.c_components.wrapping1_logic" )
 
 -- Path Following (EFM - WIP)
---sampleManager:addSample("SSK Feature Testing", "Path Following", "ssk_sampler.featureTesting.c_components.pathfollowing" )
+--sampleManager:addSample("SSKCorona Feature Testing", "Path Following", "ssk_sampler.featureTesting.c_components.pathfollowing" )
 
 -- ==
 -- Networking Utilities & External Networking Classes Tests
 -- ==
-sampleManager:addSample("SSK Feature Testing", "UDP Auto-Connect", "ssk_sampler.featureTesting.u_networking.autoconnect" )
-sampleManager:addSample("SSK Feature Testing", "UDP Manual Connect", "ssk_sampler.featureTesting.u_networking.manualconnect" )
+sampleManager:addSample("SSKCorona Feature Testing", "UDP Auto-Connect", "ssk_sampler.featureTesting.u_networking.autoconnect" )
+sampleManager:addSample("SSKCorona Feature Testing", "UDP Manual Connect", "ssk_sampler.featureTesting.u_networking.manualconnect" )
 
 -- ==
 -- Button Factory Tests
 -- ==
-sampleManager:addSample("SSK Feature Testing", "Push Buttons", "ssk_sampler.featureTesting.f_buttons.pushButtonsTest_logic" )
-sampleManager:addSample("SSK Feature Testing", "Toggle Buttons", "ssk_sampler.featureTesting.f_buttons.toggleButtonsTest_logic" )
-sampleManager:addSample("SSK Feature Testing", "Radio Buttons", "ssk_sampler.featureTesting.f_buttons.radioButtonsTest_logic" )
-sampleManager:addSample("SSK Feature Testing", "Sliders", "ssk_sampler.featureTesting.f_buttons.slidersTest_logic" )
-sampleManager:addSample("SSK Feature Testing", "Standard Button Callbacks", "ssk_sampler.featureTesting.f_buttons.buttonCallbacksTest_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Push Buttons", "ssk_sampler.featureTesting.f_buttons.pushButtonsTest_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Toggle Buttons", "ssk_sampler.featureTesting.f_buttons.toggleButtonsTest_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Radio Buttons", "ssk_sampler.featureTesting.f_buttons.radioButtonsTest_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Sliders", "ssk_sampler.featureTesting.f_buttons.slidersTest_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Standard Button Callbacks", "ssk_sampler.featureTesting.f_buttons.buttonCallbacksTest_logic" )
 
 -- ==
 -- Label Factory Tests
 -- ==
-sampleManager:addSample("SSK Feature Testing", "Labels", "ssk_sampler.featureTesting.f_labels.labels_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Labels", "ssk_sampler.featureTesting.f_labels.labels_logic" )
 
 -- ==
 -- HUDs (EFM need more snazzy huds soon)
 -- ==
-sampleManager:addSample("SSK Feature Testing", "HUDs 1 - Numeric Meters", "ssk_sampler.featureTesting.f_huds.numericmeter_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "HUDs 1 - Numeric Meters", "ssk_sampler.featureTesting.f_huds.numericmeter_logic" )
 
 -- ==
 -- Inputs
 -- ==
-sampleManager:addSample("SSK Feature Testing", "Inputs - Joystick (Normal)", "ssk_sampler.featureTesting.f_inputs.joystick1_logic" )
-sampleManager:addSample("SSK Feature Testing", "Inputs - Horizontal Snap (Normal)", "ssk_sampler.featureTesting.f_inputs.horizSnap1_logic" )
-sampleManager:addSample("SSK Feature Testing", "Inputs - Vertical Snap (Normal)", "ssk_sampler.featureTesting.f_inputs.vertSnap1_logic" )
-sampleManager:addSample("SSK Feature Testing", "Inputs - Joystick (Virtual)", "ssk_sampler.featureTesting.f_inputs.joystick2_logic" )
-sampleManager:addSample("SSK Feature Testing", "Inputs - Horizontal Snap (Virtual)", "ssk_sampler.featureTesting.f_inputs.horizSnap2_logic" )
-sampleManager:addSample("SSK Feature Testing", "Inputs - Vertical Snap (Virtual)", "ssk_sampler.featureTesting.f_inputs.vertSnap2_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Inputs - Joystick (Normal)", "ssk_sampler.featureTesting.f_inputs.joystick1_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Inputs - Horizontal Snap (Normal)", "ssk_sampler.featureTesting.f_inputs.horizSnap1_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Inputs - Vertical Snap (Normal)", "ssk_sampler.featureTesting.f_inputs.vertSnap1_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Inputs - Joystick (Virtual)", "ssk_sampler.featureTesting.f_inputs.joystick2_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Inputs - Horizontal Snap (Virtual)", "ssk_sampler.featureTesting.f_inputs.horizSnap2_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Inputs - Vertical Snap (Virtual)", "ssk_sampler.featureTesting.f_inputs.vertSnap2_logic" )
 
 -- ==
 -- Inputs (Applied)
 -- ==
-sampleManager:addSample("SSK Feature Testing", "Inputs Applied - Horizontal Snap", "ssk_sampler.featureTesting.f_inputs.applied.horizSnap1_logic" )
-sampleManager:addSample("SSK Feature Testing", "Inputs Applied - Joystick", "ssk_sampler.featureTesting.f_inputs.applied.joystick1_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Inputs Applied - Horizontal Snap", "ssk_sampler.featureTesting.f_inputs.applied.horizSnap1_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Inputs Applied - Joystick", "ssk_sampler.featureTesting.f_inputs.applied.joystick1_logic" )
 
 -- ==
 -- Prototyping (Objects)
 -- ==
---sampleManager:addSample("SSK Feature Testing", "Sampler Template 1 Test", "ssk_sampler.featureTesting._templates.template1_logic" )
---sampleManager:addSample("SSK Feature Testing", "Sampler Template 2 Test", "ssk_sampler.featureTesting._templates.template2_logic" )
+--sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 1 Test", "ssk_sampler.featureTesting._templates.template1_logic" )
+--sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 2 Test", "ssk_sampler.featureTesting._templates.template2_logic" )
 
 -- ==
 -- Sprites
 -- ==
---sampleManager:addSample("SSK Feature Testing", "Sampler Template 1 Test", "ssk_sampler.featureTesting._templates.template1_logic" )
---sampleManager:addSample("SSK Feature Testing", "Sampler Template 2 Test", "ssk_sampler.featureTesting._templates.template2_logic" )
+--sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 1 Test", "ssk_sampler.featureTesting._templates.template1_logic" )
+--sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 2 Test", "ssk_sampler.featureTesting._templates.template2_logic" )
 
 -- ==
 -- Templates
 -- ==
-sampleManager:addSample("SSK Feature Testing", "Sampler Template 1 Test", "ssk_sampler.featureTesting._templates.template1_logic" )
-sampleManager:addSample("SSK Feature Testing", "Sampler Template 2 Test", "ssk_sampler.featureTesting._templates.template2_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 1 Test", "ssk_sampler.featureTesting._templates.template1_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 2 Test", "ssk_sampler.featureTesting._templates.template2_logic" )
 
 
 -- =============================================

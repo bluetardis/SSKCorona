@@ -4,7 +4,7 @@
 -- Mover Behavior - Virtual DPAD
 -- Behavior Type: Instance
 -- =============================================================
--- Last Modified: 30 JUL 2012
+--
 -- =============================================================
 --local debugLevel = 1 -- Comment out to get global debugLevel from main.cs
 local dp = ssk.debugprinter.newPrinter( debugLevel )

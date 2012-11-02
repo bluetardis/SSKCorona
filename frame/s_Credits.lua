@@ -1,18 +1,18 @@
 -- =============================================================
--- Copyright Roaming Gamer, LLC.
+-- Copyright Roaming Gamer, LLC. 2009-2012 
 -- =============================================================
--- SSK Sampler Main Menu
+-- SSKCorona Sampler Main Menu
 -- =============================================================
 -- Short and Sweet License: 
--- 1. You may use anything you find in the SSK library and sampler to make apps and games for free or $$.
--- 2. You may not sell or distribute SSK or the sampler as your own work.
+-- 1. You may use anything you find in the SSKCorona library and sampler to make apps and games for free or $$.
+-- 2. You may not sell or distribute SSKCorona or the sampler as your own work.
 -- 3. If you intend to use the art or external code assets, you must read and follow the licenses found in the
 --    various associated readMe.txt files near those assets.
 --
--- Credit?:  Mentioning SSK and/or Roaming Gamer, LLC. in your credits is not required, but it would be nice.  Thanks!
+-- Credit?:  Mentioning SSKCorona and/or Roaming Gamer, LLC. in your credits is not required, but it would be nice.  Thanks!
 --
 -- =============================================================
--- Last Modified: 29 AUG 2012
+--
 -- =============================================================
 
 local storyboard = require( "storyboard" )
@@ -26,14 +26,19 @@ local dprint = dp.print
 --								LOCALS								--
 ----------------------------------------------------------------------
 -- Variables
+local enableMultiplayer = true
 local screenGroup
+local layers -- Local reference to display layers 
 local backImage 
-local currentPlayerNameLabel
-
-local rowY
 
 -- Callbacks/Functions
+local createLayers
+local addInterfaceElements
+
 local onBack
+local onRG
+local onCorona
+
 
 ----------------------------------------------------------------------
 --	Scene Methods:
@@ -49,37 +54,8 @@ local onBack
 function scene:createScene( event )
 	screenGroup = self.view
 
-	if(system.orientation == "portrait") then		
-		backImage   = ssk.display.backImage( screenGroup, "RGSplash2_Portrait.jpg", true ) 
-	elseif(system.orientation == "landscapeRight") then
-		backImage   = ssk.display.backImage( screenGroup, "RGSplash2_Landscape.jpg", true ) 
-	end
-	
-
-	local tmpButton
-	local tmpTxt
-
-	-- Game Title
-	tmpTxt = ssk.labels:presetLabel( screenGroup, "headerLabel", "Credits", centerX, centerY, { fontSize = 32 } )
-
-	-- ==========================================
-	-- Buttons and Labels
-	-- ==========================================
-	local curY
-
-	--
-	-- BACK 
-	--
-	curY = centerY - 75
-	categoryButton = ssk.buttons:presetPush( screenGroup, "whiteGradient", 60 , h - 60, 100, 40,  "Back", onBack )
-
-	--
-	-- Made With Label
-	--
-	tmpTxt = ssk.labels:presetLabel( screenGroup, "centeredLabel", 
-	                                 "Made with 'SSK' by Roaming Gamer, LLC.", 
-									 centerX, h-20, { textColor = _WHITE_ } )
-
+	createLayers()
+	addInterfaceElements()
 end
 
 ----------------------------------------------------------------------
@@ -110,6 +86,11 @@ end
 ----------------------------------------------------------------------
 function scene:destroyScene( event )
 	screenGroup = self.view
+
+	-- Clear all references to objects we created in 'createScene()' (or elsewhere).
+	layers:destroy()
+	layers = nil
+
 end
 
 ----------------------------------------------------------------------
@@ -129,6 +110,47 @@ end
 ----------------------------------------------------------------------
 --				FUNCTION/CALLBACK DEFINITIONS						--
 ----------------------------------------------------------------------
+-- createLayers() - Create layers for this scene
+createLayers = function( )
+	layers = ssk.display.quickLayers( screenGroup, "background", "interfaces" )
+end
+
+-- addInterfaceElements() - Create interfaces for this scene
+addInterfaceElements = function( )
+
+	-- Background Image
+	backImage   = ssk.display.backImage( layers.background, "protoBack2.png" ) 
+
+	-- ==========================================
+	-- Buttons and Labels
+	-- ==========================================
+	local curY
+
+	-- Page Title 
+	curY = 30
+	ssk.labels:presetLabel( layers.interfaces, "default", "Credits", centerX, curY, { fontSize = 32 } )
+
+	-- Made With Label
+	curY = curY + 70
+	ssk.labels:presetLabel( screenGroup, "default", 
+	                                 "Made with 'SSKCorona' by Roaming Gamer, LLC.", 
+									 centerX, curY, { textColor = _WHITE_ } )
+
+	-- Corona Badge/Button
+	curY = curY + 75
+	ssk.buttons:presetPush( layers.interfaces, "CoronaButton", centerX - 80, curY, 100, 96, "", onCorona  )
+
+	-- RG Button
+	ssk.buttons:presetPush( layers.interfaces, "RGButton", centerX + 80, curY, 100, 100, "", onRG  )
+
+	-- BACK 
+	ssk.buttons:presetPush( layers.interfaces, "default", 60 , h - 60, 100, 40,  "Back", onBack )
+
+
+
+
+end	
+
 onBack = function ( event ) 
 	local options =
 	{
@@ -144,6 +166,17 @@ onBack = function ( event )
 
 	return true
 end
+
+onRG = function(event)
+	system.openURL( "http://www.roaminggamer.com"  )
+	return true
+end
+
+onCorona = function(event)
+	system.openURL( "http://www.coronalabs.com/"  )
+	return true
+end
+
 
 ---------------------------------------------------------------------------------
 -- Scene Dispatch Events, Etc. - Generally Do Not Touch Below This Line

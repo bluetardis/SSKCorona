@@ -1,4 +1,4 @@
--- This file has been modified slightly from the original to use SSK debug features.
+-- This file has been modified slightly from the original to use SSKCorona debug features.
 --[[
 Corona� AutoLAN v 1.2
 Author: M.Y. Developers
@@ -28,7 +28,7 @@ Notice — For any reuse or distribution, you must make clear to others the lice
 --]]
 
 ----------------------------------------------------------------------
---						DEBUG (Added by Ed Maurina from SSK      	--
+--						DEBUG (Added by Ed Maurina from SSKCorona      	--
 ----------------------------------------------------------------------
 --local debugLevel = 2 -- Comment out to get global debugLevel from main.cs
 local dp = ssk.debugprinter.newPrinter( debugLevel )

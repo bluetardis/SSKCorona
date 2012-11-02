@@ -1,18 +1,18 @@
 -- =============================================================
--- Copyright Roaming Gamer, LLC.
+-- Copyright Roaming Gamer, LLC. 2009-2012 
 -- =============================================================
 -- Buttons Presets
 -- =============================================================
 -- Short and Sweet License: 
--- 1. You may use anything you find in the SSK library and sampler to make apps and games for free or $$.
--- 2. You may not sell or distribute SSK or the sampler as your own work.
+-- 1. You may use anything you find in the SSKCorona library and sampler to make apps and games for free or $$.
+-- 2. You may not sell or distribute SSKCorona or the sampler as your own work.
 -- 3. If you intend to use the art or external code assets, you must read and follow the licenses found in the
 --    various associated readMe.txt files near those assets.
 --
--- Credit?:  Mentioning SSK and/or Roaming Gamer, LLC. in your credits is not required, but it would be nice.  Thanks!
+-- Credit?:  Mentioning SSKCorona and/or Roaming Gamer, LLC. in your credits is not required, but it would be nice.  Thanks!
 --
 -- =============================================================
--- Last Modified: 29 AUG 2012
+--
 -- =============================================================
 --
 -- labelsInit.lua - Create Label Presets
@@ -24,7 +24,7 @@ local mgr			= require( "ssk.factories.f_buttons" )    -- Buttons, Sliders
 -- ============================
 local default_params = 
 { 
-	textColor          = { 0, 0, 0, 255 },
+	textColor		   = _WHITE_,
 	fontSize           = 16,
 	textFont           = native.systemFontBold,
 	unselRectGradient  = graphics.newGradient ( { 170, 170, 170, 255  }, { 64, 64, 64, 255 }, "down" ),
@@ -134,23 +134,21 @@ mgr:addPreset( "whiteGradient", params )
 -- ============================
 -- ================== RG BUTTON
 -- ============================
-params.buttonOverlayRectColor = nil
-params.unselImgSrc = imagesDir .. "badges/rg.png"
-params.selImgSrc   = imagesDir .. "badges/rg.png"
-params.unselRectEn = true
-params.selRectEn   = true
-params.strokeWidth = 0
+local params = 
+{ 
+	unselImgSrc  = imagesDir .. "badges/rg.png",
+	selImgSrc    = imagesDir .. "badges/rg.png",
+}
 mgr:addPreset( "RGButton", params )
 
 -- ============================
 -- ======= Corona  BADGE/BUTTON 150 x 144
 -- ============================
-params.buttonOverlayRectColor = nil
-params.unselImgSrc = imagesDir .. "badges/coronaBadge_smallt.png"
-params.selImgSrc   = imagesDir .. "badges/coronaBadge_smallt.png"
-params.unselRectEn = false
-params.selRectEn   = false
-params.strokeWidth = 0
+local params = 
+{ 
+	unselImgSrc  = imagesDir .. "badges/coronaBadge_smallt.png",
+	selImgSrc    = imagesDir .. "badges/coronaBadge_smallt.png",
+}
 mgr:addPreset( "CoronaButton", params )
 
 

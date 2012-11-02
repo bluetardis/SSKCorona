@@ -1,18 +1,18 @@
 -- =============================================================
--- Copyright Roaming Gamer, LLC.
+-- Copyright Roaming Gamer, LLC. 2009-2012 
 -- =============================================================
--- SSK Sampler Main Menu
+-- SSKCorona Sampler Main Menu
 -- =============================================================
 -- Short and Sweet License: 
--- 1. You may use anything you find in the SSK library and sampler to make apps and games for free or $$.
--- 2. You may not sell or distribute SSK or the sampler as your own work.
+-- 1. You may use anything you find in the SSKCorona library and sampler to make apps and games for free or $$.
+-- 2. You may not sell or distribute SSKCorona or the sampler as your own work.
 -- 3. If you intend to use the art or external code assets, you must read and follow the licenses found in the
 --    various associated readMe.txt files near those assets.
 --
--- Credit?:  Mentioning SSK and/or Roaming Gamer, LLC. in your credits is not required, but it would be nice.  Thanks!
+-- Credit?:  Mentioning SSKCorona and/or Roaming Gamer, LLC. in your credits is not required, but it would be nice.  Thanks!
 --
 -- =============================================================
--- Last Modified: 29 AUG 2012
+--
 -- =============================================================
 
 local storyboard = require( "storyboard" )
@@ -26,15 +26,31 @@ local dprint = dp.print
 --								LOCALS								--
 ----------------------------------------------------------------------
 -- Variables
+local enableMultiplayer = true
 local screenGroup
+local layers -- Local reference to display layers 
 local backImage 
-local currentPlayerNameLabel
+
+local playButton 
+local hostButton
+local joinButton
+local spmpButton
+
+local welcomeBackLabel
+local playerNameLabel
 
 -- Callbacks/Functions
+local createLayers
+local addInterfaceElements
+
 local onPlay
+local onHost
+local onJoin
 local onCredits
 local onOptions
-local onHelp
+local onHighScores
+local onRG
+local onCorona
 
 ----------------------------------------------------------------------
 --	Scene Methods:
@@ -49,63 +65,9 @@ local onHelp
 ----------------------------------------------------------------------
 function scene:createScene( event )
 	screenGroup = self.view
-	if(system.orientation == "portrait") then		
-		backImage   = ssk.display.backImage( screenGroup, "RGSplash2_Portrait.jpg", true ) 
-	elseif(system.orientation == "landscapeRight") then
-		backImage   = ssk.display.backImage( screenGroup, "RGSplash2_Landscape.jpg", true ) 
-	end
 
-
-	local tmpButton
-	local tmpTxt
-
-	-- Game Title
-	tmpTxt = ssk.labels:presetLabel( screenGroup, "headerLabel", "Main Menu", centerX, 30, { fontSize = 32 } )
-
-	-- ==========================================
-	-- Buttons and Labels
-	-- ==========================================
-	local curY
-
-	--
-	-- PLAY 
-	--
-	curY = centerY - 75
-	categoryButton = ssk.buttons:presetPush( screenGroup, "greenGradient", centerX, curY, 200, 40,  "Play", onPlay )
-
-	--
-	-- OPTIONS
-	--
-	curY = centerY - 25
-	categoryButton = ssk.buttons:presetPush( screenGroup, "yellowGradient", centerX, curY, 200, 40,  "Options", onOptions ) 
-
-	--
-	-- CREDITS
-	--
-	curY = centerY + 25
-	categoryButton = ssk.buttons:presetPush( screenGroup, "orangeGradient", centerX, curY, 200, 40,  "Credits", onCredits ) 
-	
-	--
-	-- HELP
-	--
-	curY = centerY + 75
-	categoryButton = ssk.buttons:presetPush( screenGroup, "whiteGradient", centerX, curY, 200, 40,  "Help", onHelp ) 
-
-	--
-	-- RG Button
-	--
-	ssk.buttons:presetPush( screenGroup, "RGButton", 30, h-30, 40, 40, "", onRG  )
-
-	--
-	-- Version Label
-	--
-	tmpTxt = ssk.labels:presetLabel( screenGroup, "centeredLabel", "Last Modified: " .. releaseDate, centerX, h-20, { textColor = _WHITE_ } )
-
-	--
-	-- Corona Badge/Button
-	--
-	ssk.buttons:presetPush( screenGroup, "CoronaButton", w-30, h-30, 50, 48, "", onRG  )
-
+	createLayers()
+	addInterfaceElements()
 end
 
 ----------------------------------------------------------------------
@@ -118,6 +80,13 @@ end
 ----------------------------------------------------------------------
 function scene:enterScene( event )
 	screenGroup = self.view
+
+	-- Update player name in case it was changed while we were in another
+	-- scene (such as the 'NOT ME' scene)
+	if playerNameLabel and welcomeBackLabel then
+		playerNameLabel:setText( currentPlayer.name )
+		playerNameLabel.x = welcomeBackLabel.x + welcomeBackLabel.width/2 + playerNameLabel.width / 2 + 5
+	end
 end
 
 ----------------------------------------------------------------------
@@ -136,6 +105,18 @@ end
 ----------------------------------------------------------------------
 function scene:destroyScene( event )
 	screenGroup = self.view
+
+	-- Clear all references to objects we created in 'createScene()' (or elsewhere).
+	layers:destroy()
+	layers = nil
+	playButton = nil
+	hostButton = nil
+	joinButton = nil
+	spmpButton = nil
+	welcomeBackLabel = nil
+	playerNameLabel = nil
+
+
 end
 
 ----------------------------------------------------------------------
@@ -155,11 +136,85 @@ end
 ----------------------------------------------------------------------
 --				FUNCTION/CALLBACK DEFINITIONS						--
 ----------------------------------------------------------------------
+-- createLayers() - Create layers for this scene
+createLayers = function( )
+	layers = ssk.display.quickLayers( screenGroup, "background", "interfaces" )
+end
+
+-- addInterfaceElements() - Create interfaces for this scene
+addInterfaceElements = function( )
+
+	-- Background Image
+	backImage   = ssk.display.backImage( layers.background, "protoBack2.png" ) 
+
+	-- ==========================================
+	-- Buttons and Labels
+	-- ==========================================
+	local curY
+
+	-- Game Label / Name
+	ssk.labels:presetLabel( layers.interfaces, "default", "Game Name Here", centerX, 30, { fontSize = 32 } )
+
+	-- Version Label
+	ssk.labels:presetLabel( layers.interfaces, "default", "Last Modified: " .. releaseDate, centerX, h-10, { fontSize = 12, textColor = _WHITE_ } )
+
+
+	if(enableMultiplayer) then
+		-- PLAY 
+		curY = centerY - 75
+		playButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX-25, curY, 150, 40,  "Play", onPlay )
+
+		-- HOST/JOIN 
+		curY = centerY - 75
+		hostButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX-65, curY, 70 , 40,  "Host", onHost )
+		joinButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX+15, curY, 70 , 40,  "Join", onJoin )
+		hostButton.isVisible = false
+		joinButton.isVisible = false
+
+		-- SP/MP TOGGLE 
+		curY = centerY - 75
+		spmpButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX+80, curY, 40, 40,  "SP", onSPMP )
+
+	else
+		-- PLAY 
+		curY = centerY - 75
+		playButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX, curY, 200, 40,  "Play", onPlay )
+	end
+
+	-- OPTIONS
+	curY = centerY - 25
+	ssk.buttons:presetPush( layers.interfaces, "default", centerX, curY, 200, 40,  "Options", onOptions ) 
+
+	-- HIGHSCORES
+	curY = centerY + 25
+	ssk.buttons:presetPush( layers.interfaces, "default", centerX, curY, 200, 40,  "High Scores", onHighScores ) 
+
+	-- CREDITS
+	curY = centerY + 75
+	ssk.buttons:presetPush( layers.interfaces, "default", centerX, curY, 200, 40,  "Credits", onCredits ) 
+
+	-- Welcome back label
+	curY = curY + 40
+	welcomeBackLabel = ssk.labels:presetLabel( layers.interfaces, "default", "Welcome back ", centerX - 60, curY,  { fontSize = 18 } )
+	playerNameLabel = ssk.labels:presetLabel( layers.interfaces, "default", currentPlayer.name, centerX + 20, curY,  { fontSize = 18 } )
+	playerNameLabel.x = welcomeBackLabel.x + welcomeBackLabel.width/2 + playerNameLabel.width / 2 + 5
+
+	-- NOT ME
+	ssk.buttons:presetPush( layers.interfaces, "default", centerX + 100, curY, 60, 26,  "Not Me", onNotMe ) 
+
+	-- RG Button
+	ssk.buttons:presetPush( layers.interfaces, "RGButton", 30, h-30, 40, 40, "", onRG  )
+
+	-- Corona Badge/Button
+	ssk.buttons:presetPush( layers.interfaces, "CoronaButton", w-30, h-30, 50, 48, "", onCorona  )
+end	
+
+
 onPlay = function ( event ) 
 	local options =
 	{
 		effect = "slideLeft",
-		time = 400,
+		time = 300,
 		params =
 		{
 			logicSource = nil
@@ -171,11 +226,64 @@ onPlay = function ( event )
 	return true
 end
 
+onHost = function ( event ) 
+	local options =
+	{
+		effect = "fade",
+		time = 200,
+		params =
+		{
+			logicSource = nil
+		}
+	}
+
+	storyboard.gotoScene( "s_Host", options  )	
+
+	return true
+end
+
+onJoin = function ( event ) 
+	local options =
+	{
+		effect = "fade",
+		time = 200,
+		params =
+		{
+			logicSource = nil
+		}
+	}
+
+	storyboard.gotoScene( "s_Join", options  )	
+
+	return true
+end
+
+onSPMP = function ( event ) 
+	local target = event.target
+	local text   = target:getText()
+
+	if(text == "SP") then
+		target:setText("MP")
+		playButton.isVisible = (not playButton.isVisible)
+		hostButton.isVisible = (not hostButton.isVisible)
+		joinButton.isVisible = (not joinButton.isVisible)
+	else
+		target:setText("SP")
+		playButton.isVisible = (not playButton.isVisible)
+		hostButton.isVisible = (not hostButton.isVisible)
+		joinButton.isVisible = (not joinButton.isVisible)
+
+	end
+
+	return true
+	
+end
+
 onOptions = function ( event ) 
 	local options =
 	{
 		effect = "zoomInOutFade",
-		time = 400,
+		time = 200,
 		params =
 		{
 			logicSource = nil
@@ -187,6 +295,21 @@ onOptions = function ( event )
 	return true
 end
 
+onHighScores = function ( event ) 
+	local options =
+	{
+		effect = "fade",
+		time = 200,
+		params =
+		{
+			logicSource = nil
+		}
+	}
+
+	storyboard.gotoScene( "s_HighScores", options  )	
+
+	return true
+end
 onCredits = function ( event ) 
 	local options =
 	{
@@ -203,7 +326,7 @@ onCredits = function ( event )
 	return true
 end
 
-onHelp = function ( event ) 
+onNotMe = function ( event ) 
 	local options =
 	{
 		effect = "flip",
@@ -214,11 +337,21 @@ onHelp = function ( event )
 		}
 	}
 
-	storyboard.gotoScene( "s_Help", options  )	
+	storyboard.gotoScene( "s_NotMe", options  )	
 
 	return true
 end
 
+
+onRG = function(event)
+	system.openURL( "http://developer.coronalabs.com/code/sskcorona"  )
+	return true
+end
+
+onCorona = function(event)
+	system.openURL( "http://www.coronalabs.com/"  )
+	return true
+end
 
 
 ---------------------------------------------------------------------------------

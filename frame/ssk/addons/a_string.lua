@@ -1,18 +1,18 @@
 -- =============================================================
--- Copyright Roaming Gamer, LLC.
+-- Copyright Roaming Gamer, LLC. 2009-2012 
 -- =============================================================
 -- String Add-ons
 -- =============================================================
 -- Short and Sweet License: 
--- 1. You may use anything you find in the SSK library and sampler to make apps and games for free or $$.
--- 2. You may not sell or distribute SSK or the sampler as your own work.
+-- 1. You may use anything you find in the SSKCorona library and sampler to make apps and games for free or $$.
+-- 2. You may not sell or distribute SSKCorona or the sampler as your own work.
 -- 3. If you intend to use the art or external code assets, you must read and follow the licenses found in the
 --    various associated readMe.txt files near those assets.
 --
--- Credit?:  Mentioning SSK and/or Roaming Gamer, LLC. in your credits is not required, but it would be nice.  Thanks!
+-- Credit?:  Mentioning SSKCorona and/or Roaming Gamer, LLC. in your credits is not required, but it would be nice.  Thanks!
 --
 -- =============================================================
--- Last Modified: 24 OCT 2012
+--
 -- =============================================================
 
 --[[
@@ -427,14 +427,14 @@ s string:lpad( len, char )
 s * len - Minimum lenght of resulting string.
 s * char - Character (or string) with which to pad original string.
 r A string containing all of the original string and padded on the left side with ''char'' up to a minimum of  ''len'' lenght.
-e local test = "SSK is cool!!!"
+e local test = "SSKCorona is cool!!!"
 e
 e test = test:lpad( 17, "!" )
 e 
 e print( test )
 d
 d Prints:<br>
-d !!!SSK is cool!!!<br>
+d !!!SSKCorona is cool!!!<br>
 --]]
 function string:lpad (len, char)
 	local theStr = self
@@ -450,14 +450,14 @@ s string:rpad( len, char )
 s * len - Minimum lenght of resulting string.
 s * char - Character (or string) with which to pad original string.
 r A string containing all of the original string and padded on the right side with ''char'' up to a minimum of  ''len'' lenght.
-e local test = "!!!SSK is cool"
+e local test = "!!!SSKCorona is cool"
 e
 e test = test:rpad( 17, "!" )
 e 
 e print( test )
 d
 d Prints:<br>
-d !!!SSK is cool!!!<br>
+d !!!SSKCorona is cool!!!<br>
 --]]
 
 function string:rpad(len, char)

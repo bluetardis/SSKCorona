@@ -1,18 +1,18 @@
 -- =============================================================
--- Copyright Roaming Gamer, LLC.
+-- Copyright Roaming Gamer, LLC. 2009-2012 
 -- =============================================================
 -- Sound Manager
 -- =============================================================
 -- Short and Sweet License: 
--- 1. You may use anything you find in the SSK library and sampler to make apps and games for free or $$.
--- 2. You may not sell or distribute SSK or the sampler as your own work.
+-- 1. You may use anything you find in the SSKCorona library and sampler to make apps and games for free or $$.
+-- 2. You may not sell or distribute SSKCorona or the sampler as your own work.
 -- 3. If you intend to use the art or external code assets, you must read and follow the licenses found in the
 --    various associated readMe.txt files near those assets.
 --
--- Credit?:  Mentioning SSK and/or Roaming Gamer, LLC. in your credits is not required, but it would be nice.  Thanks!
+-- Credit?:  Mentioning SSKCorona and/or Roaming Gamer, LLC. in your credits is not required, but it would be nice.  Thanks!
 --
 -- =============================================================
--- Last Modified: 29 AUG 2012
+--
 -- =============================================================
 
 --EFM 
@@ -28,6 +28,12 @@ soundMgr               = {}
 soundMgr.soundsCatalog = {}
 soundMgr.effectsVolume = 0.8
 soundMgr.musicVolume   = 0.8
+
+--EFM need more channels and way of handling volume
+--EFM need error checking code too
+soundMgr.musicChannel   = audio.findFreeChannel() 
+soundMgr.effectsChannel = soundMgr.musicChannel + 1 
+
 
 -- ============= addEffect()
 function soundMgr:addEffect( name, file, stream, preload  )
@@ -72,6 +78,7 @@ function soundMgr:setEffectsVolume( value )
 	self.effectsVolume = fnn(value or 1.0)
 	if(self.effectsVolume < 0) then self.effectsVolume = 0 end
 	if(self.effectsVolume > 1) then self.effectsVolume = 1 end
+	audio.setVolume( soundMgr.effectsVolume, {channel = self.effectsChannel} )
 	return self.effectsVolume
 end
 
@@ -85,6 +92,7 @@ function soundMgr:setMusicVolume( value )
 	self.musicVolume = fnn(value or 1.0)
 	if(self.musicVolume < 0) then self.musicVolume = 0 end
 	if(self.musicVolume > 1) then self.musicVolume = 1 end
+	audio.setVolume( soundMgr.musicVolume, {channel = self.musicChannel} )
 	return self.musicVolume
 end
 
@@ -93,7 +101,7 @@ function soundMgr:getMusicVolume( value )
 	return self.musicVolume
 end
 
--- ============= getMusicVolume()
+-- ============= play()
 function soundMgr:play( name )
 	local entry = self.soundsCatalog[name]
 
@@ -115,19 +123,31 @@ function soundMgr:play( name )
 		return false
 	end
 
-	local tmpChannel = audio.findFreeChannel()
+	if(entry.isEffect) then
+		audio.setVolume( soundMgr.effectsVolume, {channel = self.effectsChannel} )
+		audio.play( entry.handle, {channel = self.effectsChannel} )
+	else
+		audio.setVolume( soundMgr.musicVolume, {channel = self.musicChannel} )
+		audio.play( entry.handle, {channel = self.musicChannel, loops = -1, fadein=entry.fadein} )
+	end
 
-	if(not tmpChannel == 0) then
-		print("Sound Manager - ERROR: Failed to find free channel: " .. name )
+	return true
+
+end
+
+-- ============= stop()
+function soundMgr:stop( name )
+	local entry = self.soundsCatalog[name]
+
+	if(not entry) then
+		print("Sound Manager - ERROR: Unknown sound: " .. name )
 		return false
 	end
 
 	if(entry.isEffect) then
-		audio.setVolume( soundMgr.effectsVolume, {channel = tmpChannel} )
-		audio.play( entry.handle, {channel = tmpChannel} )
+		audio.stop( self.effectsChannel )
 	else
-		audio.setVolume( soundMgr.musicVolume, {channel = tmpChannel} )
-		audio.play( entry.handle, {channel = tmpChannel, loops = -1, fadein=entry.fadein} )
+		audio.stop( self.musicChannel )
 	end
 
 	return true

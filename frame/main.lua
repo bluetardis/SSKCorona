@@ -1,18 +1,18 @@
 -- =============================================================
--- Copyright Roaming Gamer, LLC.
+-- Copyright Roaming Gamer, LLC. 2009-2012 
 -- =============================================================
 -- main.lua
 -- =============================================================
 -- Short and Sweet License: 
--- 1. You may use anything you find in the SSK library and sampler to make apps and games for free or $$.
--- 2. You may not sell or distribute SSK or the sampler as your own work.
+-- 1. You may use anything you find in the SSKCorona library and sampler to make apps and games for free or $$.
+-- 2. You may not sell or distribute SSKCorona or the sampler as your own work.
 -- 3. If you intend to use the art or external code assets, you must read and follow the licenses found in the
 --    various associated readMe.txt files near those assets.
 --
--- Credit?:  Mentioning SSK and/or Roaming Gamer, LLC. in your credits is not required, but it would be nice.  Thanks!
+-- Credit?:  Mentioning SSKCorona and/or Roaming Gamer, LLC. in your credits is not required, but it would be nice.  Thanks!
 --
 -- =============================================================
--- Last Modified: 05 AUG 2012
+--
 -- =============================================================
 
 print("\n\n\n****************************************************************")
@@ -39,8 +39,14 @@ physics.start()
 --physics.setGravity(0,0)
 --physics.setDrawMode( "hybrid" )
 
--- SSK Libraries
+-- SSKCorona Libraries
 require("ssk.loadSSK")
+
+-- User SSKCorona Settings
+require("user.buttons")
+require("user.labels")
+require("user.sounds")
+
 
 ----------------------------------------------------------------------
 -- 3. ONE-TIME INITIALIZATION										--
@@ -99,49 +105,27 @@ _G.myCC:dump()
 ----------------------------------------------------------------------
 -- 7. LOAD AND APPLY PLAYER SPECIFIC SETTINGS						--
 ----------------------------------------------------------------------
---[[ EFM
 -- Load name of last player (if any) or initialize default player
-currentPlayer = ssk.datastore:new()
+_G.currentPlayer = {}
 if( io.exists( "lastPlayer.txt", system.DocumentsDirectory ) ) then
-	currentPlayer:load( "lastPlayer.txt" )
+	currentPlayer = table.load( "lastPlayer.txt", system.DocumentsDirectory )
 else
-	currentPlayer:add( "name", "ThePlayer" )
-	currentPlayer:add( "score", 0 )
-	currentPlayer:save( "lastPlayer.txt" )
+	currentPlayer.name = "Player"
+	currentPlayer.effectsEnabled = false
+	currentPlayer.effectsVolume = 0.8
+	currentPlayer.musicEnabled = false
+	currentPlayer.musicVolume = 0.8
+
+	table.save(currentPlayer, "lastPlayer.txt", system.DocumentsDirectory )
 end
 
--- Load options for current player or initialize to defaults
-ssk.gameoptions:loadPlayerOptions( currentPlayer:get("name") )
+ssk.sounds:setEffectsVolume(currentPlayer.effectsVolume)
+ssk.sounds:setMusicVolume(currentPlayer.musicVolume)
 
--- Setup sound levels
-ssk.sounds:setEffectsVolume(0.5)
-ssk.sounds:setMusicVolume(0.5)
-soundVolumes.music   = ssk.gameoptions:get( "soundTrackVolume" )
-soundVolumes.effects = ssk.gameoptions:get( "soundEffectsVolume" )
-
-
--- Start playing soundtrack if enabled
-local newSoundTrack = ssk.gameoptions:get( "soundTrack" )
-print(backgroundChannel)
-audio.stop()
-
-if(newSoundTrack == "Deliberate Thought") then
-	audio.play(backgroundMusic1, { channel = backgroundChannel, loops=-1, fadein=1000})
-elseif(newSoundTrack == "Finding The Balance") then
-	audio.play(backgroundMusic2, { channel = backgroundChannel, loops=-1, fadein=1000})
-end
-audio.setVolume(soundVolumes.music , { channel=backgroundChannel } ) 
-audio.setVolume(soundVolumes.effects , { channel=effectChannel } ) 
-
-if(soundVolumes.effects == 0) then
-	soundEnabled = true
-else
-	soundEnabled = true
+if(currentPlayer.musicEnabled) then
+	ssk.sounds:play("bouncing")
 end
 
-print("soundVolumes.music == " .. soundVolumes.music )
-print("soundVolumes.effects == " .. soundVolumes.effects )
---]]
 
 --[[ EFM
 -- Load list of known players
@@ -190,6 +174,7 @@ print("****************************************************************")
 ----------------------------------------------------------------------
 --								LOAD FIRST SCENE					--
 ----------------------------------------------------------------------
-storyboard.gotoScene( "s_SplashLoading" )
---storyboard.gotoScene( "s_MainMenu" )
+--storyboard.gotoScene( "s_SplashLoading" )
+storyboard.gotoScene( "s_MainMenu" )
 --storyboard.gotoScene( "s_Credits" )
+--storyboard.gotoScene( "s_Options" )
