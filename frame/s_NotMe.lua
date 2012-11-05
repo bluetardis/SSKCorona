@@ -35,7 +35,13 @@ local backImage
 local createLayers
 local addInterfaceElements
 
-local onBack
+local removePlayerButton
+
+local onRemove
+local onRename
+local onNewPlayer
+local onPlayerSelect
+local onOK
 
 ----------------------------------------------------------------------
 --	Scene Methods:
@@ -50,15 +56,15 @@ local onBack
 ----------------------------------------------------------------------
 function scene:createScene( event )
 	screenGroup = self.view
-
-	createLayers()
-	addInterfaceElements()
 end
 
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 function scene:willEnterScene( event )
 	screenGroup = self.view
+
+	createLayers()
+	addInterfaceElements()
 end
 
 ----------------------------------------------------------------------
@@ -77,17 +83,17 @@ end
 ----------------------------------------------------------------------
 function scene:didExitScene( event )
 	screenGroup = self.view
+
+	layers:destroy()
+	layers = nil
+
+	removePlayerButton = nil
 end
 
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 function scene:destroyScene( event )
 	screenGroup = self.view
-
-	-- Clear all references to objects we created in 'createScene()' (or elsewhere).
-	layers:destroy()
-	layers = nil
-	
 end
 
 ----------------------------------------------------------------------
@@ -109,7 +115,7 @@ end
 ----------------------------------------------------------------------
 -- createLayers() - Create layers for this scene
 createLayers = function( )
-	layers = ssk.display.quickLayers( screenGroup, "background", "interfaces" )
+	layers = ssk.display.quickLayers( screenGroup, "background", "playerList", "interfaces" )
 end
 
 -- addInterfaceElements() - Create interfaces for this scene
@@ -121,24 +127,59 @@ addInterfaceElements = function( )
 	-- ==========================================
 	-- Buttons and Labels
 	-- ==========================================
-	local curY
+	local curY = 30
+	local tmpButton
+	local tmpLabel
 
 	-- Page Title 
-	ssk.labels:presetLabel( layers.interfaces, "default", "Not Me", centerX, 30, { fontSize = 32 } )
+	ssk.labels:presetLabel( layers.interfaces, "default", "Select Player", centerX, curY, { fontSize = 32 } )
 
-	-- Work In Progress 
-	ssk.labels:presetLabel( layers.interfaces, "default", "Work In Progress", centerX, centerY, { fontSize = 32 } )
+	-- Create Player List
+	local maxPlayers = 4
+	local playerCount = 0
+	local x,y = 0,0
+	for k,v in pairs(knownPlayers) do
+		if( playerCount < maxPlayers ) then
+			tmpButton = ssk.buttons:presetPush( layers.playerList, "default", x , y, 190, 35, v, onPlayerSelect )
+			
+			if( v == currentPlayer.name ) then
+				tmpButton:setTextColor( _YELLOW_ )
+			end
+			
+			y = y + tmpButton.height + 2
+		end
+		playerCount = playerCount + 1
+	end
 
-	-- BACK 
-	curY = centerY - 75
-	ssk.buttons:presetPush( layers.interfaces, "default", 60 , h - 60, 100, 40,  "Back", onBack )
+	-- If we are not at 'maxPlayers' add a button for adding new players
+	if( playerCount < maxPlayers ) then
+		tmpButton = ssk.buttons:presetPush( layers.playerList, "default", x , y, 190, 35, "(new player)", onPlayerSelect )
+	end
+
+	curY = curY + 35 + layers.playerList.height/2
+	layers.playerList:setReferencePoint( display.CenterReferencePoint )
+	layers.playerList.x = centerX
+	layers.playerList.y = curY
+
+	-- Rename/Remove
+	curY = curY + layers.playerList.height/2 + 20
+	ssk.buttons:presetPush( layers.interfaces, "default", centerX - 50 , curY, 90, 35,  "Rename", onRename )
+	removePlayerButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX + 50 , curY, 90, 35,  "Remove", onRemove )
+	
+	if(playerCount == 1) then
+		removePlayerButton:disable()
+	end
+
+	-- OK
+	curY = curY + 40
+	ssk.buttons:presetPush( layers.interfaces, "default", centerX , curY, 190, 35,  "OK", onOK )
 
 end	
 
-onBack = function ( event ) 
+onOK = function ( event ) 
 	local options =
 	{
-		effect = "flip",
+		effect = "fade",
 		time = 200,
 		params =
 		{
@@ -148,6 +189,85 @@ onBack = function ( event )
 
 	storyboard.gotoScene( "s_MainMenu", options  )	
 
+	return true
+end
+
+onNewPlayer = function ( event ) 
+	local options =
+	{
+		effect = "fade",
+		time = 200,
+		params =
+		{
+			mode = "new"
+		}
+	}
+
+	storyboard.gotoScene( "s_NotMeDialog", options  )	
+
+	return true
+end
+
+onRemove = function ( event ) 
+
+	knownPlayers[currentPlayer.name] = nil
+	
+	for k,v in pairs( knownPlayers ) do
+		--currentPlayer.name = v
+		loadCurrentPlayer( v )
+		break
+	end
+
+	knownPlayers[currentPlayer.name] = currentPlayer.name
+	saveCurrentPlayer()
+	saveKnownPlayers()
+
+	-- Clear all references to objects we created in 'createScene()' (or elsewhere).
+	layers:destroy()
+	layers = nil
+
+	removePlayerButton = nil
+
+	createLayers()
+	addInterfaceElements()
+	
+	return true
+end
+
+onRename = function ( event ) 
+	local options =
+	{
+		effect = "fade",
+		time = 200,
+		params =
+		{
+			mode = "rename"
+		}
+	}
+
+	storyboard.gotoScene( "s_NotMeDialog", options  )	
+
+	return true
+end
+
+
+onPlayerSelect = function ( event ) 
+	local target = event.target
+	
+	if(target:getText() == "(new player)") then
+		onNewPlayer()
+		return true
+
+	else
+		loadCurrentPlayer( target:getText() )
+
+		for i=1, layers.playerList.numChildren do
+			layers.playerList[i]:setTextColor( _WHITE_ )
+		end
+
+		target:setTextColor( _YELLOW_ )
+	end
+	
 	return true
 end
 

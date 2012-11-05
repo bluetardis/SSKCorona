@@ -14,7 +14,7 @@
 -- =============================================================
 --
 -- =============================================================
-local debugLevel = 2 -- Comment out to get global debugLevel from main.cs
+--local debugLevel = 2 -- Comment out to get global debugLevel from main.cs
 local dp = ssk.debugprinter.newPrinter( debugLevel )
 local dprint = dp.print
 
@@ -32,11 +32,11 @@ local networking = {}
 ----------------------------------------------------------------------
 --						REQUIRES									--
 ----------------------------------------------------------------------
-local storyboard = require( "storyboard" )
-local json = require "json"
-local gem     =  ssk.gem
-local clientClass		= require( "ssk.external.mydevelopergames.Client" )		-- Client (External: http://www.mydevelopersgames.com/AutoLAN/)
-local serverClass		= require( "ssk.external.mydevelopergames.Server" )		-- Server (External: http://www.mydevelopersgames.com/AutoLAN/)
+local storyboard  = require( "storyboard" )
+local json        = require "json"
+local gem         =  ssk.gem
+local clientClass = require( "ssk.external.mydevelopergames.Client" ) -- Client (External: http://www.mydevelopersgames.com/AutoLAN/)
+local serverClass = require( "ssk.external.mydevelopergames.Server" ) -- Server (External: http://www.mydevelopersgames.com/AutoLAN/)
 
 ----------------------------------------------------------------------
 --						LOCALS										--
@@ -48,6 +48,11 @@ networking.numClients = 0
 
 networking.serverRunning = false
 networking.clientRunning = false
+
+-- Special Variables
+networking.myName  = "invalid"
+networking.myFinalScore = "invalid"
+networking.myDataTable  = invalid
 
 -- Callbacks/Functions
 -- COMMON
@@ -70,67 +75,43 @@ local client_ConnectionFailed
 ----------------------------------------------------------------------
 --						GLOBAL FUNCTIONS							--
 ----------------------------------------------------------------------
-function networking:msgServer( msg ) 
-	clientClass:send( msg )
+
+function networking:isNetworking()
+	return (self.serverRunning or self.clientRunning )
 end
 
-function networking:msgClient( aClient, msg  )
-	aClient:send( msg )
+function networking:msgServer( msg, data ) 
+	local msg  = msg
+	local data = data or {}
+	data.msgType = msg	
+
+	clientClass:send( json.encode(data) )
 end
 
-function networking:msgClients( msg )
-	for key,aClient in pairs(networking.clients) do
-		aClient:send( msg )
+function networking:msgClient( aClient, msg, data  )
+	local msg  = msg
+	local data = data or {}
+	data.msgType = msg			
+
+	aClient:send( json.encode(data) )
+end
+
+function networking:msgClients( msg, data )
+	local msg  = msg
+	local data = data or {}
+	data.msgType = msg			
+
+	for key,aClient in pairs(self.clients) do
+		aClient:send( json.encode(data) )
 	end
 end
 
 function networking:getNumClients(  )
-	return networking.numClients
+	return self.numClients
 end
 
 function networking:getClientsTable(  )
-	return networking.clients
-end
-
-function networking:setClientPlayerName( aClient, name  )
-	aClient.playerName = name
-end
-
-function networking:getClientPlayerName( aClient  )
-	return aClient.playerName
-end
-function networking:getClientPlayerNames( aClient  )
-	local tmpTable =  {}
-	for key,aClient in pairs(networking.clients) do
-		tmpTable[#tmpTable+1] = aClient.playerName
-	end
-	return tmpTable
-end
-
-function networking:setClientPlayerScore( aClient, score  )
-	aClient.playerScore = score
-end
-
-function networking:getClientPlayerScore( aClient  )
-	return aClient.playerScore
-end
-
-function networking:getClientPlayerScores( aClient  ) -- EFM THIS IS WRONG
-	local tmpTable =  {}
-	for key,aClient in pairs(networking.clients) do
-		tmpTable[#tmpTable+1] = { aClient.playerName, aClient.playerScore }
-		--tmpTable[aClient.playerScore] =  aClient.playerName
-	end
-	return tmpTable
-end
-
-local serverGameOver = false
-function networking:clearClientPlayerScores( aClient  )
-	for key,aClient in pairs(networking.clients) do
-		aClient.playerScore = 0
-		aClient.gameOver = false
-	end
-	serverGameOver = false
+	return self.clients
 end
 
 function networking:startServer( )
@@ -147,7 +128,7 @@ function networking:startClient( )
 		return
 	end
 
-	clientClass:start() 
+	clientClass:start() 	
 	self.clientRunning = true
 end
 
@@ -168,16 +149,16 @@ function networking:stopScanning( )
 end
 
 
-function networking:setClientApplicationName( newName )
+function networking:setClientApplicationName( newName ) -- EFM WORKING?
 	clientClass:setOptions({applicationName = newName})
 end
 
-function networking:setServerApplicationName( newName )
+function networking:setServerApplicationName( newName ) -- EFM WORKING?
 	serverClass:setOptions({applicationName = newName})
 	serverClass:setCustomBroadcast()
 end
 
-function networking:setCustomBroadcast( newBroadcast )
+function networking:setCustomBroadcast( newBroadcast ) -- EFM WORKING?
 	serverClass:setOptions({customBroadcast = newBroadcast})
 	serverClass:setCustomBroadcast()
 end
@@ -185,7 +166,7 @@ end
 function networking:autoconnectToHost( )
 	dprint(1,"autoconnectToHost()")
 	if( not self.clientRunning ) then
-		clientClass:start() 
+		clientClass:start() 		
 		self.clientRunning = true
 	end
 	clientClass:autoConnect( )
@@ -200,18 +181,17 @@ function networking:connectToSpecificHost( hostIP )
 	clientClass:connect(hostIP)
 end
 
-
 function networking:stop()
 	dprint(1,"stopNetworking()")
-	if( networking.numClients > 0) then
+	if( self.numClients > 0) then
 		serverClass:disconnect()
-		for k,v in pairs(networking.clients) do 
-			local client = networking.clients[k]
+		for k,v in pairs(self.clients) do 
+			local client = self.clients[k]
 			clients[k] = nil
-			networking.numClients = networking.numClients - 1	
+			self.numClients = self.numClients - 1	
 			client:removeSelf() --EFM BUG?? shouldn't it stop?
 		end
-		networking.numClients = 0
+		self.numClients = 0
 	end
 
 	if( self.connectedToServer == true) then
@@ -224,6 +204,10 @@ function networking:stop()
 
 	self.serverRunning = false
 	self.clientRunning = false
+
+	self.myName  = "invalid"
+	self.myFinalScore = "invalid"
+	self.myDataTable  = invalid
 
 	gem:post("CLIENT_STOPPED")
 	gem:post("SERVER_STOPPED")
@@ -244,41 +228,42 @@ end
 
 function networking:stopServer()
 	dprint(1,"stopServer()")
-	if( networking.numClients > 0) then
+	if( self.numClients > 0) then
 		serverClass:disconnect()
-		for k,v in pairs(networking.clients) do 
-			local client = networking.clients[k]
+		for k,v in pairs(self.clients) do 
+			local client = self.clients[k]
 			clients[k] = nil
-			networking.numClients = networking.numClients - 1	
+			self.numClients = self.numClients - 1	
 			client:removeSelf() --EFM BUG?? shouldn't it stop?
 		end
-		networking.numClients = 0
+		self.numClients = 0
 	end
 
 	serverClass:stop()
 	self.serverRunning = false
 
+	self.myName  = "invalid"
+	self.myFinalScore = "invalid"
+	self.myDataTable  = invalid
+
 	gem:post("SERVER_STOPPED")
 end
 
 
-
-
-
 function networking:getClientByKey( key )
-	return networking.clients[key]
+	return self.clients[key]
 end
 
 function networking:setClient( client )
-	networking.clients[client] = client
+	self.clients[client] = client
 end
 
 function networking:getClientsTable()
-	return networking.clients
+	return self.clients
 end
 
 function networking:getNumClients()
-	return networking.numClients
+	return self.numClients
 end
 
 function networking:isConnectedToServer()
@@ -303,9 +288,195 @@ function networking:isConnectedToWWW( url )
 	return hostFound
 end
 
+----------------------------------------------------------------------
+--	Special Utilities: Player Name, Score, Data					--
+----------------------------------------------------------------------
+
+function networking:setMyName( name  )
+	if(self.serverRunning) then -- I am the server
+		networking.myName = name
+	elseif(self.clientRunning) then -- I am a client
+		self:msgServer( "_RG_SETNAME_RG_" , { myName = name } )
+	end
+end
+
+function networking:setMyFinalScore( finalScore  )
+	if(self.serverRunning) then -- I am the server
+		networking.myFinalScore = finalScore
+	elseif(self.clientRunning) then -- I am a client
+		self:msgServer( "_RG_SETFINALSCORE_RG_" , { myFinalScore = finalScore } )
+	end
+end
+
+function networking:setMyData( dataTable  )
+	if(self.serverRunning) then -- I am the server
+		networking.myDataTable = dataTable
+	elseif(self.clientRunning) then -- I am a client
+		self:msgServer( "_RG_SETDATA_RG_" , { myDataTable = dataTable } )
+	end
+end
+
+
+-- Server ONLY
+function networking:clearMyName( )
+	if(self.serverRunning) then -- I am the server
+		networking.myName = "invalid"
+		for k,v in pairs(networking.clients) do
+			v.myName = "invalid"
+		end
+	end
+end
+
+function networking:clearMyFinalScore( )
+	if(self.serverRunning) then -- I am the server
+		networking.myFinalScore = "invalid"
+
+		for k,v in pairs(networking.clients) do
+			v.myFinalScore = "invalid"
+		end
+	end
+end
+
+function networking:clearMyData( )
+	if(self.serverRunning) then -- I am the server
+		networking.myDataTable = "invalid"
+
+		for k,v in pairs(networking.clients) do
+			v.myDataTable = "invalid"
+		end
+	end
+end
+
+
+-- ONLY FOR SERVER
+-- Returns 'nil' if one or more names is missing
+--
+-- Because this returns 'nil' if all the names are not present, it 
+-- makes POLLING for names/final-scores very easy.  
+function networking:getNames( )  
+	if(self.serverRunning) then -- I am the server
+		local tmpTable =  {}
+		local allFound = true
+		
+		if( self.myName == "invalid" ) then
+			allFound = false
+		else
+			tmpTable[#tmpTable+1] = self.myName
+		end		
+		
+		for key,aClient in pairs(self.clients) do
+			if( aClient.myName == "invalid" ) then
+				allFound = false
+			else
+				tmpTable[#tmpTable+1] = aClient.myName
+			end
+		end
+
+		if( allFound ) then
+			return tmpTable
+		end
+	end
+
+	return nil
+end
+
+-- ONLY FOR SERVER
+-- Returns 'nil' if one or more names or final-scores is missing
+--
+-- Because this returns 'nil' if all the names/final-scores are not present, it 
+-- makes POLLING for names very easy.  
+function networking:getFinalScores( )  
+	if(self.serverRunning) then -- I am the server
+		local tmpTable =  {}
+		local allFound = true
+		
+		if( self.myName == "invalid" or self.myFinalScore == "invalid") then
+			allFound = false
+		else
+			tmpTable[#tmpTable+1] = { name = self.myName, finalScore = self.myFinalScore }
+		end		
+		
+		for key,aClient in pairs(self.clients) do
+			if( aClient.myName == "invalid" or aClient.myFinalScore == "invalid") then
+				allFound = false
+			else
+				tmpTable[#tmpTable+1] = { name = aClient.myName, finalScore = aClient.myFinalScore }
+			end
+		end
+
+		if( allFound ) then
+			return tmpTable
+		end
+	end
+
+	return nil
+end
+
+-- ONLY FOR SERVER
+-- Returns 'nil' if one or more names or data is missing
+--
+-- Because this returns 'nil' if all the names/data are not present, it 
+-- makes POLLING for names/data very easy.  
+function networking:getData( )  
+	if(self.serverRunning) then -- I am the server
+		local tmpTable =  {}
+		local allFound = true
+		
+		if( self.myName == "invalid" or self.myDataTable == "invalid") then
+			allFound = false
+		else
+			tmpTable[#tmpTable+1] = { name = self.myName, data = self.myDataTable }
+		end		
+		
+		for key,aClient in pairs(self.clients) do
+			if( aClient.myName == "invalid" or aClient.myDataTable == "invalid") then
+				allFound = false
+			else
+				tmpTable[#tmpTable+1] = { name = aClient.myName, data = aClient.myDataTable }
+			end
+		end
+
+		if( allFound ) then
+			return tmpTable
+		end
+	end
+
+	return nil
+end
+
+
+
+function networking:setClientPlayerScore( aClient, score  )
+	aClient.playerScore = score
+end
+
+function networking:getClientPlayerScore( aClient  )
+	return aClient.playerScore
+end
+
+function networking:getClientPlayerScores( aClient  ) -- EFM THIS IS WRONG
+	local tmpTable =  {}
+	for key,aClient in pairs(self.clients) do
+		tmpTable[#tmpTable+1] = { aClient.playerName, aClient.playerScore }
+		--tmpTable[aClient.playerScore] =  aClient.playerName
+	end
+	return tmpTable
+end
+
+function networking:clearClientPlayerScores( aClient  )
+	for key,aClient in pairs(self.clients) do
+		aClient.playerScore = 0
+		aClient.gameOver = false
+	end
+end
+
+
+----------------------------------------------------------------------
+--						CALLBACK DEFINITIONS						--
+----------------------------------------------------------------------
 
 function networking:registerCallbacks()
-	dprint(1,"ssk.networking - registerCallbacks()")
+	dprint(2,"ssk.networking - registerCallbacks()")
 
 	-- SERVER
 	Runtime:addEventListener("autolanPlayerJoined", server_PlayerJoined)
@@ -319,16 +490,12 @@ function networking:registerCallbacks()
 	Runtime:addEventListener("autolanDisconnected", client_Disconnected)
 	Runtime:addEventListener("autolanConnectionFailed", client_ConnectionFailed)
 
-
 	-- BOTH
 	Runtime:addEventListener("autolanReceived", dataReceived)
 
 end
 
 
-----------------------------------------------------------------------
---						CALLBACK DEFINITIONS						--
-----------------------------------------------------------------------
 ---- COMMON
 dataReceived = function (event)	
 	dprint(2,"Received message")
@@ -348,8 +515,24 @@ host_handleDataReceived = function (event)
 	dprint(2,"host_handleDataReceived()")
 
 	local client = event.client
-	local msg = str.tokenize( event.message )
-	gem:post("MSG_FROM_CLIENT", { clientID = client, msgTable = msg } )
+	local msg = json.decode( event.message )
+
+	-- Handle SPECIAL MESSAGES without fowarding
+	-- _RG_SETNAME_RG_, _RG_SETFINALSCORE_RG_, _RG_SETDATA_RG_
+	--
+	if(msg.msgType == "_RG_SETNAME_RG_") then
+		client.myName = msg.myName
+	
+	elseif(msg.msgType == "_RG_SETFINALSCORE_RG_") then
+		client.myFinalScore = msg.myFinalScore
+
+	elseif(msg.msgType == "_RG_SETDATA_RG_") then 
+		client.myDataTable = msg.myDataTable
+	
+	else
+		gem:post("MSG_FROM_CLIENT", { clientID = client, msgTable = msg } )
+
+	end
 
 	return true -- Do not let others catch this too
 end
@@ -358,6 +541,11 @@ server_PlayerJoined = function (event)
 	dprint(1,"server_PlayerJoined()" )
 
 	local client = event.client
+
+	client.myName  = "invalid"
+	client.myFinalScore = "invalid"
+	client.myDataTable  = invalid
+
 	networking.clients[client] = client
 	networking.numClients = networking.numClients + 1
 	client.myJoinTime = system.getTimer() 
@@ -375,13 +563,15 @@ server_PlayerDropped = function (event)
 	" Dropped b/c " .. event.message .. 
 	" connection was active for " .. system.getTimer() - networking.clients[client].myJoinTime .. " ms" )
 
+	gem:post("CLIENT_DROPPED", { clientID = client, dropReason = event.message } )
+
 	-- Take player out of game and remove their name
-	client.myName = nil
-	client.inGame = nil
+	client.myName  = nil
+	client.myFinalScore = nil
+	client.myDataTable  = nil
+
 	networking.clients[client] = nil --clear references to prevent memory leaks
 	networking.numClients = networking.numClients - 1	
-
-	gem:post("CLIENT_DROPPED", { clientID = client, dropReason = event.message } )
 
 	return true -- Do not let others catch this too
 end
@@ -391,8 +581,9 @@ client_handleDataReceived = function (event)
 	dprint(1,"client_handleDataReceived() " .. event.message)
 
 	local theServer = event.client
-	local msg = str.tokenize( event.message )
-	gem:post("MSG_FROM_SERVER", { clientID = client,msgTable = msg } )
+	local msg = json.decode( event.message )
+
+	gem:post("MSG_FROM_SERVER", { clientID = client, msgTable = msg } )
 
 	return true -- Do not let others catch this too
 end

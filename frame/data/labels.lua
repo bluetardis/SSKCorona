@@ -1,7 +1,7 @@
 -- =============================================================
 -- Copyright Roaming Gamer, LLC. 2009-2012 
 -- =============================================================
--- Sound Presets
+-- User Labels Presets
 -- =============================================================
 -- Short and Sweet License: 
 -- 1. You may use anything you find in the SSKCorona library and sampler to make apps and games for free or $$.
@@ -15,17 +15,19 @@
 --
 -- =============================================================
 
-
 --
--- soundsInit.lua - Initialize Game Sounds
+-- labelsInit.lua - Create Label Presets
 --
-local mgr = require( "ssk.classes.c_sounds" ) -- Sounds Manager
---[[
-	mgr:addEffect("drop", soundsDir .. "Block Drop.wav", false, true)
-	mgr:addEffect("click", soundsDir .. "Letter Click3.wav")
-	mgr:addEffect("sneeze", soundsDir .. "Sneeze-Baby.mp3")
-	mgr:addMusic("Music1", soundsDir .. "DeliberateThought.mp3", nil, 1500)
---]]
+local mgr			= require( "ssk.factories.f_labels" )
 
-mgr:addMusic("bouncing", soundsDir .. "bouncing.mp3", nil, 0)
-mgr:addEffect("boop", soundsDir .. "boop.wav")
+-- ============================
+-- =============== DEFAULT
+-- ============================
+local params = 
+{ 
+	font      = native.systemFont,
+	fontSize  = 12,
+	textColor     = { 255,255,255, 255 },
+}
+mgr:addPreset( "user_default", params )
+

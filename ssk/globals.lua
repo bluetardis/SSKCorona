@@ -13,33 +13,29 @@
 --
 -- =============================================================
 --
+-- DO NOT MODIFY THIS FILE.  MODIFY "data/globals.lua" instead.
+--
 -- =============================================================
-
-
--- You may (and probably should) modify the following globals to suit the needs of your game
--- You may (and probably should) modify the following globals to suit the needs of your game
--- You may (and probably should) modify the following globals to suit the needs of your game
-
--- Debug messaging level (used by debugPrint): 
--- 0  - None
--- 1  - Basic messages
--- 2  - Intermediate debug output
--- 3+ - Full debug output (may be very noisy)
-_G.debugLevel = 1
-
--- Version details and flags
-_G.isTutorialDistro = true -- I can't distribute some 'paid' assets with the kit, so this
-                         -- flag is used to select alternative assets for the source distro version.
+_G.myAppName   = "Default"
+_G.debugLevel  = 1
 _G.liteVersion = false
-_G.releaseDate  = "02 NOV 2012"
+_G.releaseDate = "05 NOV 2012"
 
 -- Resource directories (images, sounds, etc.)
 _G.imagesDir = "images/"
 _G.soundsDir = "sounds/"
 
 -- Outline colors (if used)
-_G.topLineColor      = {0,0,0,180}
-_G.botLineColor      = {255,255,255,200}
+_G.topLineColor  = {0,0,0,180}
+_G.botLineColor  = {255,255,255,200}
+
+-- Gravity settings
+_G.usesPhysics = false
+_G.gravityVector = { 0, 9.8 }
+_G.physicsRenderMode = "normal" -- "normal", "debug", "hybrid"
+
+-- Multitouch
+_G.enableMultiTouch = true
 
 -- DO NOT MODIFY BELOW (Used In Framework); EXPERTS ONLY
 -- DO NOT MODIFY BELOW (Used In Framework); EXPERTS ONLY

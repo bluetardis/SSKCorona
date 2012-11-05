@@ -45,7 +45,8 @@ local UDPServer = socket.udp()
 UDPServer:setsockname("*", 0) --bind on any availible port and localserver ip address.
 local myIP, myPort = UDPServer:getsockname()
 local json = require "json"
-local applicationName = "Default"
+local applicationName = _G.myAppName or "Default" --EFM modified to make simpler; setOptions() has bug?
+dprint(2,"Server: applicationName == " .. applicationName)
 local deviceName = system.getInfo("name") 
 local customBroadcast = 1
 local broadcastTable = {"CoronaMultiplayer", applicationName, deviceName, myPort, customBroadcast} --broadcast frame = protocol name, app name, port to server (not broadcaster)  

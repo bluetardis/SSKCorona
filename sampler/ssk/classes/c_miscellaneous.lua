@@ -35,27 +35,37 @@ end
 
 function misc.dumpScreenMetrics()
 
-	print("\nApplication designed to these specs:\n")
-	print("         design width (w) = " .. w)
-	print("        design height (h) = " .. h)
-	print("design center X (centerX) = " .. centerX)
-	print("design center Y (centerY) = " .. centerY)
+	print("\n************************************************* " )
+	print("\nDesign Specs")
+	print("------------")
+	print(" design width (w) = " .. w)
+	print("design height (h) = " .. h)
 	
-	print("\nPhysical (Unscaled) Screen Specs:\n")
-	print("              deviceWidth = " .. deviceWidth)
-	print("             deviceHeight = " .. deviceHeight .. NL)
+	print("\nDevice Specs")
+	print("------------")
+	print("  device width (deviceWidth) = " .. deviceWidth)
+	print("device height (deviceHeight) = " .. deviceHeight)
 
-	print("\nScaling (warning content scaled to retain original w vs h ratio):\n")
-	print("  content scale X (scaleX) = " .. round(scaleX,3))
-	print("  content scale Y (scaleY) = " .. round(scaleY,3) .. NL)
+	print("\nDesign --> Device Scaling")
+	print("-------------------------")
+	print("content scale X (scaleX) = " .. round(scaleX,3))
+	print("content scale Y (scaleY) = " .. round(scaleY,3))
 
-	print("\nVisible scaled screen (may be wider and/or taller than design specs):\n")
-	print("              displayWidth = " .. displayWidth)
-	print("             displayHeight = " .. displayHeight .. NL)
+	print("\nVisible scaled screen")
+	print("---------------------")
+	print(" displayWidth = " .. displayWidth)
+	print("displayHeight = " .. displayHeight)
 
-	print("\Unused scaled pixels:\n")
-	print("               unusedWidth = " .. unusedWidth)
-	print("               unusedHeight = " .. unusedHeight)
+	print("\nUnused scaled pixels")
+	print("--------------------")
+	print(" unusedWidth = " .. unusedWidth)
+	print("unusedHeight = " .. unusedHeight)
+
+	print("\nScreen Orientation")
+	print("------------------")
+	print(system.orientation )
+	
+	print("\n************************************************* \n" )
 
 end
 

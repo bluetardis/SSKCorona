@@ -25,8 +25,18 @@ local dprint = dp.print
 ----------------------------------------------------------------------
 --								LOCALS								--
 ----------------------------------------------------------------------
+-- Flags modifying main menu operation and layout
+
+-- EFM move to globals?
+
+-- multiplayerMode ==> "OFF", "2P_AUTO", "2P_EASY", "MP_MANUAL"
+--local multiplayerMode = "OFF" 
+local multiplayerMode = "2P_AUTO" -- ("OFF", "2P_AUTO", "2P_EASY", "MP_MANUAL")
+--local multiplayerMode = "2P_EASY" -- ("OFF", "2P_AUTO", "2P_EASY", "MP_MANUAL")
+--local multiplayerMode = "MP_MANUAL" -- ("OFF", "2P_AUTO", "2P_EASY", "MP_MANUAL")
+
+
 -- Variables
-local enableMultiplayer = true
 local screenGroup
 local layers -- Local reference to display layers 
 local backImage 
@@ -80,6 +90,7 @@ end
 ----------------------------------------------------------------------
 function scene:enterScene( event )
 	screenGroup = self.view
+	storyboard.printMemUsage()
 
 	-- Update player name in case it was changed while we were in another
 	-- scene (such as the 'NOT ME' scene)
@@ -106,7 +117,6 @@ end
 function scene:destroyScene( event )
 	screenGroup = self.view
 
-	-- Clear all references to objects we created in 'createScene()' (or elsewhere).
 	layers:destroy()
 	layers = nil
 	playButton = nil
@@ -115,7 +125,6 @@ function scene:destroyScene( event )
 	spmpButton = nil
 	welcomeBackLabel = nil
 	playerNameLabel = nil
-
 
 end
 
@@ -151,6 +160,8 @@ addInterfaceElements = function( )
 	-- Buttons and Labels
 	-- ==========================================
 	local curY
+	local tmpButton
+	local tmpLabel
 
 	-- Game Label / Name
 	ssk.labels:presetLabel( layers.interfaces, "default", "Game Name Here", centerX, 30, { fontSize = 32 } )
@@ -159,10 +170,25 @@ addInterfaceElements = function( )
 	ssk.labels:presetLabel( layers.interfaces, "default", "Last Modified: " .. releaseDate, centerX, h-10, { fontSize = 12, textColor = _WHITE_ } )
 
 
-	if(enableMultiplayer) then
+	if(multiplayerMode == "OFF") then
+		-- PLAY 
+		curY = centerY - 75
+		playButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX, curY, 200, 40,  "Play", onPlay )
+
+	elseif(multiplayerMode == "2P_EASY") then
 		-- PLAY 
 		curY = centerY - 75
 		playButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX-25, curY, 150, 40,  "Play", onPlay )
+
+		-- SP/MP TOGGLE 
+		curY = centerY - 75
+		spmpButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX+80, curY, 40, 40,  "SP", onSPMP )
+
+	else
+		-- PLAY 
+		curY = centerY - 75
+		playButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX-25, curY, 150, 40,  "Play", onPlay )
+		
 
 		-- HOST/JOIN 
 		curY = centerY - 75
@@ -175,10 +201,6 @@ addInterfaceElements = function( )
 		curY = centerY - 75
 		spmpButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX+80, curY, 40, 40,  "SP", onSPMP )
 
-	else
-		-- PLAY 
-		curY = centerY - 75
-		playButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX, curY, 200, 40,  "Play", onPlay )
 	end
 
 	-- OPTIONS
@@ -200,7 +222,7 @@ addInterfaceElements = function( )
 	playerNameLabel.x = welcomeBackLabel.x + welcomeBackLabel.width/2 + playerNameLabel.width / 2 + 5
 
 	-- NOT ME
-	ssk.buttons:presetPush( layers.interfaces, "default", centerX + 100, curY, 60, 26,  "Not Me", onNotMe ) 
+	ssk.buttons:presetPush( layers.interfaces, "default", centerX + 100, curY, 70, 26,  "Not Me", onNotMe ) 
 
 	-- RG Button
 	ssk.buttons:presetPush( layers.interfaces, "RGButton", 30, h-30, 40, 40, "", onRG  )
@@ -213,7 +235,7 @@ end
 onPlay = function ( event ) 
 	local options =
 	{
-		effect = "slideLeft",
+		effect = "fade",
 		time = 300,
 		params =
 		{
@@ -237,7 +259,17 @@ onHost = function ( event )
 		}
 	}
 
-	storyboard.gotoScene( "s_Host", options  )	
+	if(multiplayerMode == "2P_AUTO") then
+		storyboard.gotoScene( "s_Host_2P_Auto", options  )	
+	
+	elseif(multiplayerMode == "2P_EASY") then
+		storyboard.gotoScene( "s_Host_2P_Easy", options  )	
+	
+	elseif(multiplayerMode == "MP_MANUAL") then
+		storyboard.gotoScene( "s_Host_MP_Manual", options  )	
+	
+	end
+	
 
 	return true
 end
@@ -253,7 +285,17 @@ onJoin = function ( event )
 		}
 	}
 
-	storyboard.gotoScene( "s_Join", options  )	
+	if(multiplayerMode == "2P_AUTO") then
+		storyboard.gotoScene( "s_Join_2P_Auto", options  )	
+	
+	elseif(multiplayerMode == "2P_EASY") then
+		storyboard.gotoScene( "s_Join_2P_Easy", options  )	
+	
+	elseif(multiplayerMode == "MP_MANUAL") then
+		storyboard.gotoScene( "s_Join_MP_Manual", options  )	
+	
+	end
+	
 
 	return true
 end
@@ -264,14 +306,24 @@ onSPMP = function ( event )
 
 	if(text == "SP") then
 		target:setText("MP")
-		playButton.isVisible = (not playButton.isVisible)
-		hostButton.isVisible = (not hostButton.isVisible)
-		joinButton.isVisible = (not joinButton.isVisible)
+
+		if( multiplayerMode == "2P_EASY") then
+			playButton:setText("Play a Friend")
+		else
+			playButton.isVisible = (not playButton.isVisible)
+			hostButton.isVisible = (not hostButton.isVisible)
+			joinButton.isVisible = (not joinButton.isVisible)
+		end
+
 	else
 		target:setText("SP")
-		playButton.isVisible = (not playButton.isVisible)
-		hostButton.isVisible = (not hostButton.isVisible)
-		joinButton.isVisible = (not joinButton.isVisible)
+		if( multiplayerMode == "2P_EASY") then
+			playButton:setText("Play")
+		else
+			playButton.isVisible = (not playButton.isVisible)
+			hostButton.isVisible = (not hostButton.isVisible)
+			joinButton.isVisible = (not joinButton.isVisible)
+		end
 
 	end
 
@@ -282,7 +334,7 @@ end
 onOptions = function ( event ) 
 	local options =
 	{
-		effect = "zoomInOutFade",
+		effect = "fade",
 		time = 200,
 		params =
 		{
@@ -313,7 +365,7 @@ end
 onCredits = function ( event ) 
 	local options =
 	{
-		effect = "crossFade",
+		effect = "fade",
 		time = 400,
 		params =
 		{
@@ -329,7 +381,7 @@ end
 onNotMe = function ( event ) 
 	local options =
 	{
-		effect = "flip",
+		effect = "fade",
 		time = 250,
 		params =
 		{
@@ -344,7 +396,7 @@ end
 
 
 onRG = function(event)
-	system.openURL( "http://developer.coronalabs.com/code/sskcorona"  )
+	system.openURL( "http://roaminggamer.com/"  )
 	return true
 end
 

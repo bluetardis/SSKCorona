@@ -31,21 +31,28 @@ local screenGroup
 local layers -- Local reference to display layers 
 local backImage 
 
-local effectsEnableToggle
-local musicEnableToggle
-local effectVolumeSlider
-local musicVolumeSlider
+local myScore = 0
 
 -- Callbacks/Functions
 local createLayers
-local addInterfaceElements
+local addInterfaceElements_SP
+local addInterfaceElements_MP
+local addInterfaceElements_MP_Part2
 
-local onSoundEffectsEnable
-local onMusicEnable
-local onEffectsVolumeUpdate
-local onMusicVolumeUpdate
-local onMusicVolumeDraggingUpdate
+local pollClientScores
 local onBack
+local onReplay
+
+-- Client Callbacks
+local onMsgFromServer
+local onServerDropped
+local onClientStopped
+
+-- Server Callbacks
+local onMsgFromClient
+local onClientDropped
+local onServerStopped
+
 
 ----------------------------------------------------------------------
 --	Scene Methods:
@@ -66,20 +73,52 @@ end
 ----------------------------------------------------------------------
 function scene:willEnterScene( event )
 	screenGroup = self.view
-	createLayers()
-	addInterfaceElements()
 end
 
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 function scene:enterScene( event )
 	screenGroup = self.view
+
+	createLayers()
+
+	myScore = event.params.score
+
+	if(not ssk.networking:isNetworking()) then
+		addInterfaceElements_SP()
+	else
+
+		ssk.networking:setMyFinalScore( myScore )
+		
+		if( ssk.networking:isConnectedToServer() ) then -- I AM A CLIENT
+			--print("I am a client")
+			ssk.gem:add("MSG_FROM_SERVER", onMsgFromServer, "lastScoreNetworking" )
+			ssk.gem:add("SERVER_DROPPED", onServerDropped, "lastScoreNetworking" )
+			ssk.gem:add("CLIENT_STOPPED", onClientStopped, "lastScoreNetworking" )
+
+			addInterfaceElements_MP()
+		
+		else                                            -- I AM THE SERVER
+			--print("I am the server")
+			ssk.gem:add("MSG_FROM_CLIENT", onMsgFromClient, "lastScoreNetworking" )
+			ssk.gem:add("CLIENT_DROPPED", onClientDropped, "lastScoreNetworking" )
+			ssk.gem:add("SERVER_STOPPED", onServerStopped, "lastScoreNetworking" )
+
+			addInterfaceElements_MP()
+			
+			pollClientScores()
+		
+		end
+	end
+	
+	--timer.performWithDelay( 3500, onReplay )
 end
 
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 function scene:exitScene( event )
 	screenGroup = self.view	
+	ssk.gem:removeGroup( "lastScoreNetworking" )
 end
 
 ----------------------------------------------------------------------
@@ -87,12 +126,8 @@ end
 function scene:didExitScene( event )
 	screenGroup = self.view
 
-	-- Clear all references to objects we created in 'createScene()' (or elsewhere).
 	layers:destroy()
 	layers = nil
-
-	effectVolumeSlider =  nil
-	musicVolumeSlider  =  nil
 end
 
 ----------------------------------------------------------------------
@@ -120,11 +155,35 @@ end
 ----------------------------------------------------------------------
 -- createLayers() - Create layers for this scene
 createLayers = function( )
-	layers = ssk.display.quickLayers( screenGroup, "background", "interfaces" )
+	layers = ssk.display.quickLayers( screenGroup, "background", "pollingLayer", "interfaces" )
 end
 
--- addInterfaceElements() - Create interfaces for this scene
-addInterfaceElements = function( )
+-- addInterfaceElements_SP() - Create Single Player interfaces for this scene
+addInterfaceElements_SP = function( )
+
+	-- Background Image
+	backImage   = ssk.display.backImage( layers.background, "protoBack2.png" ) 
+
+	-- ==========================================
+	-- Buttons and Labels
+	-- ==========================================
+	local curY
+	local tmpButton
+	local tmpLabel
+
+	-- Page Title 
+	ssk.labels:presetLabel( layers.interfaces, "default", "Score", centerX, 30, { fontSize = 32 } )
+
+	-- My Score
+	ssk.labels:presetLabel( layers.interfaces, "default", "You scored: " .. myScore .. " points!", centerX, centerY, { fontSize = 24 } )
+
+	-- BACK 
+	curY = centerY - 75
+	ssk.buttons:presetPush( layers.interfaces, "default", 60 , h - 60, 100, 40,  "Done", onBack )
+end	
+
+-- addInterfaceElements_MP() - Create Single Player interfaces for this scene
+addInterfaceElements_MP = function( )
 
 	-- Background Image
 	backImage   = ssk.display.backImage( layers.background, "protoBack2.png" ) 
@@ -137,144 +196,87 @@ addInterfaceElements = function( )
 	local tmpLabel
 
 	-- Page Title 
-	ssk.labels:presetLabel( layers.interfaces, "default", "Options", centerX, curY, { fontSize = 32 } )
+	ssk.labels:presetLabel( layers.interfaces, "default", "Score", centerX, curY, { fontSize = 32 } )
 
-	--if(system.orientation == "portrait") then		
-	
-		-- (Sound) Effects On/Off Toggle
-		curY = curY + 50
-		effectsEnableToggle = ssk.buttons:presetToggle( layers.interfaces, "default", 60, curY, 30, 30, "", ssk.sbc.tableToggler_CB )
-		effectsEnableToggle.hasToggled = false -- Add a flag to allow us to ignore first toggle
+	-- My Score
+	ssk.labels:presetLabel( layers.pollingLayer, "default", "Collecting scores...", centerX, centerY, { fontSize = 32 } )
 
+	-- BACK 
+	curY = centerY - 75
+	ssk.buttons:presetPush( layers.interfaces, "default", 60 , h - 60, 100, 40,  "Done", onBack )
 
-		tmpLabel = ssk.labels:presetLabel( layers.interfaces, "default", "Effects Enabled", centerX, curY, { fontSize = 18 } )
-		tmpLabel.x = effectsEnableToggle.x + effectsEnableToggle.width/2 + tmpLabel.width/2 + 25
+end	
 
-		-- (Sound) Effects Volume Slider
-		curY = curY + 40
-		effectVolumeSlider = ssk.buttons:quickHorizSlider( centerX, curY, w  - 120, 16, 
-											              "interface/trackHoriz",
-														  ssk.sbc.horizSlider2Table_CB, onEffectsVolumeUpdate,
-														  imagesDir .. "interface/thumbHoriz.png", 40, 16,
-														  layers.interfaces )
-		ssk.sbc.prep_horizSlider2Table( effectVolumeSlider, currentPlayer, "effectsVolume", nil )
+-- addInterfaceElements_MP_Part2( scores ) - Create Single Player interfaces for this scene
+addInterfaceElements_MP_Part2 = function( scores )
 
+	-- Hide the polling layer and any GUIs there
+	layers.pollingLayer.isVisible = false
 
-		-- Note: I defered this prep because it may cause an update that affects the sound effects volume slider 
-		ssk.sbc.prep_tableToggler( effectsEnableToggle, currentPlayer, "effectsEnabled", onSoundEffectsEnable )
+	-- Background Image
+	backImage   = ssk.display.backImage( layers.background, "protoBack2.png" ) 
 
+	-- ==========================================
+	-- Buttons and Labels
+	-- ==========================================
+	local curY = 120
+	local tmpButton
+	local tmpLabel
 
-		-- Music On/Off Toggle
-		curY = curY + 50
-		musicEnableToggle = ssk.buttons:presetToggle( layers.interfaces, "default", 60, curY, 30, 30, "", ssk.sbc.tableToggler_CB )
+	local highScore  = 0
+	local winnerName = "none"
 
-		tmpLabel = ssk.labels:presetLabel( layers.interfaces, "default", "Music Enabled", centerX, curY, { fontSize = 18 } )
-		tmpLabel.x = musicEnableToggle.x + musicEnableToggle.width/2 + tmpLabel.width/2 + 25
+	for i = 1, #scores do
+		if( tonumber(scores[i].finalScore) > highScore) then
+			highScore  = scores[i].finalScore
+			winnerName = scores[i].name
+		end
 
-
-		-- Music Volume Slider
-		curY = curY + 40
-		musicVolumeSlider = ssk.buttons:quickHorizSlider( centerX, curY, w  - 120, 16, 
-											              "interface/trackHoriz",
-														  ssk.sbc.horizSlider2Table_CB, onMusicVolumeUpdate,
-														  imagesDir .. "interface/thumbHoriz.png", 40, 16,
-														  layers.interfaces )
-		ssk.sbc.prep_horizSlider2Table( musicVolumeSlider, currentPlayer, "musicVolume", onMusicVolumeDraggingUpdate ) 
-
-		--musicVolumeSlider:disable()
+		-- My Score
+		ssk.labels:presetLabel( layers.interfaces, "rightLabel", scores[i].name, centerX - 10, curY, { fontSize = 22 } )
+		ssk.labels:presetLabel( layers.interfaces, "leftLabel", tostring(scores[i].finalScore):lpad(9), centerX + 10, curY, { fontSize = 22 } )
+		curY = curY + 25
 
 
-		-- Note: I defered this prep because it may cause an update that affects the music volume slider 
-		ssk.sbc.prep_tableToggler( musicEnableToggle, currentPlayer, "musicEnabled", onMusicEnable )
+	end
 
-
-	--elseif(system.orientation == "landscapeRight") then
-	--end
-
+	-- My Score
+	curY = curY + 20
+	ssk.labels:presetLabel( layers.interfaces, "default", winnerName .. " won!" , centerX, curY, { fontSize = 24 } )
 
 
 	-- BACK 
-	curY = h - 25
-	ssk.buttons:presetPush( layers.interfaces, "default", 60 , curY, 100, 40,  "Back", onBack )
+	curY = centerY - 75
+	ssk.buttons:presetPush( layers.interfaces, "default", 60 , h - 60, 100, 40,  "Done", onBack )
 
 end	
 
 
-onSoundEffectsEnable = function (event)
-	local target = event.target
+pollClientScores = function( )
+	local scores = ssk.networking:getFinalScores()
+	if( scores ) then
+		print("\n\n\nGot all scores\n\n\n")
+		--timer.performWithDelay( 500, onReplay )
+		ssk.networking:msgClients( "FINAL_SCORES", { scores = scores } )
+		addInterfaceElements_MP_Part2( scores )
 
-	if(target:pressed() ) then
-		target:setText("X")
-		effectVolumeSlider:enable()
-
-		if(not target.hasToggled) then
-			target.hasToggled = true
-		else
-			ssk.sounds:play("good")
-		end
+	else
+		print("\n\n\nDid NOT get all scores\n\n\n")
+		timer.performWithDelay( 250, pollClientScores )
 		
-	else
-		target:setText("")
-		effectVolumeSlider:disable()
-
-		if(not target.hasToggled) then
-			target.hasToggled = true
-		end
-
 	end
-
-	saveCurrentPlayer()
-
-	return false
 end
-
-onMusicEnable = function (event)
-	local target = event.target
-
-	if(target:pressed() ) then
-		target:setText("X")
-		musicVolumeSlider:enable()
-		ssk.sounds:play("bouncing")
-	else
-		target:setText("")
-		musicVolumeSlider:disable()
-		ssk.sounds:stop("bouncing")
-	end
-
-	saveCurrentPlayer()
-
-	return false
-end
-
-
-onEffectsVolumeUpdate = function( event )
-	local target = event.target
-	saveCurrentPlayer()
-	ssk.sounds:setEffectsVolume(target:getValue())
-	ssk.sounds:play("good")
-	return false
-end
-
-onMusicVolumeDraggingUpdate = function( event )
-	local target = event.target
-	ssk.sounds:setMusicVolume(target:getValue())
-	return false
-end
-
-onMusicVolumeUpdate = function( event )
-	local target = event.target
-	ssk.sounds:setMusicVolume(target:getValue())
-	saveCurrentPlayer()
-	return false
-end
-
-
 
 onBack = function ( event ) 
+	if(ssk.networking:isNetworking()) then
+		ssk.networking:clearMyFinalScore( myScore )
+		ssk.networking:stop()
+	end
+
 	local options =
 	{
 		effect = "fade",
-		time = 200,
+		time = 300,
 		params =
 		{
 			logicSource = nil
@@ -285,6 +287,61 @@ onBack = function ( event )
 
 	return true
 end
+
+onReplay = function ( event ) 
+	ssk.networking:clearMyFinalScore( myScore )
+	local options =
+	{
+		effect = "fade",
+		time = 300,
+		params =
+		{
+			logicSource = nil
+		}
+	}
+
+	storyboard.gotoScene( "s_PlayGUI", options  )	
+
+	return true
+end
+
+--
+-- Client Callbacks
+--
+onMsgFromServer = function( event )	
+	local msgTable = event.msgTable
+	table.dump(event) 
+
+	if(msgTable.msgType == "FINAL_SCORES") then
+		addInterfaceElements_MP_Part2( msgTable.scores )
+	end
+
+end
+
+onServerDropped = function( event )
+	table.dump(event) 
+end
+
+onClientStopped = function( event )
+	table.dump(event) 
+end
+
+--
+-- Server calbacks
+--
+onMsgFromClient = function( event )	
+	local msgTable = event.msgTable
+	table.dump(event) 
+end
+
+onClientDropped = function( event )
+	table.dump(event) 
+end
+
+onServerStopped = function( event )
+	table.dump(event) 
+end
+
 
 ---------------------------------------------------------------------------------
 -- Scene Dispatch Events, Etc. - Generally Do Not Touch Below This Line

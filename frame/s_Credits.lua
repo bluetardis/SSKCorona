@@ -87,7 +87,6 @@ end
 function scene:destroyScene( event )
 	screenGroup = self.view
 
-	-- Clear all references to objects we created in 'createScene()' (or elsewhere).
 	layers:destroy()
 	layers = nil
 
@@ -144,7 +143,8 @@ addInterfaceElements = function( )
 	ssk.buttons:presetPush( layers.interfaces, "RGButton", centerX + 80, curY, 100, 100, "", onRG  )
 
 	-- BACK 
-	ssk.buttons:presetPush( layers.interfaces, "default", 60 , h - 60, 100, 40,  "Back", onBack )
+	curY = h - 25
+	ssk.buttons:presetPush( layers.interfaces, "default", 60 , curY, 100, 40,  "Back", onBack )
 
 
 
@@ -154,7 +154,7 @@ end
 onBack = function ( event ) 
 	local options =
 	{
-		effect = "crossFade",
+		effect = "fade",
 		time = 400,
 		params =
 		{
@@ -168,7 +168,7 @@ onBack = function ( event )
 end
 
 onRG = function(event)
-	system.openURL( "http://www.roaminggamer.com"  )
+	system.openURL( "http://roaminggamer.com/sskcorona/"  )
 	return true
 end
 

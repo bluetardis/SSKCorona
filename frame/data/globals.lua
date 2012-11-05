@@ -1,7 +1,7 @@
 -- =============================================================
 -- Copyright Roaming Gamer, LLC. 2009-2012 
 -- =============================================================
--- Buttons Presets
+-- User Globals
 -- =============================================================
 -- Short and Sweet License: 
 -- 1. You may use anything you find in the SSKCorona library and sampler to make apps and games for free or $$.
@@ -13,25 +13,37 @@
 --
 -- =============================================================
 --
+--  Modify global settings here, and not in "ssk/globals.lua".
+--
 -- =============================================================
---
--- labelsInit.lua - Create Label Presets
---
-local mgr			= require( "ssk.factories.f_buttons" )    -- Buttons, Sliders
 
--- ============================
--- ========= DEFAULT BUTTON
--- ============================
-local default_params = 
-{ 
-	textColor		   = _WHITE_,
-	fontSize           = 16,
-	textFont           = native.systemFontBold,
-	unselRectGradient  = graphics.newGradient ( { 170, 170, 170, 255  }, { 64, 64, 64, 255 }, "down" ),
-	selRectGradient    = graphics.newGradient ( { 200, 200, 200, 255  }, { 94, 94, 94, 255 }, "down" ),
-	strokeWidth        = 1,
-    strokeColor        = {1,1,1,128},
-	textOffset         = {0,1},
-	emboss             = false,
-}
-mgr:addPreset( "user_default", default_params )
+-- Global application name used in various places, but most importantly, used in networking
+-- Make this unique for every game you produce
+_G.myAppName = "SSKCorona Game Frame"
+
+-- (Global) Debug messaging level (used by debugPrint): 
+--
+-- Warning: These values may be overwritten locally
+--
+-- 0  - None
+-- 1  - Basic messages
+-- 2  - Intermediate debug output
+-- 3+ - Full debug output (may be very noisy)
+_G.debugLevel = 1
+
+-- Version details and flags
+_G.liteVersion = false
+-- _G.releaseDate = "DD MMM YYYY"
+
+-- Outline colors (if used)
+_G.topLineColor      = {0,0,0,180}
+_G.botLineColor      = {255,255,255,200}
+
+-- Gravity settings
+_G.usesPhysics = false
+_G.gravityVector = { 0, 9.8 }
+_G.physicsRenderMode = "normal" -- "normal", "debug", "hybrid"
+
+-- Multitouch
+_G.enableMultiTouch = true
+

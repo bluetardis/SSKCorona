@@ -84,7 +84,6 @@ end
 function scene:destroyScene( event )
 	screenGroup = self.view
 
-	-- Clear all references to objects we created in 'createScene()' (or elsewhere).
 	layers:destroy()
 	layers = nil
 end
@@ -129,8 +128,8 @@ addInterfaceElements = function( )
 	ssk.labels:presetLabel( layers.interfaces, "default", "Work In Progress", centerX, centerY, { fontSize = 32 } )
 
 	-- BACK 
-	curY = centerY - 75
-	ssk.buttons:presetPush( layers.interfaces, "default", 60 , h - 60, 100, 40,  "Back", onBack )
+	curY = h - 25
+	ssk.buttons:presetPush( layers.interfaces, "default", 60 , curY, 100, 40,  "Back", onBack )
 
 end	
 

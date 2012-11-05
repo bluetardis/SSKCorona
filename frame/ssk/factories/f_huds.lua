@@ -51,7 +51,7 @@ function public:createTimeHUD( x, y, presetName, group, params)
 
 	theHUD.curTime = 0
 	theHUD.x, theHUD.y = x,y
-	theHUD.myx, theHUD.myy = x,y
+	--theHUD.myx, theHUD.myy = x,y
 
 	function theHUD:get()
 		return self.curTime
@@ -60,7 +60,7 @@ function public:createTimeHUD( x, y, presetName, group, params)
 	function theHUD:set( seconds )
 		self.curTime = seconds
 		self:setText( ssk.misc.convertSecondsToTimer( self.curTime ) )
-		self.x, self.y = self.myx, self.myy
+		--self.x, self.y = self.myx, self.myy
 	end
 
 	function theHUD:autoCount( maxTime, callback)
@@ -73,13 +73,14 @@ function public:createTimeHUD( x, y, presetName, group, params)
 					callback( self )
 				end
 				timer.cancel(self.myTimer)
+				self.myTimer = nil
 				return
 			end			
 		end
 		self.myTimer = timer.performWithDelay( 1000, self, 0 )
 	end
 
-	function theHUD:autoCountDown( minTime, callback )
+	function theHUD:autoCountDown( minTime, callback ) -- EFM swap order of args, make minTime optional
 		
 		self.timer = function()
 			self.curTime = self.curTime - 1
@@ -91,7 +92,10 @@ function public:createTimeHUD( x, y, presetName, group, params)
 				if(callback) then
 					callback( self )
 				end
-				timer.cancel(self.myTimer)
+				if(self.myTimer) then
+					timer.cancel(self.myTimer)
+					self.myTimer = nil
+				end
 				return
 			end			
 		end
@@ -122,7 +126,7 @@ function public:createNumericScoreHUD( x, y, digits, presetName, group, params)
 
 	theHUD.curValue = 0
 	theHUD.x, theHUD.y = x,y
-	theHUD.myx, theHUD.myy = x,y
+	--theHUD.myx, theHUD.myy = x,y
 
 	theHUD.digits = digits or 0
 
@@ -164,7 +168,7 @@ function public:createHorizImageCounter( group, x, y, imgSrc, imgW, imgH, maxVal
 	local theHUD = display.newGroup()
 	group:insert(theHUD)
 
-	theHUD.myx, theHUD.myy = x,y
+	--theHUD.myx, theHUD.myy = x,y
 	theHUD.curValue = 0
 	theHUD.maxValue = maxValue
 

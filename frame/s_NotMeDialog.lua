@@ -31,33 +31,16 @@ local screenGroup
 local layers -- Local reference to display layers 
 local backImage 
 
-local countDownHUD
-local scoreHUD
-local curGemColorHUD
-
-local gemColors = { _PINK_, _GREEN_, _YELLOW_, _BRIGHTORANGE_ }
-local lastGemColor = math.random(1,#gemColors)
-
-local xDrops = {}
-local i = 50
-while( i < (w-50) ) do
-	xDrops[#xDrops+1] = i
-	i = i + 75
-end
-
-local last_xDrop
-
-
-local dropTimerHandle
+local mode
+local playerNameField
 
 -- Callbacks/Functions
 local createLayers
 local addInterfaceElements
-local dropGem
 
-local onDone
-local onQuit
-
+local onOK
+local onCancel
+local onUsername
 ----------------------------------------------------------------------
 --	Scene Methods:
 -- scene:createScene( event )  - Called when the scene's view does not exist
@@ -71,9 +54,6 @@ local onQuit
 ----------------------------------------------------------------------
 function scene:createScene( event )
 	screenGroup = self.view
-
-	createLayers()
-	addInterfaceElements()
 end
 
 ----------------------------------------------------------------------
@@ -81,33 +61,22 @@ end
 function scene:willEnterScene( event )
 	screenGroup = self.view
 
-	scoreHUD:set(0)
-	--scoreHUD:set(math.random(100,1000)) --EFM
+	mode = event.params.mode
 
-	countDownHUD:set( 30 )
-	--countDownHUD:set( math.random(1,3) ) --EFm
-
-	countDownHUD:autoCountDown( 0 , onDone ) 
-	--countDownHUD:autoCountDown( 0 , nil ) --EFM
-
-	curGemColorHUD.myColor = gemColors[math.random(1,#gemColors)]
-	curGemColorHUD:setFillColor( unpack(curGemColorHUD.myColor) )
+	createLayers()
+	addInterfaceElements()
 end
 
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 function scene:enterScene( event )
 	screenGroup = self.view
-	
-	dropTimerHandle = timer.performWithDelay( 500, dropGem, 0 )
 end
 
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 function scene:exitScene( event )
 	screenGroup = self.view	
-	countDownHUD:stop()
-	timer.cancel(dropTimerHandle)
 end
 
 ----------------------------------------------------------------------
@@ -115,9 +84,17 @@ end
 function scene:didExitScene( event )
 	screenGroup = self.view
 
-	while( layers.content.numChildren > 0 ) do
-		layers.content[1]:removeSelf()
-		--tmp:removeSelf()
+	-- Clear all references to objects we created in 'createScene()' (or elsewhere).
+	layers:destroy()
+	layers = nil
+	
+	-- Close the keyboard if it is open
+	native.setKeyboardFocus( nil )
+
+	-- Remove the player name input field
+	if( playerNameField ) then
+		playerNameField:removeSelf()
+		playerNameField = nil
 	end
 
 end
@@ -126,12 +103,6 @@ end
 ----------------------------------------------------------------------
 function scene:destroyScene( event )
 	screenGroup = self.view
-
-	layers:destroy()
-	layers = nil
-	
-	countDownHUD = nil
-	scoreHUD = nil
 end
 
 ----------------------------------------------------------------------
@@ -153,7 +124,7 @@ end
 ----------------------------------------------------------------------
 -- createLayers() - Create layers for this scene
 createLayers = function( )
-	layers = ssk.display.quickLayers( screenGroup, "background", "content", "interfaces" )
+	layers = ssk.display.quickLayers( screenGroup, "background", "playerList", "interfaces" )
 end
 
 -- addInterfaceElements() - Create interfaces for this scene
@@ -163,141 +134,128 @@ addInterfaceElements = function( )
 	backImage   = ssk.display.backImage( layers.background, "protoBack2.png" ) 
 
 	-- ==========================================
-	-- Buttons, Labels, Counters, etc.
+	-- Buttons and Labels
 	-- ==========================================
+	local curY = 25
+	local tmpButton
+	local tmpLabel
 
-	-- Header bar
-	local img = display.newRect( layers.interfaces, 0 , 0,  w, 60)
-	img.x = centerX
-	img.y = 30
-	img:setFillColor( unpack( _DARKGREY_ ) )
-	img:setStrokeColor( unpack( _LIGHTGREY_ ))
-	img.strokeWidth = 2
+	-- Page Title 
+	if( mode == "new") then
+		ssk.labels:presetLabel( layers.interfaces, "default", "New Player", centerX, curY, { fontSize = 24 } )
+	else
+		ssk.labels:presetLabel( layers.interfaces, "default", "Rename Player", centerX, curY, { fontSize = 24 } )
+	end
 
-	-- Countdown timer (30 seconds)
-	local img = display.newImageRect( layers.interfaces, imagesDir .. "misc/stopwatch_70_80.png", 35, 40)
-	img.x,img.y = 25, 30
+	-- Player Name Input Field
+	curY = curY + 35
+	playerNameField     = native.newTextField( 0,0, 200, 50 )
+	layers.interfaces:insert(playerNameField)
+	playerNameField:setReferencePoint( display.CenterReferencePoint )
+	playerNameField.x = centerX
+	playerNameField.y = curY
+	playerNameField.font  = native.newFont( native.systemFontBold, 14 )
+	playerNameField:addEventListener( "userInput", onUsername )
+	--native.setKeyboardFocus( playerNameField )
 
-	countDownHUD = ssk.huds:createTimeHUD( 0, 0, "default", layers.interfaces, {fontSize = 22, color = _WHITE_})
-	countDownHUD:set( 30 )
-	countDownHUD.x = img.x + img.width/2 + countDownHUD.width/2 + 10
-	countDownHUD.y = img.y + 2
+	if(mode == "rename") then
+		playerNameField.text = currentPlayer.name
+	end
 
-	-- Score HUD
-	scoreHUD = ssk.huds:createNumericScoreHUD( 0, 0, 0, "default", layers.interfaces, {fontSize = 22, color = _WHITE_})
-	scoreHUD:set(0)
-	scoreHUD.x = w - scoreHUD.width/2 - 70
-	scoreHUD.y = countDownHUD.y
-
-	-- Current GEM Color HUD + Label
-	local lbl = ssk.labels:presetLabel( layers.interfaces, "default", "Tap These:", 0, 30,  { fontSize = 16 } )
-	curGemColorHUD = display.newImageRect( layers.interfaces, imagesDir .. "Lost Garden/lostGardenGem.png", 30, 30 )
-	
-	lbl.x = centerX - lbl.width/2 - 5 - 35
-
-	curGemColorHUD.x = centerX + curGemColorHUD.width/2 + 5 - 35
-	curGemColorHUD.y = 30
-
-	-- DONE --EFM Convert this to a pause button, leading to a pause overlay? 
-	ssk.buttons:presetPush( layers.interfaces, "default", w - 30, 30, 40, 25, "Quit", onQuit, { fontSize = 12 } )
-
+	-- OK
+	curY = curY + 55
+	ssk.buttons:presetPush( layers.interfaces, "default", centerX - 50 , curY, 90, 30,  "OK", onOK )
+	ssk.buttons:presetPush( layers.interfaces, "default", centerX + 50 , curY, 90, 30,  "Cancel", onCancel )
+		
 end	
 
-dropGem = function()
+onOK = function ( event ) 
 
-	local gem = display.newImageRect( layers.content, imagesDir .. "Lost Garden/lostGardenGem.png", 60, 60 )
+	local tmpName = playerNameField.text or ""
+	local newUserName = ""
 
-	local xDrop = xDrops[math.random(1,#xDrops)]
-	while(xDrop == last_xDrop) do
-		xDrop = xDrops[math.random(1,#xDrops)]
-	end
-	last_xDrop = xDrop
-
-	gem.x = xDrop
-	gem.y = 50
-
-	lastGemColor = lastGemColor + 1
-	if(lastGemColor > #gemColors) then
-		lastGemColor = 1
+	for aTok in tmpName:gmatch("%S+") do
+		print(aTok)
+		newUserName = newUserName .. aTok
 	end
 
-	gem.myColor = gemColors[lastGemColor]
-	gem:setFillColor( unpack(gem.myColor) )
-
-	-- Callback to increment score if we touch right gem
-	gem.touch = function( self, event )
-		local phase = event.phase
-
-		if(phase == "began") then			
-			if( self.myColor == curGemColorHUD.myColor ) then -- Good!			
-				if(currentPlayer.effectsEnabled) then
-					ssk.sounds:play("good")
-				end			
-				scoreHUD:increment(20)			
-				self:removeSelf()
-			
-			else
-				if(currentPlayer.effectsEnabled) then
-					ssk.sounds:play("bad")
-				end
-				scoreHUD:increment(-10)
-				self:removeSelf()
-			end
-		end
-
-		return true -- only top gem catches touch in overlapping touches
-	end
-
-	gem:addEventListener( "touch", gem )
-
-
-	-- Drop off screen over 4 seconds
-	transition.to( gem, {y = h + 100, time = 4000 } )
-
-	-- Self Delete in 4.1 seconds
-	gem.timer = function( self, event ) 
-		if(isDisplayObject(self)) then
-			self:removeSelf()
+	for k,v in pairs( knownPlayers ) do
+		if (v == newUsername) then
+			newUserName = nil
+			break
 		end
 	end
-	timer.performWithDelay( 4100, gem )
-end
 
-onDone = function ( event ) 
-	local options =
-	{
-		effect = "fade",
-		time = 300,
-		params =
-		{
-			score = scoreHUD:get()
-		}
-	}
+	if( newUserName ) then
 
-	storyboard.gotoScene( "s_LastScore", options  )	
+		-- NEW PLAYER
+		if(mode == "new") then
+			currentPlayer.name = newUserName
+			initDefaults()
+			knownPlayers[currentPlayer.name] = currentPlayer.name
+			saveCurrentPlayer()
+			saveKnownPlayers()
 
-	return true
-end
-
-onQuit = function ( event ) 
-	if(ssk.networking:isNetworking()) then
-		ssk.networking:stop()
+		-- RENAME PLAYER
+		else
+			knownPlayers[currentPlayer.name] = nil
+			currentPlayer.name = newUserName
+			knownPlayers[currentPlayer.name] = currentPlayer.name
+			saveCurrentPlayer()
+			saveKnownPlayers()
+		end
 	end
 
 	local options =
 	{
 		effect = "fade",
-		time = 300,
+		time = 200,
 		params =
 		{
 			logicSource = nil
 		}
 	}
 
-	storyboard.gotoScene( "s_MainMenu", options  )	
+	native.setKeyboardFocus( nil )
+
+	storyboard.gotoScene( "s_NotMe", options  )	
 
 	return true
 end
+
+onCancel = function ( event ) 
+	local options =
+	{
+		effect = "fade",
+		time = 200,
+		params =
+		{
+			logicSource = nil
+		}
+	}
+
+	storyboard.gotoScene( "s_NotMe", options  )	
+
+	return true
+end
+
+onUsername = function ( event )
+
+	if ( "began" == event.phase ) then
+		-- This is the "keyboard has appeared" event
+		-- In some cases you may want to adjust the interface when the keyboard appears.
+	
+	elseif ( "ended" == event.phase ) then
+		-- This event is called when the user stops editing a field: for example, when they touch a different field
+	
+	elseif ( "submitted" == event.phase ) then
+		-- This event occurs when the user presses the "return" key (if available) on the onscreen keyboard
+		onOk()
+	end
+
+end
+
+
 
 ---------------------------------------------------------------------------------
 -- Scene Dispatch Events, Etc. - Generally Do Not Touch Below This Line

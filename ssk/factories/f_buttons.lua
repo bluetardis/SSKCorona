@@ -450,6 +450,20 @@ if(buttonInstance.selRectEn) then
 		labelText.y = self.textOffset[2]
 	end
 
+	-- ============= getTextColor() -- Get label color
+	function buttonInstance:getTextColor( text ) 
+		local labelText = self.labelText
+		return labelText._color 
+	end
+
+	-- ============= setTextColor() -- Set label color
+	function buttonInstance:setTextColor( color ) 
+		local labelText = self.labelText
+		labelText:setTextColor( unpack( color ) )
+		labelText._color  = color
+	end
+
+
 	-- ============= adjustTextOffset() -- Move button text by specified x,y
 	function buttonInstance:adjustTextOffset( offset ) 
 		local offset = fnn(offset, {0,0})

@@ -47,8 +47,7 @@ function scene:createScene( event )
 	screenGroup = self.view
 
 	-- Background Image
-	backImage   = ssk.display.backImage( screenGroup, "protoBack2.png", true ) 
-	
+	backImage   = ssk.display.backImage( screenGroup, "protoBack2.png", true ) 	
 
 	-- ==========================================
 	-- Buttons and Labels
@@ -139,8 +138,6 @@ onMainMenu = function ( event )
 
 	return true
 end
-
-
 
 ---------------------------------------------------------------------------------
 -- Scene Dispatch Events, Etc. - Generally Do Not Touch Below This Line

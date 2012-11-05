@@ -37,42 +37,20 @@ local addInterfaceElements
 
 local onBack
 
-
 local onStartServer
 local onStopServer
-
-local onStartClient
-local onStopClient
-local onScan
-local onConnectToServer
 
 local serverStartButton
 local serverStopButton
 
-local clientStartButton
-local clientStopButton
-local clientScanButton
-local connectToServerButtons = {}
-
 local serverIndicators = {}
 local connectedClients = {}
-local clientIndicators = {}
 
 -- Server event handlers
 local onClientJoined
 local onMsgFromClient
 local onClientDropped
 local onServerStopped
-
--- Client event handlers
-local serversFound = 0
-local onConnectedToServer
-local onServerFound
-local onDoneScanningForServers
-local onMsgFromServer
-local onServerDropped
-local onClientStopped
-
 
 ----------------------------------------------------------------------
 --	Scene Methods:
@@ -103,18 +81,12 @@ end
 function scene:enterScene( event )
 	screenGroup = self.view
 	-- Server EVENTS
-	ssk.gem:add("CLIENT_JOINED", onClientJoined, "networkingTest" )
-	ssk.gem:add("MSG_FROM_CLIENT", onMsgFromClient, "networkingTest" )
-	ssk.gem:add("CLIENT_DROPPED", onClientDropped, "networkingTest" )
-	ssk.gem:add("SERVER_STOPPED", onServerStopped, "networkingTest" )
+	ssk.gem:add("CLIENT_JOINED", onClientJoined, "hostingEvents" )
+	ssk.gem:add("MSG_FROM_CLIENT", onMsgFromClient, "hostingEvents" )
+	ssk.gem:add("CLIENT_DROPPED", onClientDropped, "hostingEvents" )
+	ssk.gem:add("SERVER_STOPPED", onServerStopped, "hostingEvents" )
 
-	-- Client EVENTS
-	ssk.gem:add("CONNECTED_TO_SERVER", onConnectedToServer, "networkingTest" )
-	ssk.gem:add("SERVER_FOUND", onServerFound, "networkingTest" )
-	ssk.gem:add("DONE_SCANNING_FOR_SERVERS", onDoneScanningForServers, "networkingTest" )
-	ssk.gem:add("MSG_FROM_SERVER", onMsgFromServer, "networkingTest" )
-	ssk.gem:add("SERVER_DROPPED", onServerDropped, "networkingTest" )
-	ssk.gem:add("CLIENT_STOPPED", onClientStopped, "networkingTest" )
+	onStartServer()
 
 end
 
@@ -124,7 +96,7 @@ function scene:exitScene( event )
 	screenGroup = self.view	
 
 	ssk.networking:stop()
-	ssk.gem:removeGroup( "networkingTest" )
+	ssk.gem:removeGroup( "hostingEvents" )
 
 end
 
@@ -139,7 +111,6 @@ end
 function scene:destroyScene( event )
 	screenGroup = self.view
 
-	-- Clear all references to objects we created in 'createScene()' (or elsewhere).
 	layers:destroy()
 	layers = nil
 
@@ -176,106 +147,38 @@ addInterfaceElements = function( )
 	-- ==========================================
 	-- Buttons and Labels
 	-- ==========================================
-	local curY
+	local curY = 30
 
 	-- Page Title 
-	ssk.labels:presetLabel( layers.interfaces, "default", "Host", centerX, 30, { fontSize = 32 } )
+	ssk.labels:presetLabel( layers.interfaces, "default", "Host", centerX, curY, { fontSize = 32 } )
 
 
-	ssk.display.line2( layers.interfaces, centerX, -80, 180, h+160, 10, 10, { color = _WHITE_ , width = 4, style = "dashed"} )
+	-- Running Indicator
+	curY = centerY - 40
+	ssk.labels:presetLabel( layers.interfaces, "rightLabel", "Running", w/4 + 25, curY, { fontSize = 20 }  )
+	serverIndicators["running"] = ssk.display.circle( layers.interfaces, w/4 + 60, curY, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
 
-	ssk.labels:presetLabel( layers.interfaces, "default", "SERVER", 
-	                                   centerX - w/4 , 20, 
-									   { fontSize = 22 }  )
+	-- Connected Clients Indicator
+	curY = curY + 30
+	ssk.labels:presetLabel( layers.interfaces, "rightLabel", "Clients", w/4 + 25, curY, { fontSize = 20 }  )
+	
+	connectedClients[1] = ssk.display.circle( layers.interfaces, w/4 + 60, curY, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
+	connectedClients[2] = ssk.display.circle( layers.interfaces, w/4 + 85, curY, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
+	connectedClients[3] = ssk.display.circle( layers.interfaces, w/4 + 110, curY, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
+	connectedClients[4] = ssk.display.circle( layers.interfaces, w/4 + 135, curY, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
 
-	ssk.labels:presetLabel( layers.interfaces, "default", "CLIENT", 
-	                                   centerX + w/4 , 20, 
-									   { fontSize = 22 }  )
-
-
-	-- Server Elements (on left)
-	serverStartButton = ssk.buttons:presetPush( layers.interfaces, "greenGradient", 
-	                                     70, h - 80, 
+	-- Start/Stop (Hosting) Buttons
+	curY = curY + 40
+	serverStartButton = ssk.buttons:presetPush( layers.interfaces, "default", 
+	                                     centerX - 50, curY, 
 										 80, 30, 
 										 "Start", onStartServer )
 
-	serverStopButton = ssk.buttons:presetPush( layers.interfaces, "redGradient", 
-	                                     centerX - 70, h - 80, 
+	serverStopButton = ssk.buttons:presetPush( layers.interfaces, "default", 
+	                                     centerX + 50, curY, 
 										 80, 30, 
 										 "Stop", onStopServer )
 	serverStopButton:disable()
-
-	-- Running Indicator
-	ssk.labels:presetLabel( layers.interfaces, "rightLabel", "Running", 
-	                                   w/4 - 15, 80, 
-									   { fontSize = 20 }  )
-	serverIndicators["running"] = ssk.display.circle( layers.interfaces, w/4 + 20, 80, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
-
-	-- Connected Clients Indicator
-	ssk.labels:presetLabel( layers.interfaces, "rightLabel", "Clients", 
-	                                   w/4 - 15, 110, 
-									   { fontSize = 20 }  )
-	
-	connectedClients[1] = ssk.display.circle( layers.interfaces, w/4 + 20, 110, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
-	connectedClients[2] = ssk.display.circle( layers.interfaces, w/4 + 45, 110, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
-	connectedClients[3] = ssk.display.circle( layers.interfaces, w/4 + 70, 110, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
-	connectedClients[4] = ssk.display.circle( layers.interfaces, w/4 + 95, 110, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
-
-
-	-- Client Elements (on right)
-	clientStartButton = ssk.buttons:presetPush( layers.interfaces, "greenGradient", 
-	                                     centerX + 70, h - 80, 
-										 80, 30, 
-										 "Start", onStartClient )
-
-	clientStopButton = ssk.buttons:presetPush( layers.interfaces, "redGradient", 
-	                                     w - 70, h - 80, 
-										 80, 30, 
-										 "Stop", onStopClient )
-	clientStopButton:disable()
-
-
-	clientScanButton = ssk.buttons:presetPush( layers.interfaces, "orangeGradient", 
-	                                     centerX + w/4, h - 40, 
-										 180, 30, 
-										 "Scan", onScan )
-	clientScanButton:disable()
-
-
-	connectToServerButtons[1] = ssk.buttons:presetPush( layers.interfaces, "blueGradient", 
-	                                     centerX + 60, 190, 
-										 100, 30, 
-										 "----", onConnectToServer, { fontSize = 12 } )
-	connectToServerButtons[1]:disable()
-
-	connectToServerButtons[2] = ssk.buttons:presetPush( layers.interfaces, "blueGradient", 
-	                                     w- 60, 190, 
-										 100, 30, 
-										 "----", onConnectToServer, { fontSize = 12 } )
-	connectToServerButtons[2]:disable()
-
-
-
-	-- Running Indicator
-	ssk.labels:presetLabel( layers.interfaces, "rightLabel", "Running", 
-	                                   centerX + w/4 - 15, 80, 
-									   { fontSize = 20 }  )
-	clientIndicators["running"] = ssk.display.circle( layers.interfaces, centerX + w/4 + 20, 80, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
-
-	-- Scanning Indicator
-	ssk.labels:presetLabel( layers.interfaces, "rightLabel", "Scanning", 
-	                                   centerX + w/4 - 15, 110, 
-									   { fontSize = 20 }  )
-	
-	clientIndicators["scanning"] = ssk.display.circle( layers.interfaces, centerX + w/4 + 20, 110, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
-
-
-	-- Scanning Indicator
-	ssk.labels:presetLabel( layers.interfaces, "rightLabel", "Connected", 
-	                                   centerX + w/4 - 15, 140, 
-									   { fontSize = 20 }  )
-	
-	clientIndicators["connected"] = ssk.display.circle( layers.interfaces, centerX + w/4 + 20, 140, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
 
 
 
@@ -285,6 +188,9 @@ addInterfaceElements = function( )
 
 end	
 
+----------------------------------------------------------------------
+--				FUNCTION/CALLBACK DEFINITIONS						--
+----------------------------------------------------------------------
 
 onStartServer = function( event )
 	print("onStartServer")
@@ -294,7 +200,7 @@ onStartServer = function( event )
 
 	serverIndicators["running"]:setFillColor(unpack(_GREEN_))
 
-	ssk.networking:setCustomBroadcast( "Networking Test" )
+	--ssk.networking:setCustomBroadcast( "Networking Test" )
 	ssk.networking:startServer()
 end
 
@@ -312,56 +218,6 @@ onStopServer = function( event )
 	ssk.networking:stopServer()
 end
 
-onStartClient = function( event )
-	print("onStartClient")
-
-	clientStartButton:disable()
-	clientStopButton:enable()
-	clientScanButton:enable()
-
-	clientIndicators["running"]:setFillColor(unpack(_GREEN_))
-
-	ssk.networking:startClient()
-end
-
-onStopClient = function( event )
-	print("onStopClient")
-
-	clientStartButton:enable()
-	clientStopButton:disable()
-	clientScanButton:disable()
-
-	serversFound = 0
-
-	connectToServerButtons[1]:disable()
-	connectToServerButtons[2]:disable()
-	connectToServerButtons[1]:setText("----")
-	connectToServerButtons[2]:setText("----")
-
-	clientIndicators["running"]:setFillColor(unpack(_RED_))
-	clientIndicators["connected"]:setFillColor(unpack(_RED_))
-
-	ssk.networking:stopScanning()
-	ssk.networking:stopClient()
-end
-
-onScan = function( event )
-	print("onScan")
-	clientIndicators["scanning"]:setFillColor(unpack(_GREEN_))
-
-	serversFound = 0
-
-	connectToServerButtons[1]:disable()
-	connectToServerButtons[2]:disable()
-	connectToServerButtons[1]:setText("----")
-	connectToServerButtons[2]:setText("----")
-
-	ssk.networking:scanServers( 2000 )
-end
-
-onConnectToServer = function( event )
-	ssk.networking:connectToSpecificHost( event.target.serverIP )
-end
 
 -- Networking Event Handlers
 -- Server 
@@ -417,61 +273,9 @@ onServerStopped = function( event )
 	connectedClients[4]:setFillColor(unpack(_RED_))
 end
 
--- Client 
-onConnectedToServer = function( event )
-	table.dump(event) 
-	clientIndicators["connected"]:setFillColor(unpack(_GREEN_))
-end
 
-onServerFound = function( event )
-	serversFound = serversFound  + 1
-	
-	table.dump(event) 
-
-	if(serversFound > 2) then return false end
-	
-	connectToServerButtons[serversFound]:enable()
-	connectToServerButtons[serversFound]:setText(event.serverIP)
-	connectToServerButtons[serversFound].serverIP = event.serverIP
-	connectToServerButtons[serversFound].port = event.port
-
-
-end
-
-onDoneScanningForServers = function( event )
-	clientIndicators["scanning"]:setFillColor(unpack(_RED_))
-	table.dump(event) 
-end
-
-onMsgFromServer = function( event )	table.dump(event) end
-
-onServerDropped = function( event )
-	table.dump(event) 
-	clientIndicators["connected"]:setFillColor(unpack(_RED_))
-
-	-- Just clear all server buttons for now (easiest solution)
-	serversFound = 0
-	connectToServerButtons[1]:disable()
-	connectToServerButtons[2]:disable()
-	connectToServerButtons[1]:setText("----")
-	connectToServerButtons[2]:setText("----")
-
-end
-
-onClientStopped = function( event )
-	print("onClientStopped")
-	table.dump(event) 
-	clientIndicators["connected"]:setFillColor(unpack(_RED_))
-
-	-- Just clear all server buttons for now (easiest solution)
-	serversFound = 0
-	connectToServerButtons[1]:disable()
-	connectToServerButtons[2]:disable()
-	connectToServerButtons[1]:setText("----")
-	connectToServerButtons[2]:setText("----")
-
-end
 onBack = function ( event ) 
+	onStopServer()
 	local options =
 	{
 		effect = "fade",

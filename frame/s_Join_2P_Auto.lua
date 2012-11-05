@@ -18,7 +18,7 @@
 local storyboard = require( "storyboard" )
 local scene      = storyboard.newScene()
 
---local debugLevel = 1 -- Comment out to get global debugLevel from main.cs
+local debugLevel = 2 -- Comment out to get global debugLevel from main.cs
 local dp = ssk.debugprinter.newPrinter( debugLevel )
 local dprint = dp.print
 
@@ -31,32 +31,30 @@ local screenGroup
 local layers -- Local reference to display layers 
 local backImage 
 
-local countDownHUD
-local scoreHUD
-local curGemColorHUD
-
-local gemColors = { _PINK_, _GREEN_, _YELLOW_, _BRIGHTORANGE_ }
-local lastGemColor = math.random(1,#gemColors)
-
-local xDrops = {}
-local i = 50
-while( i < (w-50) ) do
-	xDrops[#xDrops+1] = i
-	i = i + 75
-end
-
-local last_xDrop
-
-
-local dropTimerHandle
-
 -- Callbacks/Functions
 local createLayers
 local addInterfaceElements
-local dropGem
 
-local onDone
-local onQuit
+local onBack
+local onPlay
+
+local connectedToServer = false
+
+local connectLoop
+local connectLoopTimerHandle = nil
+
+local onStartClient
+local onStopClient
+local onScan
+
+local clientIndicators = {}
+
+-- Client event handlers
+local onConnectedToServer
+local onMsgFromServer
+local onServerDropped
+local onClientStopped
+
 
 ----------------------------------------------------------------------
 --	Scene Methods:
@@ -71,7 +69,6 @@ local onQuit
 ----------------------------------------------------------------------
 function scene:createScene( event )
 	screenGroup = self.view
-
 	createLayers()
 	addInterfaceElements()
 end
@@ -81,45 +78,55 @@ end
 function scene:willEnterScene( event )
 	screenGroup = self.view
 
-	scoreHUD:set(0)
-	--scoreHUD:set(math.random(100,1000)) --EFM
+	clientIndicators["running"]:setFillColor(unpack(_RED_))
+	clientIndicators["scanning"]:setFillColor(unpack(_RED_))
+	clientIndicators["connected"]:setFillColor(unpack(_RED_))
 
-	countDownHUD:set( 30 )
-	--countDownHUD:set( math.random(1,3) ) --EFm
-
-	countDownHUD:autoCountDown( 0 , onDone ) 
-	--countDownHUD:autoCountDown( 0 , nil ) --EFM
-
-	curGemColorHUD.myColor = gemColors[math.random(1,#gemColors)]
-	curGemColorHUD:setFillColor( unpack(curGemColorHUD.myColor) )
 end
 
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 function scene:enterScene( event )
 	screenGroup = self.view
-	
-	dropTimerHandle = timer.performWithDelay( 500, dropGem, 0 )
+	-- Client EVENTS
+	ssk.gem:add("CONNECTED_TO_SERVER", onConnectedToServer, "joiningEvents" )
+	--ssk.gem:add("SERVER_FOUND", onServerFound, "joiningEvents" )
+	--ssk.gem:add("DONE_SCANNING_FOR_SERVERS", onDoneScanningForServers, "joiningEvents" )
+	ssk.gem:add("MSG_FROM_SERVER", onMsgFromServer, "joiningEvents" )
+	ssk.gem:add("SERVER_DROPPED", onServerDropped, "joiningEvents" )
+	ssk.gem:add("CLIENT_STOPPED", onClientStopped, "joiningEvents" )
+
+	onStartClient()
+	ssk.networking:autoconnectToHost()
+	clientIndicators["scanning"]:setFillColor(unpack(_GREEN_))
+
+
+	--EFM
+	screenGroup.timer = connectLoop
+
+	connectLoopTimerHandle = timer.performWithDelay( 2000, screenGroup)
+
 end
 
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 function scene:exitScene( event )
 	screenGroup = self.view	
-	countDownHUD:stop()
-	timer.cancel(dropTimerHandle)
+
+	if(connectLoopTimerHandle) then
+		timer.cancel(connectLoopTimerHandle)
+		connectLoopTimerHandle = nil
+	end
+
+	--ssk.networking:stop() --EFM
+	ssk.gem:removeGroup( "joiningEvents" )
+
 end
 
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 function scene:didExitScene( event )
 	screenGroup = self.view
-
-	while( layers.content.numChildren > 0 ) do
-		layers.content[1]:removeSelf()
-		--tmp:removeSelf()
-	end
-
 end
 
 ----------------------------------------------------------------------
@@ -129,9 +136,7 @@ function scene:destroyScene( event )
 
 	layers:destroy()
 	layers = nil
-	
-	countDownHUD = nil
-	scoreHUD = nil
+
 end
 
 ----------------------------------------------------------------------
@@ -153,7 +158,7 @@ end
 ----------------------------------------------------------------------
 -- createLayers() - Create layers for this scene
 createLayers = function( )
-	layers = ssk.display.quickLayers( screenGroup, "background", "content", "interfaces" )
+	layers = ssk.display.quickLayers( screenGroup, "background", "interfaces" )
 end
 
 -- addInterfaceElements() - Create interfaces for this scene
@@ -163,131 +168,124 @@ addInterfaceElements = function( )
 	backImage   = ssk.display.backImage( layers.background, "protoBack2.png" ) 
 
 	-- ==========================================
-	-- Buttons, Labels, Counters, etc.
+	-- Buttons and Labels
 	-- ==========================================
+	local curY = 30
 
-	-- Header bar
-	local img = display.newRect( layers.interfaces, 0 , 0,  w, 60)
-	img.x = centerX
-	img.y = 30
-	img:setFillColor( unpack( _DARKGREY_ ) )
-	img:setStrokeColor( unpack( _LIGHTGREY_ ))
-	img.strokeWidth = 2
+	-- Page Title 
+	ssk.labels:presetLabel( layers.interfaces, "default", "Joining", centerX, curY, { fontSize = 32 } )
 
-	-- Countdown timer (30 seconds)
-	local img = display.newImageRect( layers.interfaces, imagesDir .. "misc/stopwatch_70_80.png", 35, 40)
-	img.x,img.y = 25, 30
 
-	countDownHUD = ssk.huds:createTimeHUD( 0, 0, "default", layers.interfaces, {fontSize = 22, color = _WHITE_})
-	countDownHUD:set( 30 )
-	countDownHUD.x = img.x + img.width/2 + countDownHUD.width/2 + 10
-	countDownHUD.y = img.y + 2
+	-- Running Indicator
+	curY = centerY - 80
+	ssk.labels:presetLabel( layers.interfaces, "rightLabel", "Running", centerX + 15, curY, { fontSize = 20 }  )
+	clientIndicators["running"] = ssk.display.circle( layers.interfaces, centerX + 50, curY, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
 
-	-- Score HUD
-	scoreHUD = ssk.huds:createNumericScoreHUD( 0, 0, 0, "default", layers.interfaces, {fontSize = 22, color = _WHITE_})
-	scoreHUD:set(0)
-	scoreHUD.x = w - scoreHUD.width/2 - 70
-	scoreHUD.y = countDownHUD.y
+	-- Scanning Indicator
+	curY = curY + 30
+	ssk.labels:presetLabel( layers.interfaces, "rightLabel", "Scanning", centerX + 15, curY, { fontSize = 20 }  )
+	clientIndicators["scanning"] = ssk.display.circle( layers.interfaces, centerX + 50, curY, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
 
-	-- Current GEM Color HUD + Label
-	local lbl = ssk.labels:presetLabel( layers.interfaces, "default", "Tap These:", 0, 30,  { fontSize = 16 } )
-	curGemColorHUD = display.newImageRect( layers.interfaces, imagesDir .. "Lost Garden/lostGardenGem.png", 30, 30 )
-	
-	lbl.x = centerX - lbl.width/2 - 5 - 35
+	-- Connected Indicator
+	curY = curY + 30
+	ssk.labels:presetLabel( layers.interfaces, "rightLabel", "Connected", centerX + 15, curY, { fontSize = 20 }  )
+	clientIndicators["connected"] = ssk.display.circle( layers.interfaces, centerX + 50, curY, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
 
-	curGemColorHUD.x = centerX + curGemColorHUD.width/2 + 5 - 35
-	curGemColorHUD.y = 30
-
-	-- DONE --EFM Convert this to a pause button, leading to a pause overlay? 
-	ssk.buttons:presetPush( layers.interfaces, "default", w - 30, 30, 40, 25, "Quit", onQuit, { fontSize = 12 } )
+	-- BACK 
+	curY = curY + 50
+	ssk.buttons:presetPush( layers.interfaces, "default", centerX , curY, 100, 40,  "Cancel", onBack )
 
 end	
+----------------------------------------------------------------------
+--				FUNCTION/CALLBACK DEFINITIONS						--
+----------------------------------------------------------------------
 
-dropGem = function()
+connectLoop = function( self, event )
+	if( connectedToServer ) then
+		dprint(2, "I am connected.")
+		connectLoopTimerHandle = nil
+		return true
+	else
+		dprint(2, "\n**************************************")
+		dprint(2, "Reset client and try to connect again.\n")
+		ssk.networking:stopScanning()
+		ssk.networking:stopClient()
+		ssk.networking:startClient()
+		ssk.networking:autoconnectToHost()
 
-	local gem = display.newImageRect( layers.content, imagesDir .. "Lost Garden/lostGardenGem.png", 60, 60 )
-
-	local xDrop = xDrops[math.random(1,#xDrops)]
-	while(xDrop == last_xDrop) do
-		xDrop = xDrops[math.random(1,#xDrops)]
+		connectLoopTimerHandle = timer.performWithDelay( 2000, screenGroup)
+		
+		return true
 	end
-	last_xDrop = xDrop
-
-	gem.x = xDrop
-	gem.y = 50
-
-	lastGemColor = lastGemColor + 1
-	if(lastGemColor > #gemColors) then
-		lastGemColor = 1
-	end
-
-	gem.myColor = gemColors[lastGemColor]
-	gem:setFillColor( unpack(gem.myColor) )
-
-	-- Callback to increment score if we touch right gem
-	gem.touch = function( self, event )
-		local phase = event.phase
-
-		if(phase == "began") then			
-			if( self.myColor == curGemColorHUD.myColor ) then -- Good!			
-				if(currentPlayer.effectsEnabled) then
-					ssk.sounds:play("good")
-				end			
-				scoreHUD:increment(20)			
-				self:removeSelf()
-			
-			else
-				if(currentPlayer.effectsEnabled) then
-					ssk.sounds:play("bad")
-				end
-				scoreHUD:increment(-10)
-				self:removeSelf()
-			end
-		end
-
-		return true -- only top gem catches touch in overlapping touches
-	end
-
-	gem:addEventListener( "touch", gem )
-
-
-	-- Drop off screen over 4 seconds
-	transition.to( gem, {y = h + 100, time = 4000 } )
-
-	-- Self Delete in 4.1 seconds
-	gem.timer = function( self, event ) 
-		if(isDisplayObject(self)) then
-			self:removeSelf()
-		end
-	end
-	timer.performWithDelay( 4100, gem )
 end
 
-onDone = function ( event ) 
+onStartClient = function( event )
+	print("onStartClient")
+
+	clientIndicators["running"]:setFillColor(unpack(_GREEN_))
+
+	ssk.networking:startClient()
+end
+
+onStopClient = function( event )
+	print("onStopClient")
+
+	connectedToServer = false
+
+	clientIndicators["running"]:setFillColor(unpack(_RED_))
+	clientIndicators["scanning"]:setFillColor(unpack(_RED_))
+	clientIndicators["connected"]:setFillColor(unpack(_RED_))
+
+	ssk.networking:clearMyName( currentPlayer.name )
+
+	ssk.networking:stopScanning()
+	ssk.networking:stopClient()
+end
+
+-- Networking Event Handlers
+-- Client 
+onConnectedToServer = function( event )
+	table.dump(event) 
+	clientIndicators["connected"]:setFillColor(unpack(_GREEN_))
+	connectedToServer = true
+
+	ssk.networking:setMyName( currentPlayer.name )
+end
+
+onMsgFromServer = function( event )	
+	local msgTable = event.msgTable
+
+
+	if( msgTable.msgType == "START_GAME" ) then
+		onPlay()
+	end
+
+	table.dump(event) 
+end
+
+onServerDropped = function( event )
+	table.dump(event) 
+	clientIndicators["connected"]:setFillColor(unpack(_RED_))
+
+	connectedToServer = false
+
+	-- Go back to main menu if the server drops the client
+	onBack()
+end
+
+onClientStopped = function( event )
+	print("onClientStopped")
+	table.dump(event) 
+	clientIndicators["connected"]:setFillColor(unpack(_RED_))
+
+end
+
+onBack = function ( event ) 
+	onStopClient()
 	local options =
 	{
 		effect = "fade",
-		time = 300,
-		params =
-		{
-			score = scoreHUD:get()
-		}
-	}
-
-	storyboard.gotoScene( "s_LastScore", options  )	
-
-	return true
-end
-
-onQuit = function ( event ) 
-	if(ssk.networking:isNetworking()) then
-		ssk.networking:stop()
-	end
-
-	local options =
-	{
-		effect = "fade",
-		time = 300,
+		time = 200,
 		params =
 		{
 			logicSource = nil
@@ -295,6 +293,22 @@ onQuit = function ( event )
 	}
 
 	storyboard.gotoScene( "s_MainMenu", options  )	
+
+	return true
+end
+
+onPlay = function ( event ) 
+	local options =
+	{
+		effect = "fade",
+		time = 200,
+		params =
+		{
+			logicSource = nil
+		}
+	}
+
+	storyboard.gotoScene( "s_PlayGUI", options  )	
 
 	return true
 end

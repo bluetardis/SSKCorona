@@ -23,74 +23,135 @@ io.output():setvbuf("no") -- Don't use buffer for console messages
 ----------------------------------------------------------------------
 --	1.							GLOBALS								--
 ----------------------------------------------------------------------
-local globals = require( "ssk.globals" ) -- Load Standard Globals
-
+require( "ssk.globals" ) -- Load Standard Globals (DO NOT MODIFY)
+require( "data.globals" ) -- Override settings  from ssk.globals here.
 
 ----------------------------------------------------------------------
 -- 2. LOAD MODULES													--
 ----------------------------------------------------------------------
--- STORYBOARD
 local storyboard = require "storyboard"
 
--- PHYSICS
-local physics = require("physics")
-physics.start()
-
---physics.setGravity(0,0)
---physics.setDrawMode( "hybrid" )
+-- PHYSICS (Configure in ssk.globals)
+if( usesPhysics ) then
+	local physics = require("physics")
+	physics.start()
+	physics.setGravity( gravityVector[1], gravityVector[2] )
+	physics.setDrawMode( physicsRenderMode )
+end
 
 -- SSKCorona Libraries
 require("ssk.loadSSK")
 
--- User SSKCorona Settings
-require("user.buttons")
-require("user.labels")
-require("user.sounds")
-
-
 ----------------------------------------------------------------------
 -- 3. ONE-TIME INITIALIZATION										--
 ----------------------------------------------------------------------
--- Show device status bar?
+--
+-- Cofigure various aspects of your game based on settings in 
+-- ssk.globals as well as other details (simulator vs device).
+--
+----------------------------------------------------------------------
+
+-- Show device status bar
 display.setStatusBar(display.HiddenStatusBar)
 
 -- Enable Multitouch
-system.activate("multitouch")
+if( enableMultiTouch ) then 
+	system.activate("multitouch")
+end
 
--- set tap delay to 1/2 second to allow for double taps
-system.setTapDelay(0.5)
-
--- Select standard font(s) (EFM move to ssk.fonts.lua or some such)
-if(isTutorialDistro) then
-	gameFont = native.systemFont
-	helpFont = native.systemFont
- 
-elseif(onSimulator) then
+-- Configure Font(s)
+--
+-- Note: Names may be different on simulator and on device due to way
+-- Windows/OS X/iOS/Android differ in loading fonts
+--
+-- Note: You may need to extend this section, depending on how you use
+-- fonts in your game.
+--
+if(onSimulator) then
 	gameFont = "Abscissa"
 	helpFont = "Courier New"
-
 else
 	gameFont = "Abscissa"
 	helpFont = "Courier New"
 end
 
+-- Load User Settings (Put your custom settings in these files)
+--
+-- Note: These are loaded first, to allow you to supercede SSKCorona
+-- presets if you want.
+--
+require("data.buttons")
+require("data.labels")
+require("data.sounds")
 
--- Load Presets (Buttons, Labels, and Sounds)
---EFM local soundsInit = require("ssk.presets.sounds")
+-- Load SSK Presets (Buttons, Labels, and Sounds)
+-- 
+-- Note: Do not modify these files.  Add custom settings in the user files above instead.
+--
+local soundsInit = require("ssk.presets.sounds")
 local labelsInit = require("ssk.presets.labels")
 local buttonsInit = require("ssk.presets.buttons")
 
+local player require("data.player")
+
 ----------------------------------------------------------------------
 -- 4. LOAD SPRITE / SET UP ANIMATIONS								--
+----------------------------------------------------------------------
+--
+-- EFM WORK IN PROGRESS
+--
 ----------------------------------------------------------------------
 -- Load sprites and set up animations
 --ssk.easysprites.createSpriteSet( "letterTiles", imagesDir .. "letterTiles.png", 80, 80, 54 )
 
 ----------------------------------------------------------------------
--- 6. CALCULATE COLLISION MATRIX									--
+-- 5. LOAD BEHAVIORS												-- 
+----------------------------------------------------------------------
+--
+-- EFM WORK IN PROGRESS
+--
+----------------------------------------------------------------------
+--[[ 
+local behaviorsList = 
+{
+
+	"mover_faceTouch",
+	"mover_faceTouchFixedRate",
+	"mover_moveToTouchFixedRate",
+	"mover_moveToTouch",
+	"mover_dragDrop",
+--	"mover_onTouch_applyForwardForce",
+--	"mover_onTouch_applyContinuousForce",
+--	"mover_onTouch_applyTimedForce",
+	
+	"onCollisionEnded_ExecuteCallback",
+	"onCollision_ExecuteCallback",
+
+--	"onCollisionEnded_PrintMessage",
+--	"onCollision_PrintMessage",
+--	"onPostCollision_PrintMessage",
+--	"onPreCollision_PrintMessage",
+	
+--	"physics_hasForce",
+
+}
+
+for k,v in ipairs( behaviorsList ) do
+	require( "ssk.behaviors.b_" .. v )
+end
+ --]]
+
+----------------------------------------------------------------------
+-- 6. CALCULATE COLLISION MATRIX									-- 
+----------------------------------------------------------------------
+--
+-- Set up a global collision calculator (here) if you have only
+-- one set of collision settings.  If, on the other hand, you have
+-- different settings for different parts of your game, create
+-- and configure collision calulculators as you need them.
+--
 ----------------------------------------------------------------------
 --[[
-
 _G.myCC = ssk.ccmgr:newCalculator()
 _G.myCC:addName("player")
 _G.myCC:addName("enemy")
@@ -99,74 +160,48 @@ _G.myCC:addName("enemyBullet")
 _G.myCC:collidesWith("player", "enemy", "enemyBullet")
 _G.myCC:collidesWith("playerBullet", "enemy")
 _G.myCC:dump()
-
 --]]
 
 ----------------------------------------------------------------------
--- 7. LOAD AND APPLY PLAYER SPECIFIC SETTINGS						--
+-- 7. CONFIGURE SOUND & MUSIC										--
 ----------------------------------------------------------------------
--- Load name of last player (if any) or initialize default player
-_G.currentPlayer = {}
-if( io.exists( "lastPlayer.txt", system.DocumentsDirectory ) ) then
-	currentPlayer = table.load( "lastPlayer.txt", system.DocumentsDirectory )
-else
-	currentPlayer.name = "Player"
-	currentPlayer.effectsEnabled = false
-	currentPlayer.effectsVolume = 0.8
-	currentPlayer.musicEnabled = false
-	currentPlayer.musicVolume = 0.8
-
-	table.save(currentPlayer, "lastPlayer.txt", system.DocumentsDirectory )
-end
-
+--  This section assumes that the current player has certain
+--  settings.  To modify these settings edit "data/player.lua"
+--
+--  Starts a sound track if the player has music enabled.
+----------------------------------------------------------------------
 ssk.sounds:setEffectsVolume(currentPlayer.effectsVolume)
+
 ssk.sounds:setMusicVolume(currentPlayer.musicVolume)
 
 if(currentPlayer.musicEnabled) then
 	ssk.sounds:play("bouncing")
 end
 
-
---[[ EFM
--- Load list of known players
-knownPlayers = ssk.datastore:new()
-if( io.exists( "knownPlayers.txt", system.DocumentsDirectory ) ) then
-	knownPlayers:load( "knownPlayers.txt" )
-else
-	-- If no players exist at all, add the current player to our list
-	local playerName = currentPlayer:get( "name" )
-	knownPlayers:add( playerName, playerName )
-	knownPlayers:save( "knownPlayers.txt" )
-end
-function getKnownPlayersList()
-	local tmpTable = {}
-	for k,v in pairs(knownPlayers) do 
-		if( ( k == v ) and ( type(v) == "string" ) ) then
-			table.insert( tmpTable, v )
-		end
-	end
-	return tmpTable
-end
-function saveKnownPlayersList()
-	knownPlayers:save( "knownPlayers.txt" )
-end
---]]
-
-
 ----------------------------------------------------------------------
--- 8. PRINT USEFUL DEBUG INFORMATION (BEFORE STARTING GAME)			--
+-- 8. DEBUG STUFF													--
 ----------------------------------------------------------------------
+-- 
+-- This section is nice to have while developing, but should be disabled
+-- for production releases.
+--
+----------------------------------------------------------------------
+
 -- Print all known (loaded and useable) font names
---local sysFonts = native.getFontNames()
---for k,v in pairs(sysFonts) do print(v) end
+--[[
+print("\nFonts found on this system:" )
+local sysFonts = native.getFontNames()
+for k,v in pairs(sysFonts) do print(v) end
+--]]
 
 -- Print information about the design and device resolution
 ssk.misc.dumpScreenMetrics()
 
--- Print the collision matrix data
---collisionCalculator:dump()
+-- Print the default physics paramaters used by ssk.display builder functions
+--[[
+ssk.display.listDPP()
+--]]
 
---ssk.display.listDPP()
 
 print("\n****************************************************************")
 print("*********************** /\\/\\ main.cs /\\/\\ **********************")
@@ -178,3 +213,8 @@ print("****************************************************************")
 storyboard.gotoScene( "s_MainMenu" )
 --storyboard.gotoScene( "s_Credits" )
 --storyboard.gotoScene( "s_Options" )
+--storyboard.gotoScene( "s_Join_2P_Auto" )
+--storyboard.gotoScene( "s_Host_2P_Auto" )
+--storyboard.gotoScene( "s_NotMe" )
+--storyboard.gotoScene( "s_NotMeDialog" )
+--storyboard.gotoScene( "s_PlayGUI" )

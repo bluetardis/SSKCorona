@@ -40,7 +40,8 @@ local dprint = dp.print
 local socket = require "socket"
 local json = require "json"
 local multiplayer = {}
-local applicationName = "Default"
+local applicationName = _G.myAppName or "Default" --EFM modified to make simpler; setOptions() has bug?
+dprint(2,"Client: applicationName == " .. applicationName)
 
 local client = {} --master object
 
