@@ -89,8 +89,7 @@ local params =
 	font           = gameFont,
 	fontSize       = 38,
 	emboss         = true,
-	embossTextColor     = _LIGHTGREY_,
-	--embossTextColor     = { 32,32,200, 200 },
+	embossTextColor     = { 32,32,200, 200 },
 	embossHighlightColor = { 255,255,255, 255 },
 	embossShadowColor    = { 0,0,0, 255 },
 }

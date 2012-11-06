@@ -260,17 +260,11 @@ system.activate("multitouch")
 system.setTapDelay(0.5)
 
 -- Select standard font(s) (EFM move to ssk.fonts.lua or some such)
-if(isTutorialDistro) then
-	gameFont = native.systemFont
-	helpFont = native.systemFont
+gameFont = native.systemFont
+helpFont = native.systemFont
  
-elseif(onSimulator) then
-	gameFont = "Abscissa"
-	helpFont = "Courier New"
-else
-	gameFont = "Abscissa"
-	helpFont = "Courier New"
-end
+--	gameFont = "Abscissa"
+--	helpFont = "Courier New"
 
 
 -- Load Presets (Buttons, Labels, and Sounds)

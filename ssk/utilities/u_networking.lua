@@ -563,15 +563,20 @@ server_PlayerDropped = function (event)
 	" Dropped b/c " .. event.message .. 
 	" connection was active for " .. system.getTimer() - networking.clients[client].myJoinTime .. " ms" )
 
+	-- Immediately decrement client count
+	networking.numClients = networking.numClients - 1	
+
+	-- Post drop event to listeners with client info
 	gem:post("CLIENT_DROPPED", { clientID = client, dropReason = event.message } )
 
+	-- Finally, clear the client info
 	-- Take player out of game and remove their name
 	client.myName  = nil
 	client.myFinalScore = nil
 	client.myDataTable  = nil
 
 	networking.clients[client] = nil --clear references to prevent memory leaks
-	networking.numClients = networking.numClients - 1	
+
 
 	return true -- Do not let others catch this too
 end

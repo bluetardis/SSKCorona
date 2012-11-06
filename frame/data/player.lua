@@ -53,7 +53,7 @@ _G.currentPlayer = {}
 if( io.exists( "lastPlayer.txt", system.DocumentsDirectory ) ) then
 	currentPlayer = table.load( "lastPlayer.txt", system.DocumentsDirectory )
 else
-	currentPlayer.name = "Bob"
+	currentPlayer.name = "RoamingGamer"
 
 	initDefaults()
 

@@ -19,7 +19,7 @@
 _G.myAppName   = "Default"
 _G.debugLevel  = 1
 _G.liteVersion = false
-_G.releaseDate = "05 NOV 2012"
+_G.releaseDate = "06 NOV 2012"
 
 -- Resource directories (images, sounds, etc.)
 _G.imagesDir = "images/"

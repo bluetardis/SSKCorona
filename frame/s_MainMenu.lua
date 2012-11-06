@@ -27,14 +27,6 @@ local dprint = dp.print
 ----------------------------------------------------------------------
 -- Flags modifying main menu operation and layout
 
--- EFM move to globals?
-
--- multiplayerMode ==> "OFF", "2P_AUTO", "2P_EASY", "MP_MANUAL"
---local multiplayerMode = "OFF" 
-local multiplayerMode = "2P_AUTO" -- ("OFF", "2P_AUTO", "2P_EASY", "MP_MANUAL")
---local multiplayerMode = "2P_EASY" -- ("OFF", "2P_AUTO", "2P_EASY", "MP_MANUAL")
---local multiplayerMode = "MP_MANUAL" -- ("OFF", "2P_AUTO", "2P_EASY", "MP_MANUAL")
-
 
 -- Variables
 local screenGroup
@@ -96,7 +88,7 @@ function scene:enterScene( event )
 	-- scene (such as the 'NOT ME' scene)
 	if playerNameLabel and welcomeBackLabel then
 		playerNameLabel:setText( currentPlayer.name )
-		playerNameLabel.x = welcomeBackLabel.x + welcomeBackLabel.width/2 + playerNameLabel.width / 2 + 5
+		--playerNameLabel.x = welcomeBackLabel.x + welcomeBackLabel.width/2 + playerNameLabel.width / 2 + 5
 	end
 end
 
@@ -207,22 +199,27 @@ addInterfaceElements = function( )
 	curY = centerY - 25
 	ssk.buttons:presetPush( layers.interfaces, "default", centerX, curY, 200, 40,  "Options", onOptions ) 
 
+--[[ NOT READY YET
 	-- HIGHSCORES
 	curY = centerY + 25
 	ssk.buttons:presetPush( layers.interfaces, "default", centerX, curY, 200, 40,  "High Scores", onHighScores ) 
+--]]
 
 	-- CREDITS
-	curY = centerY + 75
+	curY = curY + 50 -- centerY + 75
 	ssk.buttons:presetPush( layers.interfaces, "default", centerX, curY, 200, 40,  "Credits", onCredits ) 
 
 	-- Welcome back label
-	curY = curY + 40
-	welcomeBackLabel = ssk.labels:presetLabel( layers.interfaces, "default", "Welcome back ", centerX - 60, curY,  { fontSize = 18 } )
-	playerNameLabel = ssk.labels:presetLabel( layers.interfaces, "default", currentPlayer.name, centerX + 20, curY,  { fontSize = 18 } )
-	playerNameLabel.x = welcomeBackLabel.x + welcomeBackLabel.width/2 + playerNameLabel.width / 2 + 5
+	curY = curY + 50
+	welcomeBackLabel = ssk.labels:presetLabel( layers.interfaces, "rightLabel", "Welcome back ", centerX + 20, curY,  { fontSize = 18 } )
+	curY = curY + 25
+	playerNameLabel = ssk.labels:presetLabel( layers.interfaces, "rightLabel", currentPlayer.name, centerX + 20, curY,  { fontSize = 18 } )
+	--playerNameLabel.x = welcomeBackLabel.x + welcomeBackLabel.width/2 + playerNameLabel.width / 2 + 5
+	--playerNameLabel.x = welcomeBackLabel.x + welcomeBackLabel.width/2 + playerNameLabel.width / 2 + 5
 
 	-- NOT ME
-	ssk.buttons:presetPush( layers.interfaces, "default", centerX + 100, curY, 70, 26,  "Not Me", onNotMe ) 
+	curY = curY - 10
+	ssk.buttons:presetPush( layers.interfaces, "default", centerX + 70, curY, 70, 40,  "Not Me", onNotMe ) 
 
 	-- RG Button
 	ssk.buttons:presetPush( layers.interfaces, "RGButton", 30, h-30, 40, 40, "", onRG  )
@@ -259,6 +256,8 @@ onHost = function ( event )
 		}
 	}
 
+	storyboard.gotoScene( "s_Host", options  )	
+	--[[
 	if(multiplayerMode == "2P_AUTO") then
 		storyboard.gotoScene( "s_Host_2P_Auto", options  )	
 	
@@ -269,6 +268,7 @@ onHost = function ( event )
 		storyboard.gotoScene( "s_Host_MP_Manual", options  )	
 	
 	end
+	--]]
 	
 
 	return true
@@ -285,6 +285,8 @@ onJoin = function ( event )
 		}
 	}
 
+	storyboard.gotoScene( "s_Join", options  )	
+	--[[
 	if(multiplayerMode == "2P_AUTO") then
 		storyboard.gotoScene( "s_Join_2P_Auto", options  )	
 	
@@ -293,8 +295,8 @@ onJoin = function ( event )
 	
 	elseif(multiplayerMode == "MP_MANUAL") then
 		storyboard.gotoScene( "s_Join_MP_Manual", options  )	
-	
 	end
+	--]]
 	
 
 	return true

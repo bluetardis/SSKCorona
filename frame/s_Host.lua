@@ -31,33 +31,28 @@ local screenGroup
 local layers -- Local reference to display layers 
 local backImage 
 
+local playButton
+
+local maxClients = 4
+
 -- Callbacks/Functions
 local createLayers
 local addInterfaceElements
 
-local onBack
+local onCancel
+local onPlay
 
-local onStartClient
-local onStopClient
-local onScan
-local onConnectToServer
+local onStartServer
+local onStopServer
 
-local clientStartButton
-local clientStopButton
-local clientScanButton
-local connectToServerButtons = {}
+local serverIndicators = {}
+local connectedClients = {}
 
-local clientIndicators = {}
-
--- Client event handlers
-local serversFound = 0
-local onConnectedToServer
-local onServerFound
-local onDoneScanningForServers
-local onMsgFromServer
-local onServerDropped
-local onClientStopped
-
+-- Server event handlers
+local onClientJoined
+local onMsgFromClient
+local onClientDropped
+local onServerStopped
 
 ----------------------------------------------------------------------
 --	Scene Methods:
@@ -81,23 +76,25 @@ end
 ----------------------------------------------------------------------
 function scene:willEnterScene( event )
 	screenGroup = self.view
+
+	serverIndicators["running"]:setFillColor(unpack(_RED_))
+	
+	for i = 1, #connectedClients do
+		connectedClients[i]:setFillColor(unpack(_RED_))
+	end
 end
 
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 function scene:enterScene( event )
 	screenGroup = self.view
-	-- Client EVENTS
-	ssk.gem:add("CONNECTED_TO_SERVER", onConnectedToServer, "joiningEvents" )
-	ssk.gem:add("SERVER_FOUND", onServerFound, "joiningEvents" )
-	ssk.gem:add("DONE_SCANNING_FOR_SERVERS", onDoneScanningForServers, "joiningEvents" )
-	ssk.gem:add("MSG_FROM_SERVER", onMsgFromServer, "joiningEvents" )
-	ssk.gem:add("SERVER_DROPPED", onServerDropped, "joiningEvents" )
-	ssk.gem:add("CLIENT_STOPPED", onClientStopped, "joiningEvents" )
+	-- Server EVENTS
+	ssk.gem:add("CLIENT_JOINED", onClientJoined, "hostingEvents" )
+	ssk.gem:add("MSG_FROM_CLIENT", onMsgFromClient, "hostingEvents" )
+	ssk.gem:add("CLIENT_DROPPED", onClientDropped, "hostingEvents" )
+	ssk.gem:add("SERVER_STOPPED", onServerStopped, "hostingEvents" )
 
-	onStartClient()
-	ssk.networking:autoconnectToHost()
-
+	onStartServer()
 
 end
 
@@ -106,8 +103,8 @@ end
 function scene:exitScene( event )
 	screenGroup = self.view	
 
-	ssk.networking:stop()
-	ssk.gem:removeGroup( "joiningEvents" )
+	--ssk.networking:stop()
+	ssk.gem:removeGroup( "hostingEvents" )
 
 end
 
@@ -124,6 +121,7 @@ function scene:destroyScene( event )
 
 	layers:destroy()
 	layers = nil
+	playButton = nil
 
 end
 
@@ -161,162 +159,122 @@ addInterfaceElements = function( )
 	local curY = 30
 
 	-- Page Title 
-	ssk.labels:presetLabel( layers.interfaces, "default", "Join", centerX, curY, { fontSize = 32 } )
-
-
+	ssk.labels:presetLabel( layers.interfaces, "default", "Hosting", centerX, curY, { fontSize = 32 } )
+	
 	-- Running Indicator
-	curY = centerY - 80
-	ssk.labels:presetLabel( layers.interfaces, "rightLabel", "Running", centerX + 15, curY, { fontSize = 20 }  )
-	clientIndicators["running"] = ssk.display.circle( layers.interfaces, centerX + 50, curY, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
+	curY = centerY - 40
+	ssk.labels:presetLabel( layers.interfaces, "rightLabel", "Running", centerX + 25, curY, { fontSize = 20 }  )
+	serverIndicators["running"] = ssk.display.circle( layers.interfaces, centerX + 60, curY, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
 
-	-- Scanning Indicator
+	-- Connected Clients Indicator
 	curY = curY + 30
-	ssk.labels:presetLabel( layers.interfaces, "rightLabel", "Scanning", centerX + 15, curY, { fontSize = 20 }  )
-	clientIndicators["scanning"] = ssk.display.circle( layers.interfaces, centerX + 50, curY, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
+	ssk.labels:presetLabel( layers.interfaces, "rightLabel", "Connected", centerX + 25, curY, { fontSize = 20 }  )
+	--connectedClients = ssk.display.circle( layers.interfaces, centerX + 60, curY, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
 
+	local xOffset = 0
+	for i = 1, maxClients do
+		connectedClients[i] = ssk.display.circle( layers.interfaces, centerX + 60 + xOffset, curY, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
+		xOffset = xOffset + connectedClients[i].width + 5
+	end
 
-	-- Connected Indicator
-	curY = curY + 30
-	ssk.labels:presetLabel( layers.interfaces, "rightLabel", "Connected", centerX + 15, curY, { fontSize = 20 }  )
-	clientIndicators["connected"] = ssk.display.circle( layers.interfaces, centerX + 50, curY, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
+	if( multiplayerMode == "MP_MANUAL" ) then
 
-	-- Start/Stop Client Buttons
-	curY = curY + 40
-	clientStartButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX - 55, curY, 90, 30, "Start", onStartClient )
-	clientStopButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX + 55, curY, 90, 30, "Stop", onStopClient )
-	clientStopButton:disable()
+	-- CANCEL
+		curY = curY + 50
+		ssk.buttons:presetPush( layers.interfaces, "default", centerX - 55 , curY, 90, 40,  "Cancel", onCancel )
 
-	-- Scan for host button
-	curY = curY + 40
-	clientScanButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX, curY, 200, 30, "Scan", onScan )
-	clientScanButton:disable()
+		-- START
+		playButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX + 55 , curY, 90, 40,  "Play", onPlay )
+		playButton:disable()
 
-	-- Connect to Server Buttons
-	curY = curY + 40
-	connectToServerButtons[1] = ssk.buttons:presetPush( layers.interfaces, "default", centerX - 55, curY, 90, 30, "----", onConnectToServer, { fontSize = 10 } )
-	connectToServerButtons[1]:disable()
-	connectToServerButtons[2] = ssk.buttons:presetPush( layers.interfaces, "default", centerX + 55, curY, 90, 30, "----", onConnectToServer, { fontSize = 10 } )
-	connectToServerButtons[2]:disable()
+	else
+		curY = curY + 50
+		ssk.buttons:presetPush( layers.interfaces, "default", centerX , curY, 100, 40,  "Cancel", onCancel )
+	end
 
-
-
-	-- BACK 
-	curY = h - 25
-	ssk.buttons:presetPush( layers.interfaces, "default", 60 , curY, 100, 40,  "Back", onBack )
 
 end	
+
 ----------------------------------------------------------------------
 --				FUNCTION/CALLBACK DEFINITIONS						--
 ----------------------------------------------------------------------
 
-onStartClient = function( event )
-	print("onStartClient")
+onStartServer = function( event )
+	print("onStartServer")
 
-	clientStartButton:disable()
-	clientStopButton:enable()
-	clientScanButton:enable()
+	serverIndicators["running"]:setFillColor(unpack(_GREEN_))
 
-	clientIndicators["running"]:setFillColor(unpack(_GREEN_))
-
-	ssk.networking:startClient()
+	--ssk.networking:setCustomBroadcast( "Networking Test" )
+	ssk.networking:startServer()
+	ssk.networking:setMyName( currentPlayer.name )
 end
 
-onStopClient = function( event )
-	print("onStopClient")
+onStopServer = function( event )
+	print("onStartServer")
 
-	clientStartButton:enable()
-	clientStopButton:disable()
-	clientScanButton:disable()
+	serverIndicators["running"]:setFillColor(unpack(_RED_))
+	for i = 1, #connectedClients do
+		connectedClients[i]:setFillColor(unpack(_RED_))
+	end
 
-	serversFound = 0
 
-	connectToServerButtons[1]:disable()
-	connectToServerButtons[2]:disable()
-	connectToServerButtons[1]:setText("----")
-	connectToServerButtons[2]:setText("----")
-
-	clientIndicators["running"]:setFillColor(unpack(_RED_))
-	clientIndicators["connected"]:setFillColor(unpack(_RED_))
-
-	ssk.networking:stopScanning()
-	ssk.networking:stopClient()
+	ssk.networking:stopServer()
+	ssk.networking:clearMyName( currentPlayer.name )
 end
 
-onScan = function( event )
-	print("onScan")
-	clientIndicators["scanning"]:setFillColor(unpack(_GREEN_))
-
-	serversFound = 0
-
-	connectToServerButtons[1]:disable()
-	connectToServerButtons[2]:disable()
-	connectToServerButtons[1]:setText("----")
-	connectToServerButtons[2]:setText("----")
-
-	ssk.networking:scanServers( 2000 )
-end
-
-onConnectToServer = function( event )
-	ssk.networking:connectToSpecificHost( event.target.serverIP )
-end
 
 -- Networking Event Handlers
--- Client 
-onConnectedToServer = function( event )
-	table.dump(event) 
-	clientIndicators["connected"]:setFillColor(unpack(_GREEN_))
+-- Server 
+onClientJoined = function( event )
+	local numClients = ssk.networking:getNumClients()
+	connectedClients[numClients]:setFillColor(unpack(_GREEN_))
+
+	if( multiplayerMode == "2P_AUTO" ) then
+		onPlay()
+	else
+		playButton:enable()
+	end
 end
 
-onServerFound = function( event )
-	serversFound = serversFound  + 1
+onMsgFromClient = function( event )	
+	local msgTable = event.msgTable
+end
+
+onClientDropped = function( event )
+
+	for i = 1, #connectedClients do
+		connectedClients[i]:setFillColor(unpack(_RED_))
+	end
+
+	local numClients = ssk.networking:getNumClients()
 	
-	table.dump(event) 
+	if( numClients > maxClients ) then
+		numClients = maxClients
+	end
 
-	if(serversFound > 2) then return false end
-	
-	connectToServerButtons[serversFound]:enable()
-	connectToServerButtons[serversFound]:setText(event.serverIP)
-	connectToServerButtons[serversFound].serverIP = event.serverIP
-	connectToServerButtons[serversFound].port = event.port
+	for i = 1, numClients do
+		connectedClients[i]:setFillColor(unpack(_GREEN_))
+	end
 
-
-end
-
-onDoneScanningForServers = function( event )
-	clientIndicators["scanning"]:setFillColor(unpack(_RED_))
-	table.dump(event) 
-end
-
-onMsgFromServer = function( event )	table.dump(event) end
-
-onServerDropped = function( event )
-	table.dump(event) 
-	clientIndicators["connected"]:setFillColor(unpack(_RED_))
-
-	-- Just clear all server buttons for now (easiest solution)
-	serversFound = 0
-	connectToServerButtons[1]:disable()
-	connectToServerButtons[2]:disable()
-	connectToServerButtons[1]:setText("----")
-	connectToServerButtons[2]:setText("----")
+	if( multiplayerMode == "MP_MANUAL" ) then
+		if( numClients > 0 ) then
+			playButton:enable()
+		else
+			playButton:disable()
+		end
+	end
 
 end
 
-onClientStopped = function( event )
-	print("onClientStopped")
-	table.dump(event) 
-	clientIndicators["connected"]:setFillColor(unpack(_RED_))
-
-	-- Just clear all server buttons for now (easiest solution)
-	serversFound = 0
-	connectToServerButtons[1]:disable()
-	connectToServerButtons[2]:disable()
-	connectToServerButtons[1]:setText("----")
-	connectToServerButtons[2]:setText("----")
-
+onServerStopped = function( event )
+	for i = 1, #connectedClients do
+		connectedClients[i]:setFillColor(unpack(_RED_))
+	end
 end
-onBack = function ( event ) 
-	onStopClient()
+
+
+onCancel = function ( event ) 
+	onStopServer()
 	local options =
 	{
 		effect = "fade",
@@ -331,6 +289,24 @@ onBack = function ( event )
 
 	return true
 end
+
+onPlay = function ( event ) 
+	ssk.networking:msgClients( "START_GAME" )
+	local options =
+	{
+		effect = "fade",
+		time = 200,
+		params =
+		{
+			logicSource = nil
+		}
+	}
+
+	storyboard.gotoScene( "s_PlayGUI", options  )	
+
+	return true
+end
+
 
 ---------------------------------------------------------------------------------
 -- Scene Dispatch Events, Etc. - Generally Do Not Touch Below This Line

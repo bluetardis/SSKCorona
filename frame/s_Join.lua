@@ -18,7 +18,7 @@
 local storyboard = require( "storyboard" )
 local scene      = storyboard.newScene()
 
---local debugLevel = 1 -- Comment out to get global debugLevel from main.cs
+local debugLevel = 2 -- Comment out to get global debugLevel from main.cs
 local dp = ssk.debugprinter.newPrinter( debugLevel )
 local dprint = dp.print
 
@@ -38,17 +38,23 @@ local addInterfaceElements
 local onBack
 local onPlay
 
-local onStartServer
-local onStopServer
+local connectedToServer = false
 
-local serverIndicators = {}
-local connectedClient
+local connectLoop
+local connectLoopTimerHandle = nil
 
--- Server event handlers
-local onClientJoined
-local onMsgFromClient
-local onClientDropped
-local onServerStopped
+local onStartClient
+local onStopClient
+local onScan
+
+local clientIndicators = {}
+
+-- Client event handlers
+local onConnectedToServer
+local onMsgFromServer
+local onServerDropped
+local onClientStopped
+
 
 ----------------------------------------------------------------------
 --	Scene Methods:
@@ -63,7 +69,6 @@ local onServerStopped
 ----------------------------------------------------------------------
 function scene:createScene( event )
 	screenGroup = self.view
-
 	createLayers()
 	addInterfaceElements()
 end
@@ -73,8 +78,9 @@ end
 function scene:willEnterScene( event )
 	screenGroup = self.view
 
-	serverIndicators["running"]:setFillColor(unpack(_RED_))
-	connectedClient:setFillColor(unpack(_RED_))
+	clientIndicators["running"]:setFillColor(unpack(_RED_))
+	clientIndicators["scanning"]:setFillColor(unpack(_RED_))
+	clientIndicators["connected"]:setFillColor(unpack(_RED_))
 
 end
 
@@ -82,13 +88,23 @@ end
 ----------------------------------------------------------------------
 function scene:enterScene( event )
 	screenGroup = self.view
-	-- Server EVENTS
-	ssk.gem:add("CLIENT_JOINED", onClientJoined, "hostingEvents" )
-	ssk.gem:add("MSG_FROM_CLIENT", onMsgFromClient, "hostingEvents" )
-	ssk.gem:add("CLIENT_DROPPED", onClientDropped, "hostingEvents" )
-	ssk.gem:add("SERVER_STOPPED", onServerStopped, "hostingEvents" )
+	-- Client EVENTS
+	ssk.gem:add("CONNECTED_TO_SERVER", onConnectedToServer, "joiningEvents" )
+	--ssk.gem:add("SERVER_FOUND", onServerFound, "joiningEvents" )
+	--ssk.gem:add("DONE_SCANNING_FOR_SERVERS", onDoneScanningForServers, "joiningEvents" )
+	ssk.gem:add("MSG_FROM_SERVER", onMsgFromServer, "joiningEvents" )
+	ssk.gem:add("SERVER_DROPPED", onServerDropped, "joiningEvents" )
+	ssk.gem:add("CLIENT_STOPPED", onClientStopped, "joiningEvents" )
 
-	onStartServer()
+	onStartClient()
+	ssk.networking:autoconnectToHost()
+	clientIndicators["scanning"]:setFillColor(unpack(_GREEN_))
+
+
+	--EFM
+	screenGroup.timer = connectLoop
+
+	connectLoopTimerHandle = timer.performWithDelay( 2000, screenGroup)
 
 end
 
@@ -97,8 +113,13 @@ end
 function scene:exitScene( event )
 	screenGroup = self.view	
 
-	--ssk.networking:stop()
-	ssk.gem:removeGroup( "hostingEvents" )
+	if(connectLoopTimerHandle) then
+		timer.cancel(connectLoopTimerHandle)
+		connectLoopTimerHandle = nil
+	end
+
+	--ssk.networking:stop() --EFM
+	ssk.gem:removeGroup( "joiningEvents" )
 
 end
 
@@ -152,81 +173,110 @@ addInterfaceElements = function( )
 	local curY = 30
 
 	-- Page Title 
-	ssk.labels:presetLabel( layers.interfaces, "default", "Hosting", centerX, curY, { fontSize = 32 } )
-	
+	ssk.labels:presetLabel( layers.interfaces, "default", "Joining", centerX, curY, { fontSize = 32 } )
+
+
 	-- Running Indicator
-	curY = centerY - 40
-	ssk.labels:presetLabel( layers.interfaces, "rightLabel", "Running", centerX + 25, curY, { fontSize = 20 }  )
-	serverIndicators["running"] = ssk.display.circle( layers.interfaces, centerX + 60, curY, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
+	curY = centerY - 80
+	ssk.labels:presetLabel( layers.interfaces, "rightLabel", "Running", centerX + 15, curY, { fontSize = 20 }  )
+	clientIndicators["running"] = ssk.display.circle( layers.interfaces, centerX + 50, curY, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
 
-	-- Connected Clients Indicator
+	-- Scanning Indicator
 	curY = curY + 30
-	ssk.labels:presetLabel( layers.interfaces, "rightLabel", "Connected", centerX + 25, curY, { fontSize = 20 }  )
-	connectedClient = ssk.display.circle( layers.interfaces, centerX + 60, curY, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
+	ssk.labels:presetLabel( layers.interfaces, "rightLabel", "Scanning", centerX + 15, curY, { fontSize = 20 }  )
+	clientIndicators["scanning"] = ssk.display.circle( layers.interfaces, centerX + 50, curY, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
 
+	-- Connected Indicator
+	curY = curY + 30
+	ssk.labels:presetLabel( layers.interfaces, "rightLabel", "Connected", centerX + 15, curY, { fontSize = 20 }  )
+	clientIndicators["connected"] = ssk.display.circle( layers.interfaces, centerX + 50, curY, { radius = 8, fill = _RED_, stroke = _LIGHTGREY_, strokeWidth = 2} )
 
 	-- BACK 
 	curY = curY + 50
 	ssk.buttons:presetPush( layers.interfaces, "default", centerX , curY, 100, 40,  "Cancel", onBack )
 
 end	
-
 ----------------------------------------------------------------------
 --				FUNCTION/CALLBACK DEFINITIONS						--
 ----------------------------------------------------------------------
 
-onStartServer = function( event )
-	print("onStartServer")
+connectLoop = function( self, event )
+	if( connectedToServer ) then
+		dprint(2, "I am connected.")
+		connectLoopTimerHandle = nil
+		return true
+	else
+		dprint(2, "\n**************************************")
+		dprint(2, "Reset client and try to connect again.\n")
+		ssk.networking:stopScanning()
+		ssk.networking:stopClient()
+		ssk.networking:startClient()
+		ssk.networking:autoconnectToHost()
 
-	serverIndicators["running"]:setFillColor(unpack(_GREEN_))
+		connectLoopTimerHandle = timer.performWithDelay( 2000, screenGroup)
+		
+		return true
+	end
+end
 
-	--ssk.networking:setCustomBroadcast( "Networking Test" )
-	ssk.networking:startServer()
+onStartClient = function( event )
+	print("onStartClient")
+
+	clientIndicators["running"]:setFillColor(unpack(_GREEN_))
+
+	ssk.networking:startClient()
+end
+
+onStopClient = function( event )
+	print("onStopClient")
+
+	connectedToServer = false
+
+	clientIndicators["running"]:setFillColor(unpack(_RED_))
+	clientIndicators["scanning"]:setFillColor(unpack(_RED_))
+	clientIndicators["connected"]:setFillColor(unpack(_RED_))
+
+	ssk.networking:clearMyName( currentPlayer.name )
+
+	ssk.networking:stopScanning()
+	ssk.networking:stopClient()
+end
+
+-- Networking Event Handlers
+-- Client 
+onConnectedToServer = function( event )
+	clientIndicators["connected"]:setFillColor(unpack(_GREEN_))
+	connectedToServer = true
+
 	ssk.networking:setMyName( currentPlayer.name )
 end
 
-onStopServer = function( event )
-	print("onStartServer")
-
-	serverIndicators["running"]:setFillColor(unpack(_RED_))
-	connectedClient:setFillColor(unpack(_RED_))
-
-	ssk.networking:stopServer()
-	ssk.networking:clearMyName( currentPlayer.name )
-end
-
-
--- Networking Event Handlers
--- Server 
-onClientJoined = function( event )
-	table.dump(event) 
-	connectedClient:setFillColor(unpack(_RED_))
-
-	ssk.networking:msgClient( event.clientID, "START_GAME" )
-	onPlay()
-end
-
-onMsgFromClient = function( event )	
+onMsgFromServer = function( event )	
 	local msgTable = event.msgTable
-	table.dump(event) 
+
+
+	if( msgTable.msgType == "START_GAME" ) then
+		onPlay()
+	end
 end
 
-onClientDropped = function( event )
-	table.dump(event) 
-	connectedClient:setFillColor(unpack(_RED_))
+onServerDropped = function( event )
+	clientIndicators["connected"]:setFillColor(unpack(_RED_))
 
-	connectedClient:setFillColor(unpack(_GREEN_))
+	connectedToServer = false
 
+	-- Go back to main menu if the server drops the client
+	onBack()
 end
 
-onServerStopped = function( event )
-	table.dump(event) 
-	connectedClient:setFillColor(unpack(_RED_))
-end
+onClientStopped = function( event )
+	print("onClientStopped")
+	clientIndicators["connected"]:setFillColor(unpack(_RED_))
 
+end
 
 onBack = function ( event ) 
-	onStopServer()
+	onStopClient()
 	local options =
 	{
 		effect = "fade",
@@ -257,7 +307,6 @@ onPlay = function ( event )
 
 	return true
 end
-
 
 ---------------------------------------------------------------------------------
 -- Scene Dispatch Events, Etc. - Generally Do Not Touch Below This Line

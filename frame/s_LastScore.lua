@@ -178,8 +178,8 @@ addInterfaceElements_SP = function( )
 	ssk.labels:presetLabel( layers.interfaces, "default", "You scored: " .. myScore .. " points!", centerX, centerY, { fontSize = 24 } )
 
 	-- BACK 
-	curY = centerY - 75
-	ssk.buttons:presetPush( layers.interfaces, "default", 60 , h - 60, 100, 40,  "Done", onBack )
+	curY = h - 25
+	ssk.buttons:presetPush( layers.interfaces, "default", 60 , curY, 100, 40,  "Done", onBack )
 end	
 
 -- addInterfaceElements_MP() - Create Single Player interfaces for this scene
