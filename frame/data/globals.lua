@@ -25,7 +25,6 @@ _G.debugLevel  = 1
 _G.liteVersion = false
 --_G.releaseDate = "06 NOV 2012"
 
-
 -- (Global) Debug messaging level (used by debugPrint): 
 --
 -- Warning: These values may be overwritten locally
@@ -56,6 +55,6 @@ _G.enableMultiTouch = true
 -- multiplayerMode ==> "OFF", "2P_AUTO", "2P_EASY", "MP_MANUAL"
 _G.multiplayerMode = "OFF" 
 --_G.multiplayerMode = "2P_AUTO" 
---_G.multiplayerMode = "2P_EASY" -- THIS MODE NOT YET AVAILABLE
 --_G.multiplayerMode = "MP_MANUAL" 
+--_G.multiplayerMode = "2P_EASY" -- THIS MODE NOT YET AVAILABLE
 

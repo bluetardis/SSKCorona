@@ -88,7 +88,8 @@ function scene:enterScene( event )
 	-- scene (such as the 'NOT ME' scene)
 	if playerNameLabel and welcomeBackLabel then
 		playerNameLabel:setText( currentPlayer.name )
-		--playerNameLabel.x = welcomeBackLabel.x + welcomeBackLabel.width/2 + playerNameLabel.width / 2 + 5
+		playerNameLabel:setReferencePoint(display.CenterRightReferencePoint)
+		playerNameLabel.x = centerX + 20
 	end
 end
 
@@ -151,74 +152,66 @@ addInterfaceElements = function( )
 	-- ==========================================
 	-- Buttons and Labels
 	-- ==========================================
-	local curY
+	local curY = 30
 	local tmpButton
 	local tmpLabel
 
 	-- Game Label / Name
-	ssk.labels:presetLabel( layers.interfaces, "default", "Game Name Here", centerX, 30, { fontSize = 32 } )
+	ssk.labels:presetLabel( layers.interfaces, "default", "Game Name Here", centerX, curY, { fontSize = 32 } )
 
-	-- Version Label
-	ssk.labels:presetLabel( layers.interfaces, "default", "Last Modified: " .. releaseDate, centerX, h-10, { fontSize = 12, textColor = _WHITE_ } )
 
+	if(system.orientation == "portrait") then
+		curY = curY + 100 
+	else	
+		curY = curY + 50 
+	end
 
 	if(multiplayerMode == "OFF") then
 		-- PLAY 
-		curY = centerY - 75
 		playButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX, curY, 200, 40,  "Play", onPlay )
 
 	elseif(multiplayerMode == "2P_EASY") then
 		-- PLAY 
-		curY = centerY - 75
 		playButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX-25, curY, 150, 40,  "Play", onPlay )
 
 		-- SP/MP TOGGLE 
-		curY = centerY - 75
 		spmpButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX+80, curY, 40, 40,  "SP", onSPMP )
 
 	else
 		-- PLAY 
-		curY = centerY - 75
 		playButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX-25, curY, 150, 40,  "Play", onPlay )
-		
 
 		-- HOST/JOIN 
-		curY = centerY - 75
 		hostButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX-65, curY, 70 , 40,  "Host", onHost )
 		joinButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX+15, curY, 70 , 40,  "Join", onJoin )
 		hostButton.isVisible = false
 		joinButton.isVisible = false
 
 		-- SP/MP TOGGLE 
-		curY = centerY - 75
 		spmpButton = ssk.buttons:presetPush( layers.interfaces, "default", centerX+80, curY, 40, 40,  "SP", onSPMP )
 
 	end
 
 	-- OPTIONS
-	curY = centerY - 25
+	curY = curY + 45 
 	ssk.buttons:presetPush( layers.interfaces, "default", centerX, curY, 200, 40,  "Options", onOptions ) 
 
---[[ NOT READY YET
 	-- HIGHSCORES
-	curY = centerY + 25
+	curY = curY + 45 
 	ssk.buttons:presetPush( layers.interfaces, "default", centerX, curY, 200, 40,  "High Scores", onHighScores ) 
---]]
 
 	-- CREDITS
-	curY = curY + 50 -- centerY + 75
+	curY = curY + 45 
 	ssk.buttons:presetPush( layers.interfaces, "default", centerX, curY, 200, 40,  "Credits", onCredits ) 
 
 	-- Welcome back label
-	curY = curY + 50
+	curY = curY + 40
 	welcomeBackLabel = ssk.labels:presetLabel( layers.interfaces, "rightLabel", "Welcome back ", centerX + 20, curY,  { fontSize = 18 } )
 	curY = curY + 25
 	playerNameLabel = ssk.labels:presetLabel( layers.interfaces, "rightLabel", currentPlayer.name, centerX + 20, curY,  { fontSize = 18 } )
-	--playerNameLabel.x = welcomeBackLabel.x + welcomeBackLabel.width/2 + playerNameLabel.width / 2 + 5
-	--playerNameLabel.x = welcomeBackLabel.x + welcomeBackLabel.width/2 + playerNameLabel.width / 2 + 5
 
 	-- NOT ME
-	curY = curY - 10
+	curY = curY - 15
 	ssk.buttons:presetPush( layers.interfaces, "default", centerX + 70, curY, 70, 40,  "Not Me", onNotMe ) 
 
 	-- RG Button
@@ -226,6 +219,11 @@ addInterfaceElements = function( )
 
 	-- Corona Badge/Button
 	ssk.buttons:presetPush( layers.interfaces, "CoronaButton", w-30, h-30, 50, 48, "", onCorona  )
+
+
+	-- Version Label
+	ssk.labels:presetLabel( layers.interfaces, "default", "Last Modified: " .. releaseDate, centerX, h-10, { fontSize = 12, textColor = _WHITE_ } )
+
 end	
 
 
