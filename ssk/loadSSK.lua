@@ -52,7 +52,6 @@ ssk.display		= require( "ssk.factories.f_prototyping" )  			-- Prototyping Game 
 ssk.inputs		= require( "ssk.factories.f_inputs" )					-- Joysticks and Self-Centering Sliders Factory
 ssk.huds		= require( "ssk.factories.f_huds" )						-- HUDs Factory
 ssk.dbmgr		= require( "ssk.factories.f_dbmgr" )					-- (Rudimentary) DB Manager Factory
-ssk.spritemgr	= require( "ssk.factories.f_sprites" )					-- (Easy) Sprite Factory
 
 -- ==
 --    Classes
@@ -65,6 +64,7 @@ ssk.gem			= require( "ssk.classes.c_gem")							-- Game Event Manager
 ssk.math2d		= require( "ssk.classes.c_math2d" )						-- 2D (vector) Math 
 ssk.misc		= require( "ssk.classes.c_miscellaneous" )				-- Miscellaneous Utilities
 ssk.sbc			= require( "ssk.classes.c_standardButtonCallbacks" )	-- Standard Button & Slider Callbacks
+ssk.sheetmgr	= require( "ssk.classes.c_imageSheets" )				-- Image Sheets Manager
 ssk.sounds		= require( "ssk.classes.c_sounds" )						-- Sounds Manager
 
 

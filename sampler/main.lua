@@ -74,23 +74,19 @@ sampleManager = require("sampleMgr")
 --
 -- 'Register' SSKCorona Samples (EFM need secondary subcategory or better indexing method)
 --
---sampleManager:addSample("WIP", "Sprites Mgr", "ssk_sampler.sprites", true )
-
 
 -- =============================================
 -- Current WIP (move to proper location after testing)
 -- =============================================
 --sampleManager:addSample("Template", "Template 1", "ssk_sampler._templates.template1_logic", true )
 --sampleManager:addSample("Template", "Template 2", "ssk_sampler._templates.template2_logic", true )
-
 --sampleManager:addSample("SSKCorona Feature Testing", "Path Following", "ssk_sampler.featureTesting.c_components.pathfollowing" )
 
-
-sampleManager:addSample("Forums Help", "121029 - ... changing .. orientation (alternative)", "ssk_sampler.forumhelp.121029_manually_changing_screen_orientation", true)
 
 -- =============================================
 -- Forums Help (EFM add forum entry links in each example)
 -- =============================================
+sampleManager:addSample("Forums Help", "121029 - ... changing .. orientation (alternative)", "ssk_sampler.forumhelp.121029_manually_changing_screen_orientation")
 sampleManager:addSample("Forums Help", "121028 - Visually vibrating object", "ssk_sampler.forumhelp.121028_vibrating_object")
 sampleManager:addSample("Forums Help", "121027 - Touch does not end ... offscreen", "ssk_sampler.forumhelp.121027_touch_does_not_end_offscreen" )
 sampleManager:addSample("Forums Help", "121023 - Dragging objects ... like a puzzle", "ssk_sampler.forumhelp.121023_dragging-objects-specific-location-puzzle")
@@ -144,6 +140,7 @@ sampleManager:addSample("SSKCorona Feature Testing", "Toggle Buttons", "ssk_samp
 sampleManager:addSample("SSKCorona Feature Testing", "Radio Buttons", "ssk_sampler.featureTesting.f_buttons.radioButtonsTest_logic" )
 sampleManager:addSample("SSKCorona Feature Testing", "Sliders", "ssk_sampler.featureTesting.f_buttons.slidersTest_logic" )
 sampleManager:addSample("SSKCorona Feature Testing", "Standard Button Callbacks", "ssk_sampler.featureTesting.f_buttons.buttonCallbacksTest_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Push Button Masks", "ssk_sampler.featureTesting.f_buttons.pushButtonMasks", true )
 
 -- ==
 -- Label Factory Tests
@@ -154,6 +151,8 @@ sampleManager:addSample("SSKCorona Feature Testing", "Labels", "ssk_sampler.feat
 -- HUDs (EFM need more snazzy huds soon)
 -- ==
 sampleManager:addSample("SSKCorona Feature Testing", "HUDs 1 - Numeric Meters", "ssk_sampler.featureTesting.f_huds.numericmeter_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "HUDs 2 - Percentage Dials", "ssk_sampler.featureTesting.f_huds.percentage_dials_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "HUDs 3 - Sliding Meters", "ssk_sampler.featureTesting.f_huds.visualmeters_logic" )
 
 -- ==
 -- Inputs
@@ -178,10 +177,11 @@ sampleManager:addSample("SSKCorona Feature Testing", "Inputs Applied - Joystick"
 --sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 2 Test", "ssk_sampler.featureTesting._templates.template2_logic" )
 
 -- ==
--- Sprites
+-- Image Sheet Mgr
 -- ==
 --sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 1 Test", "ssk_sampler.featureTesting._templates.template1_logic" )
 --sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 2 Test", "ssk_sampler.featureTesting._templates.template2_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Image Sheet Manager", "ssk_sampler.featureTesting.c_imageSheets.imgSheetMgr" )
 
 -- ==
 -- Templates

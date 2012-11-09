@@ -21,6 +21,12 @@
 --[[ 
     Button Parms:
 
+	touchMask
+	touchMaskW
+	touchMaskH
+
+	touchOffset
+
 	unselRectEn
 	selRectEn
 	unselRectFillColor
@@ -52,6 +58,7 @@
 	text - ""
 	fontSize - 20
 	textColor - {255,255,255,255}
+	selTextColor - textColor
 	textFont - native.systemFontBold
 	textOffset - {0,0}
 	isPressed - false
@@ -134,6 +141,13 @@ function buttonClass:addPreset( presetName, params )
 	local entry = {}
 	self.presetsCatalog[presetName] = entry
 
+	entry.touchMask      = params.touchMask
+	entry.touchMaskW     = params.touchMaskW
+	entry.touchMaskH     = params.touchMaskH
+
+	entry.touchOffset    = params.touchOffset
+	
+
 	entry.unselRectEn     = fnn(params.unselRectEn, not params.unselImgSrc)
 	entry.selRectEn       = fnn(params.selRectEn, not params.selImgSrc)
 
@@ -171,6 +185,7 @@ function buttonClass:addPreset( presetName, params )
 	entry.text         = fnn(params.text, "")
 	entry.fontSize     = fnn(params.fontSize, 20)
 	entry.textColor    = fnn(params.textColor, {255,255,255,255})
+	entry.selTextColor = fnn(params.selTextColor, entry.textColor)
 	entry.textFont     = fnn(params.textFont, native.systemFontBold)
 	entry.textOffset   = fnn(params.textOffset, {0,0})
 	entry.isPressed    = fnn(params.isPressed, false)
@@ -214,6 +229,7 @@ function buttonClass:new( params, screenGroup )
 	buttonInstance.text         = fnn(buttonInstance.text, "")
 	buttonInstance.fontSize     = fnn(buttonInstance.fontSize, 20)
 	buttonInstance.textColor    = fnn(buttonInstance.textColor, {255,255,255,255})
+	buttonInstance.selTextColor = fnn(buttonInstance.selTextColor, buttonInstance.textColor)
 	buttonInstance.textFont     = fnn(buttonInstance.textFont, native.systemFontBold)
 	buttonInstance.textOffset   = fnn(buttonInstance.textOffset, {0,0})
     buttonInstance.emboss       = fnn(buttonInstance.emboss, false)
@@ -223,6 +239,14 @@ function buttonClass:new( params, screenGroup )
 	-- ====================
 	-- Create the button
 	-- ====================
+
+	-- MASK
+	if(buttonInstance.touchMask) then
+		local tmpMask = graphics.newMask(buttonInstance.touchMask)
+		buttonInstance:setMask( tmpMask )
+		buttonInstance.maskScaleX = buttonInstance.w / buttonInstance.touchMaskW
+		buttonInstance.maskScaleY = buttonInstance.h / buttonInstance.touchMaskH
+	end
 
 	-- UNSEL RECT
 	if(buttonInstance.unselRectEn) then
@@ -491,10 +515,34 @@ if(buttonInstance.selRectEn) then
 		--if(not self.overlayRect) then print "NO OVERLAY RECT" end	
 		--if(not self.overlayImage) then print "NO OVERLAY IMAGE" end	
 
-		if(self.selRect) then self.selRect.isVisible = vis end
-		if(self.unselRect) then self.unselRect.isVisible = (not vis) end
-		if(self.sel) then self.sel.isVisible = vis end
-		if(self.unsel) then self.unsel.isVisible = (not vis) end
+		if(self.highlighted == nil or self.highlighted ~= vis) then
+
+			if(self.selRect) then self.selRect.isVisible = vis end
+			if(self.unselRect) then self.unselRect.isVisible = (not vis) end
+			if(self.sel) then self.sel.isVisible = vis end
+			if(self.unsel) then self.unsel.isVisible = (not vis) end
+		
+			if (self.touchOffset) then
+				if(vis) then						
+					self.x = self.x + self.touchOffset.x
+					self.y = self.y + self.touchOffset.y
+				else
+					self.x = self.x - self.touchOffset.x
+					self.y = self.y - self.touchOffset.y
+				end
+			end
+
+			if(self.selTextColor) then 
+				if(vis) then		
+					self.labelText:setTextColor( unpack( self.selTextColor ) )
+				else
+					self.labelText:setTextColor( unpack( self.textColor ) )
+				end
+			end
+
+			self.highlighted = vis
+
+		end
 	end
 
 
@@ -649,6 +697,7 @@ end
 function buttonClass:touch( params )
 	--for k,v in pairs(params) do print(k,v) end
 	local result         = true
+	local id		     = params.id 
 	local theButton      = params.target 
 	local phase          = params.phase
 	local sel            = theButton.sel
@@ -673,7 +722,7 @@ function buttonClass:touch( params )
 
 	if(phase == "began") then
 		theButton:setHighlight(true)
-		display.getCurrentStage():setFocus( theButton )
+		display.getCurrentStage():setFocus( theButton, id )
 		theButton.isFocus = true
 
 		-- Only Pushbutton fires event here

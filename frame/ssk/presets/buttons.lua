@@ -34,7 +34,7 @@ local default_params =
 	strokeWidth        = 1,
     strokeColor        = {1,1,1,128},
 	textOffset         = {0,1},
-	emboss             = false,
+	emboss             = false,	
 }
 mgr:addPreset( "default", default_params )
 
@@ -131,7 +131,6 @@ params.unselRectGradient  = graphics.newGradient ( { 230, 230, 230, 255  }, { 16
 params.selRectGradient    = graphics.newGradient ( { 255, 255, 255, 255  }, { 180, 180, 180, 255 }, "down" )
 params.buttonOverlayRectColor = nil
 mgr:addPreset( "whiteGradient", params )
-
 
 -- ============================
 -- ================== RG BUTTON
@@ -273,3 +272,45 @@ params.unselRectEn = true
 params.selRectEn   = true
 mgr:addPreset( "optionsButton", params )
 
+
+-- ============================
+-- ============= BANANA BUTTON
+-- ============================
+params.buttonOverlayRectColor = nil
+params.selRectFillColor	= {200,200,200,255}
+params.touchMask = imagesDir .. "interface/bananaMask.png"
+params.touchMaskW = 256
+params.touchMaskH = 256
+params.unselImgSrc = imagesDir .. "interface/bananaN.png"
+params.selImgSrc   = imagesDir .. "interface/bananaH.png"
+params.unselRectEn = false
+params.selRectEn   = false
+mgr:addPreset( "bananaButton", params )
+
+-- ============================
+-- ============= APPLE BUTTON
+-- ============================
+params.buttonOverlayRectColor = nil
+params.selRectFillColor	= {200,200,200,255}
+params.touchMask = imagesDir .. "interface/appleMask.png"
+params.touchMaskW = 256
+params.touchMaskH = 280
+params.unselImgSrc = imagesDir .. "interface/appleN.png"
+params.selImgSrc   = imagesDir .. "interface/appleH.png"
+params.unselRectEn = false
+params.selRectEn   = false
+mgr:addPreset( "appleButton", params )
+
+-- ============================
+-- ============= FISH BUTTON
+-- ============================
+params.buttonOverlayRectColor = nil
+params.selRectFillColor	= {200,200,200,255}
+params.touchMask = imagesDir .. "interface/fishMask.png"
+params.touchMaskW = 300
+params.touchMaskH = 180
+params.unselImgSrc = imagesDir .. "interface/fishN.png"
+params.selImgSrc   = imagesDir .. "interface/fishH.png"
+params.unselRectEn = false
+params.selRectEn   = false
+mgr:addPreset( "fishButton", params )

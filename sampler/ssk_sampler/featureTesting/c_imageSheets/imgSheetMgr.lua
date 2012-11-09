@@ -79,12 +79,33 @@ function gameLogic:createScene( screenGroup )
 	
 	-- 5. Add demo/sample content
 	--createSky(centerX, centerY, screenWidth, screenHeight )
-	thePlayer = createPlayer( centerX, centerY- 60, 99 * 2, 34 * 2 )
+	--thePlayer = createPlayer( centerX, centerY- 60, 99 * 2, 34 * 2 )
 
-	createSprite( centerX - 70 , centerY + 60, 2 )
-	createSprite( centerX, centerY + 60, 1 )
-	createSprite( centerX + 50, centerY + 60, 0.8 )
-	createSprite( centerX + 100, centerY + 60, 0.5 )
+	local tank = createSprite( centerX, centerY + 60, "blue", 1/2 )
+	tank.rotation = 90
+	tank.x,tank.y = 100,60
+	transition.to( tank, {x = w-100, time = 3000 } )
+	timer.performWithDelay(3000, function() tank:pause() end )
+
+	local tank = createSprite( centerX, centerY + 60, "grey", 1/2 )
+	tank.rotation = 90
+	tank.x,tank.y = 100,90
+	transition.to( tank, {x = w-100, time = 3000 } )
+	timer.performWithDelay(3000, function() tank:pause() end )
+
+	local tank = createSprite( centerX, centerY + 60, "red", 1/2 )
+	tank.rotation = 90
+	tank.x,tank.y = 100,120
+	transition.to( tank, {x = w-100, time = 3000 } )
+	timer.performWithDelay(3000, function() tank:pause() end )
+
+	local tank = createSprite( centerX, centerY + 60, "green", 1/2 )
+	tank.rotation = 90
+	tank.x,tank.y = 100,150
+	transition.to( tank, {x = w-100, time = 3000 } )
+	timer.performWithDelay(3000, function() tank:pause() end )
+
+
 end
 
 -- =======================
@@ -101,6 +122,9 @@ function gameLogic:destroyScene( screenGroup )
 	physics.setDrawMode( "normal" )
 	physics.setGravity(0,0)
 	screenGroup.isVisible=false
+
+
+	ssk.sheetmgr:destroySheet( "greyTank1" )
 end
 
 -- =======================
@@ -145,27 +169,28 @@ addInterfaceElements = function()
 	ssk.buttons:presetPush( layers.interfaces, "blueGradient", 64, 20 , 120, 30, "Show Details", onShowHide )
 end	
 
-function createSprite( x, y, scale ) 
+function createSprite( x, y, tankColor, scale ) 
+	local scale = scale * 2
 	local sheetData = { 
 		width = 32,   --the width of each frame
 		height = 32,  --the height of each frame
-		numFrames = 3, --the total number of frames on the sheet
+		numFrames = 8, --the total number of frames on the sheet
 	}
 
-	--local mySheet = graphics.newImageSheet( imagesDir .. "AriFeldman/enemyPlaneBlue.png", sheetData )
+	--local mySheet = graphics.newImageSheet( imagesDir .. "AriFeldman/enemyPlaneBlue2x.png", sheetData )
 
-	if( not ssk.spritemgr:sheetExists( "enemyPlane1" ) ) then
-		ssk.spritemgr:createSheet( "enemyPlane1", imagesDir .. "AriFeldman/enemyPlaneBlue.png", sheetData )
+	if( not ssk.sheetmgr:sheetExists( tankColor .. "tank" ) ) then
+		ssk.sheetmgr:createSheet( tankColor .. "tank", imagesDir .. "AriFeldman/" .. tankColor .. "tank.png", sheetData )
 	end
 
-	local mySheet = ssk.spritemgr:getSheet( "enemyPlane1" )
+	local mySheet = ssk.sheetmgr:getSheet( tankColor .. "tank" )
 
 	local sequenceData = {
 		{ 
 			name = "normalRun",  --name of animation sequence
 			start = 1,  --starting frame index
-			count = 3,  --total number of frames to animate consecutively before stopping or looping
-			time = 150,  --optional, in milliseconds; if not supplied, the sprite is frame-based
+			count = 8,  --total number of frames to animate consecutively before stopping or looping
+			time = 400,  --optional, in milliseconds; if not supplied, the sprite is frame-based
 			loopCount = 0,  --optional. 0 (default) repeats forever; a positive integer specifies the number of loops
 			loopDirection = "forward"  --optional, either "forward" (default) or "bounce" which will play forward then backwards through the sequence of frames
 		}  --if defining more sequences, place a comma here and proceed to the next sequence sub-table	
@@ -179,8 +204,9 @@ function createSprite( x, y, scale )
 
 	layers.content:insert(animation)
 
-	ssk.spritemgr:destroySheet( "enemyPlane1" )
+	--
 
+	return animation
 end
 
 function createPlayer( x, y, w, h )

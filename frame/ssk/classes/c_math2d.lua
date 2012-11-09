@@ -651,7 +651,7 @@ end
 function math2do.tweenAngle( objA, objB )
 	local vx,vy      = math2do.sub( objA.x, objA.y, objB.x, objB.y )
 	vx,vy            = math2do.normalize(vx,vy)
-	local vecAngle   = ssk.m2d.vector2Angle(vx,vy)
+	local vecAngle   = math2do.vector2Angle(vx,vy)
 	local tweenAngle = vecAngle - objA.rotation
 
 	dprint(3,"     vx,vy == " .. vx,vy)
