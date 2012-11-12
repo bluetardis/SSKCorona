@@ -41,11 +41,11 @@ openCloseTestingMaxDelay = 67 -- 1500
 
 -- Automatically open-close-open-... first example in list
 enableOpenCloseTesting = true
---enableOpenCloseTesting = false
+enableOpenCloseTesting = false
 
 -- Automatically open-close-open-... random example in list
 enableRandomOpenCloseTesting = true
---enableRandomOpenCloseTesting = false
+enableRandomOpenCloseTesting = false
 
 -- Automatically open first example in list (useful while editing that sample)
 -- Above settings take precedence
