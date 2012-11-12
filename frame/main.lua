@@ -209,8 +209,8 @@ print("****************************************************************")
 ----------------------------------------------------------------------
 --								LOAD FIRST SCENE					--
 ----------------------------------------------------------------------
---storyboard.gotoScene( "s_SplashLoading" )
-storyboard.gotoScene( "s_MainMenu" )
+storyboard.gotoScene( "s_SplashLoading" )
+--storyboard.gotoScene( "s_MainMenu" )
 --storyboard.gotoScene( "s_Credits" )
 --storyboard.gotoScene( "s_Options" )
 --storyboard.gotoScene( "s_Join_2P_Auto" )

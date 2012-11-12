@@ -20,7 +20,7 @@
 --
 -- labelsInit.lua - Create Label Presets
 --
-local mgr			= require( "ssk.factories.f_labels" )
+local mgr			= require( "ssk.libs.labels" )
 
 -- ============================
 -- =============== DEFAULT

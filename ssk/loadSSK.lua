@@ -12,82 +12,58 @@
 -- Credit?:  Mentioning SSKCorona and/or Roaming Gamer, LLC. in your credits is not required, but it would be nice.  Thanks!
 --
 -- =============================================================
---
--- =============================================================
-
--- ================================================================================
--- Load this module in main.cs to load all of the SSKCorona library with just one call.
+-- Load this module in main.lua to load all of the SSKCorona library with just one call.
 -- ================================================================================
 
+-- ==
 -- TheSSKCorona super object; Most libraries will be attached to this.
+-- ==
 local ssk = {}
 _G.ssk = ssk 
 
--- =============================================================
---	ROAMING GAMER CONTENTS (Produced or Modified by Ed M.)
--- =============================================================
 -- ==
---    Early Loads: This stuff is used by subsequently loaded content
+--    Early Loads: This stuff is used by subsequently loaded content and must be loaded FIRST.
 -- ==
-ssk.debugprinter	= require("ssk.classes.c_debugPrint")				-- Level based debug printer
-ssk.advanced		= require( "ssk.classes.c_advanced" )				-- Advanced stuff (dig at your own peril; comments and criticisms welcomed)
+ssk.debugprinter	= require("ssk.libs.debugPrint")				-- Level based debug printer
+ssk.advanced		= require( "ssk.libs.advanced" )				-- Advanced stuff (dig at your own peril; comments and criticisms welcomed)
 
 -- ==
---    Addons - add extra functionality to existing classes, module, and global space.
+--    Addons - Add extra functionality to existing libs, module, and global space.
+--             This stuff is also often used in other libraries, so gets loaded 
+--             before the bulk of the libraries
 -- ==
-require( "ssk.addons.a_global")
-require( "ssk.addons.a_io")
-require( "ssk.addons.a_math")
-require( "ssk.addons.a_string")
-require( "ssk.addons.a_table")
-
---EFM split below into game object factories and other?
--- ==
---    Factories - 'Classes' that produce one or more object types.
--- ==
-ssk.buttons		= require( "ssk.factories.f_buttons" )					-- Buttons & Sliders Factory
-ssk.labels		= require( "ssk.factories.f_labels" )					-- Labels Factory
-ssk.points		= require( "ssk.factories.f_points" )					-- Simple Points Factory (table of points)
-ssk.display		= require( "ssk.factories.f_prototyping" )  			-- Prototyping Game Objects Factory
-ssk.inputs		= require( "ssk.factories.f_inputs" )					-- Joysticks and Self-Centering Sliders Factory
-ssk.huds		= require( "ssk.factories.f_huds" )						-- HUDs Factory
-ssk.dbmgr		= require( "ssk.factories.f_dbmgr" )					-- (Rudimentary) DB Manager Factory
+require( "ssk.libs.global")
+require( "ssk.libs.io")
+require( "ssk.libs.math")
+require( "ssk.libs.string")
+require( "ssk.libs.table")
 
 -- ==
---    Classes
+--    Libraries
 -- ==
-ssk.behaviors	= require( "ssk.classes.c_behaviors" )					-- Behaviors Manager
-ssk.bench		= require( "ssk.classes.c_benchmarking" )				-- Benchmarking Utilities
-ssk.ccmgr		= require( "ssk.classes.c_collisionCalculator" )		-- Collision Calculator (EFM actually a factory now)
-ssk.component	= require( "ssk.classes.c_components" )					-- Misc Game Components (Mechanics, etc.)
-ssk.gem			= require( "ssk.classes.c_gem")							-- Game Event Manager
-ssk.math2d		= require( "ssk.classes.c_math2d" )						-- 2D (vector) Math 
-ssk.misc		= require( "ssk.classes.c_miscellaneous" )				-- Miscellaneous Utilities
-ssk.sbc			= require( "ssk.classes.c_standardButtonCallbacks" )	-- Standard Button & Slider Callbacks
-ssk.sheetmgr	= require( "ssk.classes.c_imageSheets" )				-- Image Sheets Manager
-ssk.sounds		= require( "ssk.classes.c_sounds" )						-- Sounds Manager
+ssk.behaviors	= require( "ssk.libs.behaviors" )				-- Behaviors Manager
+ssk.bench		= require( "ssk.libs.benchmarking" )			-- Benchmarking Utilities
+ssk.buttons		= require( "ssk.libs.buttons" )					-- Buttons & Sliders Factory
+ssk.ccmgr		= require( "ssk.libs.collisionCalculator" )		-- Collision Calculator (EFM actually a factory now)
+ssk.component	= require( "ssk.libs.components" )				-- Misc Game Components (Mechanics, etc.)
+ssk.dbmgr		= require( "ssk.libs.dbmgr" )					-- (Rudimentary) DB Manager Factory
+ssk.display		= require( "ssk.libs.display" )  				-- Prototyping Game Objects Factory
+ssk.gem			= require( "ssk.libs.gem")						-- Game Event Manager
+ssk.huds		= require( "ssk.libs.huds" )					-- HUDs Factory
+ssk.inputs		= require( "ssk.libs.inputs" )					-- Joysticks and Self-Centering Sliders Factory
+ssk.labels		= require( "ssk.libs.labels" )					-- Labels Factory
+ssk.math2d		= require( "ssk.libs.math2d" )					-- 2D (vector) Math 
+ssk.misc		= require( "ssk.libs.miscellaneous" )			-- Miscellaneous Utilities
+ssk.networking	= require( "ssk.libs.networking" )              -- Easy networking utilities (layered on top of M.Y. Developer AutoLan)
+ssk.pnglib		= require( "ssk.libs.external.pngLib.pngLib" )				-- Utility lib for extracting PNG image metrics
+ssk.points		= require( "ssk.libs.points" )					-- Simple Points Factory (table of points)
+ssk.sbc			= require( "ssk.libs.standardButtonCallbacks" )	-- Standard Button & Slider Callbacks
+ssk.sheetmgr	= require( "ssk.libs.imageSheets" )				-- Image Sheets Manager
+ssk.sounds		= require( "ssk.libs.sounds" )					-- Sounds Manager
 
 
 -- ==
---    Utilities
+--    Configuration Work (REQUIRED)
 -- ==
--- Easy Networking (Uses mydevelopersgames free AutoLan to do heavy lifting, but written by Ed M.)
-ssk.networking	= require( "ssk.utilities.u_networking" )  
 ssk.networking:registerCallbacks()
-
--- =============================================================
---	EXTERNALLY PRODUCED (and accredited) CONTENT
--- =============================================================
-ssk.pnglib		= require( "ssk.external.pngLib.pngLib" )				-- Utility lib for extracting PNG image metrics
-
--- =============================================================
---	PAID CONTENT - Sorry, not included. 8(
--- I have left stubs here for stuff I think you should buy.
--- This is stuff that I believe will help you develop games better and/or faster.
--- =============================================================
--- ==
---    M.Y. Developers - Profiler (Paid; http://www.mydevelopersgames.com/site/)
--- ==
---profiler = require "paid.Profiler"
---profiler.startProfiler({time = 30000, delay = 1000, mode = 4})
 

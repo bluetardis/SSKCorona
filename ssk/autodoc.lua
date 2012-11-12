@@ -103,12 +103,19 @@ function string:getWords( index, endindex )
 	return tmpString
 end
 
+local currentPrefix = ""
+local currentLibrary = "nil"
+local currentFunction = "nil"
+local currentSplit =  "."
+
+local indexes = {}
 
 _G.require = function( ... )
 
 	newOutfile( arg[1] )
 
-	--print("Auto documenting: ", arg[1] )
+	print("Auto documenting: ", arg[1] )
+
 	local path = arg[1]
 	path = path:gsub( "%.", "\\") .. ".lua"
 	path = system.pathForFile( path , system.ResourceDirectory )
@@ -181,21 +188,23 @@ local function isOutFileOpen( )
 
 	local fileName = inFileName -- .. ".txt"
 	fileName = fileName:gsub( "%.", "_") .. ".txt"
+
+	--fileName = currentPrefix .. currentLibrary .. "_" .. currentFunction .. ".txt"
 	
 	-- io.open opens a file at path. returns nil if no file found
 	local path = system.pathForFile( fileName, system.DocumentsDirectory )
 	outFile   = io.open( path, "w" )
 
 	if outFile then
-		print( "Created file" )
+		--print( "Created file" )
 	else
-		print( "Create file failed!" )
+		--print( "Create file failed!" )
 	end
 end
 
 
 newOutfile = function ( fileName ) 
-	print("New In File: " .. fileName )
+	--print("New In File: " .. fileName )
 	inFileName = fileName
 
 	outFile = nil
@@ -209,7 +218,7 @@ newOutfile = function ( fileName )
 end
 
 newBlock = function ( inFile ) 
-	print(" *****************  New Block")
+	--print(" *****************  New Block")
 	--isOutFileOpen()
 	--outFile:write( "Feed me data!\n", numbers[1], numbers[2], "\n" )
 	inDescription = false
@@ -222,23 +231,62 @@ newBlock = function ( inFile )
 end
 
 headerLine = function ( line ) 
-	print("Header Line")
+	--print("Header Line")
 	isOutFileOpen()
-	local name = line:gsub("^%l", string.upper)
+	--local name = line:gsub("^%l", string.upper)
+	local name = line
 	if(not line) then line = "" end
+
+	local parts = line:split("%.")
+
+	currentSplit = "."
+	currentPrefix = ""
+
+	if(#parts == 1) then 
+		print("A")
+		local tmp = parts[1]:split("%:")
+		currentLibrary = tmp[1]
+		currentFunction = tmp[2]
+		currentSplit = ":"
+
+	elseif(#parts == 2) then 
+		if(parts[1] == "ssk") then
+			print("B")
+			currentPrefix = "ssk."
+			local tmp = parts[2]:split("%:")
+			currentLibrary = tmp[1]
+			currentFunction = tmp[2]
+			currentSplit = ":"
+		else
+			print("C")
+			currentLibrary = parts[1]
+			currentFunction = parts[2]
+			currentSplit = "."
+		end
+	elseif(#parts == 3) then 
+		currentPrefix = "ssk."
+		currentLibrary = parts[2]
+		currentFunction = parts[3]
+		currentSplit = "."
+	end
+
+	local index = currentPrefix .. currentLibrary .. currentSplit .. currentFunction
+
+	indexes[#indexes+1] = index
 	
-	outFile:write( "PAGENAME: " .. name .."\n" )
-	outFile:write( "INDEX: " .. "[[" .. name .."| " .. name .."]]" .."\n" )
+	outFile:write( "**********************************************\n" )
+	outFile:write( "[[" .. index .. "|" .. index .. "]]\n" )
+	outFile:write( "======================================\n" )
 end
 
 descriptionLine = function ( line ) 
-	print("Definition Line")
+	--print("Definition Line")
 	isOutFileOpen()
 
 	if( inExample or inExample2 ) then
 		inExample = false
 		inExample2 = false
-		outFile:write( "</syntaxhighlight></big>\n" )
+		outFile:write( "</pre>\n" )
 	end
 
 	if(not line) then line = "" end
@@ -246,7 +294,7 @@ descriptionLine = function ( line )
 end
 
 descriptionLine2 = function ( line ) 
-	print("Description Line 2")
+	--print("Description Line 2")
 	isOutFileOpen()
 
 	if(not line) then line = "" end
@@ -254,7 +302,7 @@ descriptionLine2 = function ( line )
 end
 
 syntaxLine = function ( line ) 
-	print("Syntax Line")
+	--print("Syntax Line")
 	isOutFileOpen()
 	if(not line) then line = "" end
 
@@ -262,13 +310,13 @@ syntaxLine = function ( line )
 		outFile:write( line .. "\n" )
 	else
 		inSyntax = true
-		outFile:write( "\n<br>'''<big>Syntax</big>''' <br>\n" )
+		outFile:write( "<br>'''<big>Syntax</big>''' <br>\n" )
 		outFile:write( line .. "\n" )
 	end
 end
 
 returnsLine = function ( line ) 
-	print("Returns Line")
+	--print("Returns Line")
 	isOutFileOpen()
 	if(not line) then line = "" end
 
@@ -276,13 +324,13 @@ returnsLine = function ( line )
 		outFile:write( line .. "\n" )
 	else
 		inReturns = true
-		outFile:write( "\n<br>'''<big>Returns</big>''' <br>\n" )
+		outFile:write( "'''<big>Returns</big>''' <br>\n" )
 		outFile:write( line .. "\n" )
 	end
 end
 
 exampleLine = function ( line ) 
-	print("Example Line")
+	--print("Example Line")
 	isOutFileOpen()
 	if(not line) then line = "" end
 
@@ -290,14 +338,14 @@ exampleLine = function ( line )
 		outFile:write( line .. "\n" )
 	else
 		inExample = true
-		outFile:write( "\n<br>'''<big>Example</big>''' <br>\n" )
-		outFile:write( "<big><syntaxhighlight lang=\"cpp\">\n" )
+		outFile:write( "<br><br>'''<big>Example</big>''' <br>\n" )
+		outFile:write( "<pre>\n" )
 		outFile:write( line .. "\n" )
 	end
 end
 
 exampleLine2 = function ( line ) 
-	print("Example Line 2")
+	--print("Example Line 2")
 	isOutFileOpen()
 	if(not line) then line = "" end
 
@@ -305,13 +353,13 @@ exampleLine2 = function ( line )
 		outFile:write( line .. "\n" )
 	else
 		inExample2 = true
-		outFile:write( "<big><syntaxhighlight lang=\"cpp\">\n" )
+		outFile:write( "<pre>\n" )
 		outFile:write( line .. "\n" )
 	end
 end
 
 seeAlsoLine = function ( line ) 
-	print("See Also Line")
+	--print("See Also Line")
 	isOutFileOpen()
 	if(not line) then line = "" end
 
@@ -321,10 +369,10 @@ seeAlsoLine = function ( line )
 		if( inExample or inExample2 ) then
 			inExample = false
 			inExample2 = false
-			outFile:write( "</big></syntaxhighlight>" )
+			outFile:write( "</big></pre>" )
 		end
 		inSeeAlso = true
-		outFile:write( "\n<br>'''<big>See Also</big>''' <br>\n" )
+		outFile:write( "<br>'''<big>See Also</big>''' <br>\n" )
 		outFile:write( line .. "\n" )
 	end
 end
@@ -333,13 +381,33 @@ endBlock = function ( )
 	if( inExample or inExample2 ) then
 		inExample = false
 		inExample2 = false
-		outFile:write( "</syntaxhighlight></big>" )
+		outFile:write( "</pre>" )
 	end
 
 	if(outFile) then
-		outFile:write( "\n\n[[SSKCorona#Libraries| Back]]" )
-		outFile:write( "\n\n ================================= \n\n" )
+		--outFile:write( "\n\n[[#" .. currentLibrary .. "| Back]]<br>" )
+		outFile:write( "\n[[|SSK Libraries]]" )
+		outFile:write( "\n ================================= \n\n" )
 	end
 end
 
 
+function _G.dumpIndexes()
+
+	fileName = "_indexes.txt"
+	local path = system.pathForFile( fileName, system.DocumentsDirectory )
+	local indexOutFile   = io.open( path, "w" )
+
+	if indexOutFile then
+		for i = 1, #indexes do
+			local index = indexes[i]
+			indexOutFile:write( "** [[" .. index .. "|" .. index .. "]]\n" )
+		end
+		
+	else
+		--print( "Create file failed!" )
+	end
+
+	io.close( indexOutFile )
+
+end

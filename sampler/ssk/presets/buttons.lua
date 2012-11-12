@@ -19,7 +19,7 @@
 --
 -- labelsInit.lua - Create Label Presets
 --
-local mgr			= require( "ssk.factories.f_buttons" )    -- Buttons, Sliders
+local mgr			= require( "ssk.libs.buttons" )    -- Buttons, Sliders
 
 -- ============================
 -- ========= DEFAULT BUTTON

@@ -63,26 +63,25 @@ function gameLogic:createScene( screenGroup )
 	physics.setGravity(0,0)
 	--physics.setDrawMode( "hybrid" )
 	screenGroup.isVisible=true
-	
 	-- 5. Add demo/sample content
 	local theHUD
 	
 	local theHUD = ssk.huds:createPercentageDial( layers.interfaces, centerX - 150, centerY )
-	theHUD:setPercent(0)
+	--theHUD:setPercent(35)
 
 	local theHUD1 = ssk.huds:createPercentageDial( layers.interfaces, centerX,  centerY - 75,
 		{ barColor = _RED_, backSrc = _GREEN_ , size = 100, textSize = 20, textColor = _GREY_ })
 
 	local theHUD2 = ssk.huds:createPercentageDial( layers.interfaces, centerX + 150, centerY - 75, 
-		{ barColor = _RED_, backSrc =  _GREEN_ , size = 100, textSize = 18, overlayPath = imagesDir .. "dialOverlay1.png", textPrefix = "Energy: ", textSuffix = ""})
+		{ barColor = _RED_, backSrc =  _GREEN_ , size = 100, textSize = 18, overlayPath = imagesDir .. "interface/huds/dialOverlay1.png", textPrefix = "Energy: ", textSuffix = ""})
 
 	local theHUD3 = ssk.huds:createPercentageDial( layers.interfaces, centerX, centerY + 75, 
 		{ barColor = _YELLOW_, backSrc =  _BLUE_ , size = 100, text=false, 
-		maskPath = imagesDir .. "dialMask2.png", overlayPath = imagesDir .. "dialOverlay2.png"})
+		maskPath = imagesDir .. "interface/huds/dialMask2.png", overlayPath = imagesDir .. "interface/huds/dialOverlay2.png"})
 
 	local theHUD4 = ssk.huds:createPercentageDial( layers.interfaces, centerX + 150, centerY + 75, 
 		{ dialSrc = _WHITE_, backSrc =  _BRIGHTORANGE_ , size = 100, text=false,
-		maskPath = imagesDir .. "dialMask3.png", overlayPath = imagesDir .. "dialOverlay3.png"})
+		maskPath = imagesDir .. "interface/huds/dialMask3.png", overlayPath = imagesDir .. "interface/huds/dialOverlay3.png"})
 
 
 	local dir = "up"
@@ -116,7 +115,6 @@ function gameLogic:createScene( screenGroup )
 	end
 
 	timer.performWithDelay(33, updateIt, 0 )
-
 
 end
 

@@ -21,6 +21,7 @@ print("****************************************************************\n\n")
 io.output():setvbuf("no") -- Don't use buffer for console messages
 
 --require("ssk.autodoc")                            -- Auto documents SSKCorona library as they are loaded (NORMALLY NOT LOADED)
+--timer.performWithDelay( 67, dumpIndexes )
 
 ----------------------------------------------------------------------
 --	1.							GLOBALS								--
@@ -40,11 +41,11 @@ openCloseTestingMaxDelay = 67 -- 1500
 
 -- Automatically open-close-open-... first example in list
 enableOpenCloseTesting = true
-enableOpenCloseTesting = false
+--enableOpenCloseTesting = false
 
 -- Automatically open-close-open-... random example in list
 enableRandomOpenCloseTesting = true
-enableRandomOpenCloseTesting = false
+--enableRandomOpenCloseTesting = false
 
 -- Automatically open first example in list (useful while editing that sample)
 -- Above settings take precedence
@@ -71,21 +72,29 @@ require("ssk.loadSSK")
 -- Game Specific Modules
 sampleManager = require("sampleMgr")
 
---
+--========================================================================================
+--========================================================================================
 -- 'Register' SSKCorona Samples (EFM need secondary subcategory or better indexing method)
---
+--========================================================================================
+--========================================================================================
 
 -- =============================================
 -- Current WIP (move to proper location after testing)
 -- =============================================
 --sampleManager:addSample("Template", "Template 1", "ssk_sampler._templates.template1_logic", true )
 --sampleManager:addSample("Template", "Template 2", "ssk_sampler._templates.template2_logic", true )
+
+
+-- =============================================
+-- OFFLINE WIPs
+-- =============================================
 --sampleManager:addSample("SSKCorona Feature Testing", "Path Following", "ssk_sampler.featureTesting.c_components.pathfollowing" )
 
 
 -- =============================================
 -- Forums Help (EFM add forum entry links in each example)
 -- =============================================
+sampleManager:addSample("Forums Help", "121111 - Image objects size change ...", "ssk_sampler.forumhelp.121111_image_objects_size_change")
 sampleManager:addSample("Forums Help", "121029 - ... changing .. orientation (alternative)", "ssk_sampler.forumhelp.121029_manually_changing_screen_orientation")
 sampleManager:addSample("Forums Help", "121028 - Visually vibrating object", "ssk_sampler.forumhelp.121028_vibrating_object")
 sampleManager:addSample("Forums Help", "121027 - Touch does not end ... offscreen", "ssk_sampler.forumhelp.121027_touch_does_not_end_offscreen" )
@@ -235,6 +244,7 @@ sampleManager:addSample("Puzzle Games #1", "4-in-a-row", "ssk_sampler.games.puzz
 sampleManager:addSample("Puzzle Games #1", "Connect-3", "ssk_sampler.games.puzzle1.connect3.connect3" )
 sampleManager:addSample("Action Games #1", "Asteroids", "ssk_sampler.games.action1.asteroids", true )
 
+sampleManager:addSample("Misc", "Still Here?", "ssk_sampler.mechanics.stillhere", true )
 
 -- ==
 -- Functional

@@ -20,7 +20,7 @@
 --
 -- soundsInit.lua - Initialize Game Sounds
 --
-local mgr = require( "ssk.classes.c_sounds" ) -- Sounds Manager
+local mgr = require( "ssk.libs.sounds" ) -- Sounds Manager
 --[[
 mgr:addEffect("drop", soundsDir .. "Block Drop.wav", false, true)
 mgr:addEffect("click", soundsDir .. "Letter Click3.wav")
