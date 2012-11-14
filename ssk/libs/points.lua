@@ -23,10 +23,11 @@ local pointsFactory = {}
 h ssk.points:new
 d Create a new points instance.
 d <br>Note: A points instance is a table of tabeles ,where each inner-table is a pair of x,y positions stored.  The points instance is organized like this: { {x=#, y=#}, {x=#, y=#}, ... }
-s ssk.points:new()
+s ssk.points:new( ... )
+s * x,y pairs of points to initialize the list with.
 r A points list (pointsInstance).
 --]]
-	function pointsFactory:new()
+	function pointsFactory:new( ... )
 		local pointsInstance = {}
 
 --[[
@@ -163,6 +164,9 @@ r A table containing the popped point in the form {x=#, y=#}.
 			local element = table.remove( self, 1 )
 			return element
 		end
+
+		-- If any points were passed, add them now
+		pointsInstance:add( unpack( arg ) )
 
 		return pointsInstance
 	end

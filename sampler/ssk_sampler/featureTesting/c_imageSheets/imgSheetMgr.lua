@@ -46,6 +46,8 @@ local addInterfaceElements
 local createPlayer
 local createSprite
 local createSky
+local createSprite
+local createRunner
 
 local onShowHide
 
@@ -104,6 +106,9 @@ function gameLogic:createScene( screenGroup )
 	tank.x,tank.y = 100,150
 	transition.to( tank, {x = w-100, time = 3000 } )
 	timer.performWithDelay(3000, function() tank:pause() end )
+
+
+	--createRunner( centerX, centerY, 1/2)
 
 
 end
@@ -208,6 +213,47 @@ function createSprite( x, y, tankColor, scale )
 
 	return animation
 end
+
+function createRunner( x, y, scale ) 
+	local scale = scale * 2
+	local sheetData = { 
+		width = 96,   --the width of each frame
+		height = 96,  --the height of each frame
+		numFrames = 8, --the total number of frames on the sheet
+	}
+
+	--local mySheet = graphics.newImageSheet( imagesDir .. "walker.png", sheetData )
+
+	if( not ssk.sheetmgr:sheetExists( "runner" ) ) then
+		ssk.sheetmgr:createSheet( "runner", imagesDir .. "walker.png", sheetData )
+	end
+
+	local mySheet = ssk.sheetmgr:getSheet( "runner" )
+
+	local sequenceData = {
+		{ 
+			name = "normalRun",  --name of animation sequence
+			start = 1,  --starting frame index
+			count = 8,  --total number of frames to animate consecutively before stopping or looping
+			time = 500,  --optional, in milliseconds; if not supplied, the sprite is frame-based
+			loopCount = 1,  --optional. 0 (default) repeats forever; a positive integer specifies the number of loops
+			loopDirection = "forward"  --optional, either "forward" (default) or "bounce" which will play forward then backwards through the sequence of frames
+		}  --if defining more sequences, place a comma here and proceed to the next sequence sub-table	
+	}
+
+	local animation = display.newSprite( mySheet, sequenceData )
+	animation:scale(scale,scale)
+	animation.x = x
+	animation.y = y
+	animation:play()
+
+	layers.content:insert(animation)
+
+	--
+
+	return animation
+end
+
 
 function createPlayer( x, y, w, h )
 	local player = ssk.display.imageRect( layers.content, x, y,imagesDir .. "AriFeldman/enemyPlaneBlue.png",

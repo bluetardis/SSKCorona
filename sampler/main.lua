@@ -81,9 +81,10 @@ sampleManager = require("sampleMgr")
 -- =============================================
 -- Current WIP (move to proper location after testing)
 -- =============================================
---sampleManager:addSample("Template", "Template 1", "ssk_sampler._templates.template1_logic", true )
---sampleManager:addSample("Template", "Template 2", "ssk_sampler._templates.template2_logic", true )
+--sampleManager:addSample("Template", "Template 1", "ssk_sampler._templates.template1_logic", true ) -- SMALL SCREEN BUTTONS
+--sampleManager:addSample("Template", "Template 2", "ssk_sampler._templates.template2_logic", true )  -- FULL SCREEN NO BUTTONS 
 
+--sampleManager:addSample("SSKCorona Feature Testing WIP", "Image Sheet Manager", "ssk_sampler.featureTesting.c_imageSheets.imgSheetMgr" )
 
 -- =============================================
 -- OFFLINE WIPs
@@ -94,11 +95,13 @@ sampleManager = require("sampleMgr")
 -- =============================================
 -- Forums Help (EFM add forum entry links in each example)
 -- =============================================
+sampleManager:addSample("Forums Help", "121113 - Quick question on transitions", "ssk_sampler.forumhelp.121113_quick_question_on_transitions", true )  -- FULL SCREEN NO BUTTONS 
 sampleManager:addSample("Forums Help", "121111 - Image objects size change ...", "ssk_sampler.forumhelp.121111_image_objects_size_change")
 sampleManager:addSample("Forums Help", "121029 - ... changing .. orientation (alternative)", "ssk_sampler.forumhelp.121029_manually_changing_screen_orientation")
 sampleManager:addSample("Forums Help", "121028 - Visually vibrating object", "ssk_sampler.forumhelp.121028_vibrating_object")
 sampleManager:addSample("Forums Help", "121027 - Touch does not end ... offscreen", "ssk_sampler.forumhelp.121027_touch_does_not_end_offscreen" )
 sampleManager:addSample("Forums Help", "121023 - Dragging objects ... like a puzzle", "ssk_sampler.forumhelp.121023_dragging-objects-specific-location-puzzle")
+sampleManager:addSample("Forums Help", "121023 - Dragging objects ... like a puzzle (part 2)", "ssk_sampler.forumhelp.121023_dragging-objects-specific-location-puzzle2")
 sampleManager:addSample("Forums Help", "121020 - Getting Sprite to Jump Forward", "ssk_sampler.forumhelp.121020_sprite_jump_forward" )
 sampleManager:addSample("Forums Help", "121015 - Display ellipse with an angle", "ssk_sampler.forumhelp.121015_display_ellipse_with_angle" )
 sampleManager:addSample("Forums Help", "121008 - Calculating intersecting lines", "ssk_sampler.forumhelp.121008_calculating_intersecting_lines" )
@@ -424,7 +427,6 @@ local monitorMem = function()
 end
 
 --monitorMem()
-
 
 print("\n****************************************************************")
 print("*********************** /\\/\\ main.cs /\\/\\ **********************")
