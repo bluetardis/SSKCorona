@@ -58,6 +58,8 @@ local gameLogic = {}
 -- =======================
 function gameLogic:createScene( screenGroup )
 
+	isSolved = false
+
 	-- 1. Create collisions calculator and set up collision matrix
 	createCollisionCalculator()
 
