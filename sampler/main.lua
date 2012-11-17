@@ -81,10 +81,14 @@ sampleManager = require("sampleMgr")
 -- =============================================
 -- Current WIP (move to proper location after testing)
 -- =============================================
---sampleManager:addSample("Template", "Template 1", "ssk_sampler._templates.template1_logic", true ) -- SMALL SCREEN BUTTONS
---sampleManager:addSample("Template", "Template 2", "ssk_sampler._templates.template2_logic", true )  -- FULL SCREEN NO BUTTONS 
+--sampleManager:addSample("Template", "Template 1", "ssk_sampler._templates.template1", true ) -- SMALL SCREEN BUTTONS
+--sampleManager:addSample("Template", "Template 2", "ssk_sampler._templates.template2", true )  -- FULL SCREEN NO BUTTONS 
+--sampleManager:addSample("Template", "Benchmark Template 1: Operations Per Second", "ssk_sampler._templates.template3_benchmark_OPS", true ) 
+--sampleManager:addSample("Template", "Benchmark Template 2: Operation vs. Operation", "ssk_sampler._templates.template4_benchmark_OPVS", true ) 
 
---sampleManager:addSample("SSKCorona Feature Testing WIP", "Image Sheet Manager", "ssk_sampler.featureTesting.c_imageSheets.imgSheetMgr" )
+-- EFM overlay to set specs
+-- EFM last bench result to mm
+
 
 -- =============================================
 -- OFFLINE WIPs
@@ -185,21 +189,23 @@ sampleManager:addSample("SSKCorona Feature Testing", "Inputs Applied - Joystick"
 -- ==
 -- Prototyping (Objects)
 -- ==
---sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 1 Test", "ssk_sampler.featureTesting._templates.template1_logic" )
---sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 2 Test", "ssk_sampler.featureTesting._templates.template2_logic" )
+--sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 1 Test", "ssk_sampler.featureTesting._templates.template1" )
+--sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 2 Test", "ssk_sampler.featureTesting._templates.template2" )
 
 -- ==
 -- Image Sheet Mgr
 -- ==
---sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 1 Test", "ssk_sampler.featureTesting._templates.template1_logic" )
---sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 2 Test", "ssk_sampler.featureTesting._templates.template2_logic" )
+--sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 1 Test", "ssk_sampler.featureTesting._templates.template1" )
+--sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 2 Test", "ssk_sampler.featureTesting._templates.template2" )
 sampleManager:addSample("SSKCorona Feature Testing", "Image Sheet Manager", "ssk_sampler.featureTesting.c_imageSheets.imgSheetMgr" )
 
 -- ==
 -- Templates
 -- ==
-sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 1 Test", "ssk_sampler.featureTesting._templates.template1_logic" )
-sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 2 Test", "ssk_sampler.featureTesting._templates.template2_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 1 Test", "ssk_sampler._templates.template1" )
+sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 2 Test", "ssk_sampler._templates.template2" )
+sampleManager:addSample("SSKCorona Feature Testing", "Benchmark Template 1: Operations Per Second Test", "ssk_sampler._templates.template3_benchmark_OPS" ) 
+sampleManager:addSample("SSKCorona Feature Testing", "Benchmark Template 2: Operation vs. Operation Test", "ssk_sampler._templates.template4_benchmark_OPVS") 
 
 
 -- =============================================
@@ -230,6 +236,11 @@ sampleManager:addSample("Mechanics - Platforming", "One-Way Platform", "ssk_samp
 -- Benchmarks
 -- =============================================
 --sampleManager:addSample("Benchmarks", "Template", "ssk_sampler.benchmarks.template" )
+sampleManager:addSample("Benchmarks", "math.sqrt() - Remote : Operations Per Second", "ssk_sampler.benchmarks.math_sqrt_remote", true ) 
+sampleManager:addSample("Benchmarks", "math.sqrt() - Local : Operations Per Second", "ssk_sampler.benchmarks.math_sqrt_local", true ) 
+sampleManager:addSample("Benchmarks", "math.sqrt() - Local vs. Remote", "ssk_sampler.benchmarks.math_sqrt_local_vs_remote", true ) 
+
+
 
 -- =============================================
 -- Games
@@ -405,6 +416,12 @@ end
 ----------------------------------------------------------------------
 -- 8. PRINT USEFUL DEBUG INFORMATION (BEFORE STARTING GAME)			--
 ----------------------------------------------------------------------
+print("*********************************************************")
+print("              USEFUL DEBUG INFO")
+print("*********************************************************\n")
+-- Print Lua Version
+print("Corona SDK is using " .. _VERSION)
+
 -- Print all known (loaded and useable) font names
 --local sysFonts = native.getFontNames()
 --for k,v in pairs(sysFonts) do print(v) end
@@ -427,6 +444,7 @@ local monitorMem = function()
 end
 
 --monitorMem()
+
 
 print("\n****************************************************************")
 print("*********************** /\\/\\ main.cs /\\/\\ **********************")

@@ -38,9 +38,15 @@ local updateSubcategoriesButton
 local categoryCounter
 local subCategoryCounter
 
+local lastPathLabel -- Max of 60 characters
+local lastResultLabel
+_G.lastResultMessage   = "" -- "Awesome Cakes!" -- Max of 60 characters!
+
 -- Callbacks/Functions
 local onCategory
+local onCategoryEvent
 local onSubCategory
+local onSubCategoryEvent
 local onGo
 
 local onRG
@@ -74,14 +80,8 @@ function scene:createScene( event )
 	-- ==========================================
 	-- Buttons and Labels
 	-- ==========================================
-	local curY
+	local curY = 105
 
-	if(system.orientation == "portrait") then		
-		curY = 190		
-	elseif(system.orientation == "landscapeRight") then
-		curY = 130
-	end
-	
 	--
 	-- PLAY 
 	--
@@ -89,7 +89,8 @@ function scene:createScene( event )
 	curY = curY + 0
 	local categories = sampleManager:getCategories()
 	categoryButton = ssk.buttons:presetPush( screenGroup, "whiteGradient", centerX-35, curY, 380, 40, 
-		categories[1], ssk.sbc.tableRoller_CB, { fontSize = 18, textOffset = {0,1} } )
+		categories[1], nil, { fontSize = 18, textOffset = {0,1}, onEvent = onCategoryEvent } )
+		--categories[1], ssk.sbc.tableRoller_CB, { fontSize = 18, textOffset = {0,1}, onEvent = onCategoryEvent } )
 	
 	ssk.sbc.prep_tableRoller( categoryButton, categories, onCategory ) 
 
@@ -98,11 +99,12 @@ function scene:createScene( event )
 	categoryCounter = ssk.labels:presetLabel( screenGroup, "black", ccNum .. " of " .. tcNum , w - 45, curY, { fontSize = 16, color = {0,0,0,255} } )
 
 	-- Subcategory Button
-	curY = curY + 50
+	curY = curY + 45
 	local subCategories = sampleManager:getSubcategories( categories[1] )
 
 	subCategoryButton = ssk.buttons:presetPush( screenGroup, "yellowGradient", centerX-35, curY, 380, 40, 
-		subCategories[1], ssk.sbc.tableRoller_CB, { fontSize = 15, textOffset = {0,1} } )
+		subCategories[1], nil, { fontSize = 15, textOffset = {0,1},  onEvent = onSubCategoryEvent } )
+		--subCategories[1], ssk.sbc.tableRoller_CB, { fontSize = 15, textOffset = {0,1},  onEvent = onSubCategoryEvent } )
 	
 	ssk.sbc.prep_tableRoller( subCategoryButton, subCategories, onSubCategory ) 
 
@@ -111,9 +113,19 @@ function scene:createScene( event )
 	subCategoryCounter = ssk.labels:presetLabel( screenGroup, "black", cscNum .. " of " .. tscNum , w - 45, curY, { fontSize = 16, color = {0,0,0,255} } )
 
 	-- Go Button
-	curY = curY + 70
-	ssk.buttons:presetPush( screenGroup, "greenGradient", centerX, curY, 80, 40, 
+	curY = curY + 45
+	ssk.buttons:presetPush( screenGroup, "greenGradient", centerX, curY, 140, 40, 
 						"Go", onGo, { fontSize = 26, textOffset = {0,1} } )
+
+	-- Last Path Label
+	curY = curY + 40 
+	lastPathLabel = ssk.labels:presetLabel( screenGroup, "default", "012345678901234567890123456789012345678901234567890123456789", centerX, curY, { fontSize = 13, textColor = _BLACK_ } )
+
+	-- Last Result Message 
+	curY = curY + 22 
+	lastResultLabel = ssk.labels:presetLabel( screenGroup, "default", "012345678901234567890123456789012345678901234567890123456789", centerX, curY, { fontSize = 13, textColor = _RED_ } )
+	--lastResultLabel.isVisible = false
+	--lastResultLabel:setText(lastResultMessage)
 
 	--
 	-- RG Button
@@ -204,6 +216,19 @@ function scene:enterScene( event )
 		timer.performWithDelay(openCloseTestingMinDelay, onGo )
 	end
 
+	if(lastResultMessage and #lastResultMessage > 0 ) then
+		lastResultLabel.isVisible = true
+		lastResultLabel:setText(lastResultMessage)
+		lastResultMessage = nil
+	else 
+		lastResultLabel.isVisible = false
+	end
+
+	local curCategory    = categoryButton:getText()
+	local curSubCategory = subCategoryButton:getText()
+	local logicSource = sampleManager:getSamplePath( curCategory, curSubCategory )
+	lastPathLabel:setText(logicSource)
+
 end
 
 ----------------------------------------------------------------------
@@ -254,6 +279,40 @@ onCategory = function ( event )
 	return true
 end
 
+local catLastPoint = {}
+local minDist2 = 20 ^ 2
+onCategoryEvent  = function ( event ) 
+	if( event.phase == "began" ) then
+		catLastPoint = { x = event.x, y = event.y } 
+		ssk.sbc.tableRoller_CB( event )
+	
+	elseif( event.phase == "moved" ) then
+		local curPoint = { x = event.x, y = event.y }
+		local tween = ssk.math2d.sub( curPoint, catLastPoint )
+		local dist2 = ssk.math2d.squarelength( tween )
+
+		if( dist2 >= minDist2 ) then
+			--print("Drag .. " .. dist2 )
+			if( curPoint.x < catLastPoint.x ) then
+				event.backwards = true
+			end
+			ssk.sbc.tableRoller_CB( event )
+			catLastPoint = curPoint
+		end
+
+	elseif( event.phase == "ended" or event.phase == "cancelled" ) then
+		catLastPoint = { x = event.x, y = event.y }
+	end
+
+	local curCategory    = categoryButton:getText()
+	local curSubCategory = subCategoryButton:getText()
+	local logicSource = sampleManager:getSamplePath( curCategory, curSubCategory )
+	lastPathLabel:setText(logicSource)
+	lastResultLabel:setText("")
+
+	return true
+end
+
 onSubCategory = function ( event ) 
 	
 	local cscNum = sampleManager:getSubCategoriesEntryNum( categoryButton:getText(), subCategoryButton:getText() )
@@ -262,6 +321,40 @@ onSubCategory = function ( event )
 
 	return true
 end
+
+local subCatLastPoint = {}
+onSubCategoryEvent  = function ( event ) 
+	if( event.phase == "began" ) then
+		subCatLastPoint = { x = event.x, y = event.y } 
+		ssk.sbc.tableRoller_CB( event )
+	
+	elseif( event.phase == "moved" ) then
+		local curPoint = { x = event.x, y = event.y }
+		local tween = ssk.math2d.sub( curPoint, subCatLastPoint )
+		local dist2 = ssk.math2d.squarelength( tween )
+
+		if( dist2 >= minDist2 ) then
+			--print("Drag .. " .. dist2 )
+			if( curPoint.x < subCatLastPoint.x ) then
+				event.backwards = true
+			end
+			ssk.sbc.tableRoller_CB( event )
+			subCatLastPoint = curPoint
+		end
+
+	elseif( event.phase == "ended" or event.phase == "cancelled" ) then
+		subCatLastPoint = { x = event.x, y = event.y }
+	end
+
+	local curCategory    = categoryButton:getText()
+	local curSubCategory = subCategoryButton:getText()
+	local logicSource = sampleManager:getSamplePath( curCategory, curSubCategory )
+	lastPathLabel:setText(logicSource)
+	lastResultLabel:setText("")
+
+	return true
+end
+
 
 
 updateSubcategoriesButton = function()

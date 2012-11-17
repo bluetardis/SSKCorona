@@ -69,24 +69,44 @@ function standardCallbacks.tableRoller_CB( event )
 	local underBarSwap  = target._underBarSwap
 	local curText       = target:getText()
 	local retVal        = true
+	local backwards     = event.backwards or false
 
 	if(underBarSwap) then
 		curText = curText:spaces2underbars(curText)
 	end
 
-	local j = 0
-	for i = 1, #srcTable do
-		dprint(2,tostring(srcTable[i]) .. " ?= " .. curText )
-		if( tostring(srcTable[i]) == curText ) then
-			j = i
-			break
+	local j
+	if( backwards ) then
+		--print("Backwards")
+		j = #srcTable + 1
+		for i = #srcTable, 1, -1 do
+			dprint(2,tostring(srcTable[i]) .. " ?= " .. curText )
+			if( tostring(srcTable[i]) == curText ) then
+				j = i
+				break
+			end
 		end
-	end
 
-	j = j + 1
+		j = j - 1
 
-	if(j > #srcTable) then
-		j = 1
+		if(j < 1 ) then
+			j = #srcTable
+		end
+	else
+		j = 0
+		for i = 1, #srcTable do
+			dprint(2,tostring(srcTable[i]) .. " ?= " .. curText )
+			if( tostring(srcTable[i]) == curText ) then
+				j = i
+				break
+			end
+		end
+
+		j = j + 1
+
+		if(j > #srcTable) then
+			j = 1
+		end
 	end
 
 	if(underBarSwap) then

@@ -123,5 +123,11 @@ createPlayer = function ( x, y, size )
 	return player
 end
 
+createSky = function ( x, y, width, height  )
+	local sky  = ssk.display.imageRect( layers.background, x, y, imagesDir .. "starBack_320_240.png",
+		{ width = width, height = height, myName = "theSky" } )
+	return sky
+end
+
 
 return gameLogic
