@@ -63,13 +63,13 @@ function gameLogic:createScene( screenGroup )
 
 	local closure = function ()
 		oneTimePrep()
-		local results1, results2 = iterate( 5, 10000 )
+		local results1, results2 = iterate( 50, 100000 )
 		accumulate( results1, results2 )
 		oneTimeGather()
 		timer.performWithDelay( 34, function() storyboard.gotoScene( "s_MainMenu" , "slideRight", 400  )	end )
 	end
 
-	timer.performWithDelay( 34, closure )
+	timer.performWithDelay( 1000, closure )
 
 end
 
