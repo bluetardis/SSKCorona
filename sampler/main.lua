@@ -86,9 +86,6 @@ sampleManager = require("sampleMgr")
 --sampleManager:addSample("Template", "Benchmark Template 1: Operations Per Second", "ssk_sampler._templates.template3_benchmark_OPS", true ) 
 --sampleManager:addSample("Template", "Benchmark Template 2: Operation vs. Operation", "ssk_sampler._templates.template4_benchmark_OPVS", true ) 
 
--- EFM overlay to set specs
--- EFM last bench result to mm
-
 
 -- =============================================
 -- OFFLINE WIPs
@@ -202,10 +199,10 @@ sampleManager:addSample("SSKCorona Feature Testing", "Image Sheet Manager", "ssk
 -- ==
 -- Templates
 -- ==
-sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 1 Test", "ssk_sampler._templates.template1" )
-sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 2 Test", "ssk_sampler._templates.template2" )
-sampleManager:addSample("SSKCorona Feature Testing", "Benchmark Template 1: Operations Per Second Test", "ssk_sampler._templates.template3_benchmark_OPS" ) 
-sampleManager:addSample("SSKCorona Feature Testing", "Benchmark Template 2: Operation vs. Operation Test", "ssk_sampler._templates.template4_benchmark_OPVS") 
+--sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 1 Test", "ssk_sampler._templates.template1" )
+--sampleManager:addSample("SSKCorona Feature Testing", "Sampler Template 2 Test", "ssk_sampler._templates.template2" )
+--sampleManager:addSample("SSKCorona Feature Testing", "Benchmark Template 1: Operations Per Second Test", "ssk_sampler._templates.template3_benchmark_OPS" ) 
+--sampleManager:addSample("SSKCorona Feature Testing", "Benchmark Template 2: Operation vs. Operation Test", "ssk_sampler._templates.template4_benchmark_OPVS") 
 
 
 -- =============================================
@@ -235,11 +232,17 @@ sampleManager:addSample("Mechanics - Platforming", "One-Way Platform", "ssk_samp
 -- =============================================
 -- Benchmarks
 -- =============================================
---sampleManager:addSample("Benchmarks", "Template", "ssk_sampler.benchmarks.template" )
-sampleManager:addSample("Benchmarks", "math.sqrt() - Remote : Operations Per Second", "ssk_sampler.benchmarks.math_sqrt_remote", true ) 
-sampleManager:addSample("Benchmarks", "math.sqrt() - Local : Operations Per Second", "ssk_sampler.benchmarks.math_sqrt_local", true ) 
-sampleManager:addSample("Benchmarks", "math.sqrt() - Local vs. Remote", "ssk_sampler.benchmarks.math_sqrt_local_vs_remote", true ) 
+sampleManager:addSample("Benchmarks", "math.sqrt() - Normal : Operations Per Second", "ssk_sampler.benchmarks.math_sqrt_remote", true ) 
+sampleManager:addSample("Benchmarks", "math.sqrt() - Localized : Operations Per Second", "ssk_sampler.benchmarks.math_sqrt_local", true ) 
+sampleManager:addSample("Benchmarks", "math.sqrt() - Localized vs. Normal", "ssk_sampler.benchmarks.math_sqrt_local_vs_remote", true ) 
+sampleManager:addSample("Benchmarks", "ASCII85 Encoding : KB Per Second", "ssk_sampler.benchmarks.ascii85", true ) 
 
+
+-- =============================================
+-- Experiments
+-- =============================================
+sampleManager:addSample("Experiments", "Co-Routines", "ssk_sampler.experiments.coroutineTest", true )
+sampleManager:addSample("Experiments", "GGCharts Test#1", "ssk_sampler.experiments.GlitchGames.test1", true )
 
 
 -- =============================================
@@ -259,6 +262,7 @@ sampleManager:addSample("Puzzle Games #1", "Connect-3", "ssk_sampler.games.puzzl
 sampleManager:addSample("Action Games #1", "Asteroids", "ssk_sampler.games.action1.asteroids", true )
 
 sampleManager:addSample("Misc", "Still Here?", "ssk_sampler.mechanics.stillhere", true )
+sampleManager:addSample("Misc", "No Update", "ssk_sampler.mechanics.noupdate", true )
 
 -- ==
 -- Functional
@@ -443,8 +447,7 @@ local monitorMem = function()
     print( "TexMem:   " .. textMem )
 end
 
---monitorMem()
-
+monitorMem()
 
 print("\n****************************************************************")
 print("*********************** /\\/\\ main.cs /\\/\\ **********************")

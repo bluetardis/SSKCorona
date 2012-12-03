@@ -28,9 +28,13 @@ local layers -- Local reference to display layers
 local overlayImage 
 local backImage
 
+local screenGroup
+
 -- Local Function & Callback Declarations
 local createLayers
 local addInterfaceElements
+
+local loremIpsum
 
 local gameLogic = {}
 
@@ -50,19 +54,21 @@ local accumulate -- takes table from iterate and calculates final result; update
 -- ====================== Initialization
 -- =======================
 function gameLogic:createScene( screenGroup )
+	screenGroup = screenGroup
 	-- 1. Set up any rendering layers we need
 	createLayers( screenGroup )
 
 	-- 2. Add Interface Elements to this demo (buttons, etc.)
 	addInterfaceElements()
+
 	-- 3. Run the theBenchmark
 
 	local closure = function ()
 		oneTimePrep()
-		local results = iterate( 50, 100000 )
+		local results = iterate( 1, 25 ) 
 		accumulate( results )
 		oneTimeGather()
-		timer.performWithDelay( 34, function() storyboard.gotoScene( "s_MainMenu" , "slideRight", 400  )	end )		
+		timer.performWithDelay( 34, function() storyboard.gotoScene( "s_MainMenu" , "slideRight", 400  )	end )
 	end
 
 	timer.performWithDelay( 1000, closure )
@@ -106,6 +112,13 @@ addInterfaceElements = function()
 end	
 
 oneTimePrep = function()
+	loremIpsum = io.readFile("data/loremipsum_1k.txt", system.ResourceDirectory )
+
+	local enc = ssk.ascii85.encode( loremIpsum )
+
+	print( #loremIpsum, #enc, round( 100 * #enc/#loremIpsum, 2 ) )
+
+
 end
 
 preTest = function()
@@ -118,6 +131,7 @@ postTest = function()
 end
 
 oneTimeGather = function()
+	loremIpsum = nil
 end
 
 iterate = function( iterations, numOps )
@@ -162,7 +176,7 @@ accumulate = function( results )
 		end
 
 
-		_G.lastResultMessage = totalOperations .. " operations @ " .. OPS .. suffix .. " ops/s"
+		_G.lastResultMessage = "Ran " .. totalOperations .. " 8KB encodes @ " .. 8 * OPS .. suffix .. " KB/s"
 	else
 		_G.lastResultMessage = totalOperations .. SPC .. " operations in less than 1 ms" 
 	end
@@ -173,9 +187,12 @@ accumulate = function( results )
 end
 
 theBenchmark = function( numOps )
-	local dummy
+
+	local encode = ssk.ascii85.encode
+	local li = loremIpsum
+	local enc
 	for i = 1, numOps do
-		math.sqrt( i )
+		enc = encode( li )
 	end
 end
 

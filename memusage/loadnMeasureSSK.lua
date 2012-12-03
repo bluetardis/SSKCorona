@@ -32,57 +32,57 @@ _G.ssk = ssk
 --    Early Loads: This stuff is used by subsequently loaded content
 -- ==
 
-ssk.debugprinter	= measureFunc("ssk.classes.c_debugPrint")				-- Level based debug printer
-ssk.advanced		= measureFunc( "ssk.classes.c_advanced" )				-- Advanced stuff (dig at your own peril; comments and criticisms welcomed)
+ssk.debugprinter	= measureFunc("ssk.libs.debugPrint")				-- Level based debug printer
+ssk.advanced		= measureFunc( "ssk.libs.advanced" )				-- Advanced stuff (dig at your own peril; comments and criticisms welcomed)
 
 -- ==
---    Addons - add extra functionality to existing classes, module, and global space.
+--    Addons - add extra functionality to existing libs, module, and global space.
 -- ==
-measureFunc( "ssk.addons.a_global")
-measureFunc( "ssk.addons.a_io")
-measureFunc( "ssk.addons.a_math")
-measureFunc( "ssk.addons.a_string")
-measureFunc( "ssk.addons.a_table")
+measureFunc( "ssk.libs.global")
+measureFunc( "ssk.libs.io")
+measureFunc( "ssk.libs.math")
+measureFunc( "ssk.libs.string")
+measureFunc( "ssk.libs.table")
 
 
---EFM split below into game object factories and other?
+--EFM split below into game object libs and other?
 -- ==
---    Factories - 'Classes' that produce one or more object types.
+--    libs - 'libs' that produce one or more object types.
 -- ==
-ssk.buttons		= measureFunc( "ssk.factories.f_buttons" )					-- Buttons & Sliders Factory
-ssk.labels		= measureFunc( "ssk.factories.f_labels" )					-- Labels Factory
-ssk.points		= measureFunc( "ssk.factories.f_points" )					-- Simple Points Factory (table of points)
-ssk.display		= measureFunc( "ssk.factories.f_prototyping" )  			-- Prototyping Game Objects Factory
-ssk.inputs		= measureFunc( "ssk.factories.f_inputs" )					-- Joysticks and Self-Centering Sliders Factory
-ssk.huds		= measureFunc( "ssk.factories.f_huds" )						-- HUDs Factory
-ssk.dbmgr		= measureFunc( "ssk.factories.f_dbmgr" )					-- (Rudimentary) DB Manager Factory
-ssk.spritemgr	= measureFunc( "ssk.factories.f_sprites" )					-- (Easy) Sprite Factory
+ssk.buttons		= measureFunc( "ssk.libs.buttons" )					-- Buttons & Sliders Factory
+ssk.labels		= measureFunc( "ssk.libs.labels" )					-- Labels Factory
+ssk.points		= measureFunc( "ssk.libs.points" )					-- Simple Points Factory (table of points)
+ssk.display		= measureFunc( "ssk.libs.display" )  			-- Prototyping Game Objects Factory
+ssk.inputs		= measureFunc( "ssk.libs.inputs" )					-- Joysticks and Self-Centering Sliders Factory
+ssk.huds		= measureFunc( "ssk.libs.huds" )						-- HUDs Factory
+ssk.dbmgr		= measureFunc( "ssk.libs.dbmgr" )					-- (Rudimentary) DB Manager Factory
+ssk.spritemgr	= measureFunc( "ssk.libs.imageSheets" )					-- (Easy) Sprite Factory
 
 -- ==
---    Classes
+--    libs
 -- ==
-ssk.behaviors	= measureFunc( "ssk.classes.c_behaviors" )					-- Behaviors Manager
-ssk.bench		= measureFunc( "ssk.classes.c_benchmarking" )				-- Benchmarking Utilities
-ssk.ccmgr		= measureFunc( "ssk.classes.c_collisionCalculator" )		-- Collision Calculator (EFM actually a factory now)
-ssk.component	= measureFunc( "ssk.classes.c_components" )					-- Misc Game Components (Mechanics, etc.)
-ssk.gem			= measureFunc( "ssk.classes.c_gem")							-- Game Event Manager
-ssk.math2d		= measureFunc( "ssk.classes.c_math2d" )						-- 2D (vector) Math 
-ssk.misc		= measureFunc( "ssk.classes.c_miscellaneous" )				-- Miscellaneous Utilities
-ssk.sbc			= measureFunc( "ssk.classes.c_standardButtonCallbacks" )	-- Standard Button & Slider Callbacks
-ssk.sounds		= measureFunc( "ssk.classes.c_sounds" )						-- Sounds Manager
+ssk.behaviors	= measureFunc( "ssk.libs.behaviors" )					-- Behaviors Manager
+ssk.bench		= measureFunc( "ssk.libs.benchmarking" )				-- Benchmarking Utilities
+ssk.ccmgr		= measureFunc( "ssk.libs.collisionCalculator" )		-- Collision Calculator (EFM actually a factory now)
+ssk.component	= measureFunc( "ssk.libs.components" )					-- Misc Game Components (Mechanics, etc.)
+ssk.gem			= measureFunc( "ssk.libs.gem")							-- Game Event Manager
+ssk.math2d		= measureFunc( "ssk.libs.math2d" )						-- 2D (vector) Math 
+ssk.misc		= measureFunc( "ssk.libs.miscellaneous" )				-- Miscellaneous Utilities
+ssk.sbc			= measureFunc( "ssk.libs.standardButtonCallbacks" )	-- Standard Button & Slider Callbacks
+ssk.sounds		= measureFunc( "ssk.libs.sounds" )						-- Sounds Manager
 
 
 -- ==
 --    Utilities
 -- ==
 -- Easy Networking (Uses mydevelopersgames free AutoLan to do heavy lifting, but written by Ed M.)
-ssk.networking	= measureFunc( "ssk.utilities.u_networking" )  
+ssk.networking	= measureFunc( "ssk.libs.networking" )  
 ssk.networking:registerCallbacks()
 
 -- =============================================================
 --	EXTERNALLY PRODUCED (and accredited) CONTENT
 -- =============================================================
-ssk.pnglib		= measureFunc( "ssk.external.pngLib.pngLib" )				-- Utility lib for extracting PNG image metrics
+--ssk.pnglib		= measureFunc( "ssk.external.pngLib.pngLib" )				-- Utility lib for extracting PNG image metrics
 
 -- =============================================================
 --	PAID CONTENT - Sorry, not included. 8(

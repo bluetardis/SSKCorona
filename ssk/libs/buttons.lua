@@ -102,6 +102,11 @@ function buttonClass:addPreset( presetName, params )
 	local entry = {}
 	self.presetsCatalog[presetName] = entry
 
+	entry.x      = params.x
+	entry.y      = params.y
+	entry.w      = params.w
+	entry.h      = params.h
+
 	entry.touchMask      = params.touchMask
 
 	if( params.touchMask and not params.touchMaskW) then

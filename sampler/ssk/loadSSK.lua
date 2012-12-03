@@ -61,6 +61,12 @@ ssk.sbc			= require( "ssk.libs.standardButtonCallbacks" )	-- Standard Button & S
 ssk.sheetmgr	= require( "ssk.libs.imageSheets" )				-- Image Sheets Manager
 ssk.sounds		= require( "ssk.libs.sounds" )					-- Sounds Manager
 
+ssk.ascii85     = require( "ssk.libs.external.SatheeshJM.ascii85" ) -- ASCI85 Compression Utility
+
+
+--ssk.cbe			= require( "ssk.libs.CBEffects.Library" )				-- CBEffects Particle System
+ssk.ggchart		= require( "ssk.libs.external.GlitchGames.GGChart" )	-- Glitch Games Charts
+
 
 -- ==
 --    Configuration Work (REQUIRED)

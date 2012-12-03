@@ -41,3 +41,40 @@ function io.exists( fileName, base )
 	io.close(f)
 	return true 
 end
+
+
+--EFM add docs
+if( io.readFile ) then
+	print("ERROR! io.readFile() exists already")
+else
+	print("NOTE io.readFile() created")
+end
+function io.readFile( fileName, base )
+	local base = base or nil
+	local fileContents
+
+	if( io.exists( fileName, base ) == false ) then
+		print("A", fileName)
+		return nil
+	end
+
+	local fileName = fileName
+	if( base ) then
+		fileName = system.pathForFile( fileName, base )
+	end
+
+	print("B", fileName)
+	
+	local f=io.open(fileName,"r")
+	if (f == nil) then 
+		print("B")
+		return nil
+	end
+
+	fileContents = f:read( "*a" )
+
+	io.close(f)
+
+	print("X")
+	return fileContents
+end
