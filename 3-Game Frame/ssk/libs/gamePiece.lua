@@ -17,27 +17,25 @@
 
 local touch
 
-local gamePiece
+local gamepiece
 
-if( not _G.ssk.gamePiece ) then
-	_G.ssk.gamePiece = {}
+if( not _G.ssk.gamepiece ) then
+	_G.ssk.gamepiece = {}
 end
 
-gamePiece = _G.ssk.gamePiece
-
-local gamePiece = {}
+gamepiece = _G.ssk.gamepiece
 
 -------------------------------------------------
 -- BUILDER FUNCTIONS
 -------------------------------------------------
-function gamePiece:addPreset( presetName, params )	
+function gamepiece:addPreset( presetName, params )	
 	return
 end
 
 -- ==
 --    func() - what it does
 -- ==
-function gamePiece:new( group, x, y, params )	
+function gamepiece:new( group, x, y, params )	
 	local group = group or display.currentStage
 	local thePiece = display.newGroup()
 
@@ -255,7 +253,7 @@ touch = function( self, event )
 
 
 	else
-		print("ERROR: gamePieces: onTouch() should never get here! phase == ", phase )
+		print("ERROR: gamepieces: onTouch() should never get here! phase == ", phase )
 	end
 
 	--print(target, phase, event.x, event.y, event.id, target.x, target.y, event.time)
