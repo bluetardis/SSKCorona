@@ -43,7 +43,11 @@ end
 function _G.safeRemove( obj )
 	if( obj and obj.removeSelf and type(obj.removeSelf) == "function") then 
 		obj:removeSelf()
-		setmetatable( obj, nil )  -- This happens automatically on the next simcycle/frame, but let's force it now
+		-- If this function is called on joints, type(obj) returns "userdata"
+		-- Userdata don't have metatables :)
+		if(type(obj) == "table") then
+			setmetatable( obj, nil )  -- This happens automatically on the next simcycle/frame, but let's force it now
+		end
 		obj.removeSelf = nil
 	end
 end

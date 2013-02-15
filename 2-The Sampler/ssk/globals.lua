@@ -16,22 +16,11 @@
 -- DO NOT MODIFY THIS FILE.  MODIFY "data/globals.lua" instead.
 --
 -- =============================================================
-_G.myAppName   = "Default"
 _G.debugLevel  = 1
-_G.liteVersion = false
-_G.releaseDate = "04 DEC 2012"
 
--- Resource directories (images, sounds, etc.)
 _G.imagesDir = "images/"
 _G.soundsDir = "sounds/"
 
--- Gravity settings
-_G.usesPhysics = false
-_G.gravityVector = { 0, 9.8 }
-_G.physicsRenderMode = "normal" -- "normal", "debug", "hybrid"
-
--- Multitouch
-_G.enableMultiTouch = false
 
 -- DO NOT MODIFY BELOW (Used In Framework); EXPERTS ONLY
 -- DO NOT MODIFY BELOW (Used In Framework); EXPERTS ONLY
@@ -74,6 +63,7 @@ _G._BLACK_ = {  0,   0,   0, 255}; _G.colorNames[_BLACK_] = "BLACK";_G.allColors
 
 _G._GREY_      = {128, 128, 128, 255}; _G.colorNames[_GREY_] = "GREY";_G.allColors[#_G.allColors+1] = _G._GREY_
 _G._DARKGREY_  = { 64,  64,  64, 255}; _G.colorNames[_DARKGREY_] = "DARKGREY";_G.allColors[#_G.allColors+1] = _G._DARKGREY_
+_G._DARKERGREY_  = { 32,  32,  32, 255}; _G.colorNames[_DARKERGREY_] = "DARKERGREY";_G.allColors[#_G.allColors+1] = _G._DARKERGREY_
 _G._LIGHTGREY_ = {192, 192, 192, 255}; _G.colorNames[_LIGHTGREY_] = "LIGHTGREY";_G.allColors[#_G.allColors+1] = _G._LIGHTGREY_
 
 _G._RED_   = {255,   0,   0, 255}; _G.colorNames[_RED_] = "RED";_G.allColors[#_G.allColors+1] = _G._RED_

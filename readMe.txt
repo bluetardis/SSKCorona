@@ -1,4 +1,4 @@
-11 JAN 2013 -- NEEDS UPDATING
+14 FEB 2013 
 
 Table of Contents
 =================
@@ -57,11 +57,9 @@ This kit contains the following:
 |
 |--\readMe.txt  => This file.
 |
-|--\frame       => Example SP/MP game framework using SSK.
+|--\1-The Library => The SSK library in standalone form.
 |
-|--\resources   => Free assets/resources (remember to read licences.)
-|
-|--\sampler     => A sample application containing:
+|--\2-The Sampler => A sample application containing:
 |                  - Benchmarks
 |                  - Sample code from forum help
 |                  - Input 'devices' (Virtual Dpad/Joystick, sliders, etc.)
@@ -71,9 +69,15 @@ This kit contains the following:
 |                  - Miscellaneous code snippets
 |                  - and more ...
 |
-|--\ssk         => The SSK library in standalone form.
+|--\3-Game Frame-SP => Single Player Game Frame using SSK and Corona's Framework library.
 |
-|--\winScripts  => Useful scripts for Windows(C) users.  
+|--\4-Game Frame-MP => Multi-Player Game Frame using SSK and Corona's Framework library.
+|
+|--\98-Preset Packs => Additional button, label and sound presets.
+|
+|--\99-TheResources => Free art and sound resources.
+|
+|--\others? => Stuff I use to maintain the library.
 
 
 
@@ -113,12 +117,15 @@ of the '\winScripts' folder to your project folder.  These scripts do the
 following:
   - toAndroid.bat        => Copies the icons found in 'ssk\appicons\Android\*' to
                             the root of your project directory.
+
   - toiPhone.bat         => Copies the icons found in 'ssk\appicons\iPhone\*' to
                             the root of your project directory.
+
   - toLandScapeRight.bat => Copies the file 'ssk\build.settings.landscapeRight'
                             to the file 'build.settings' in the root of your 
                             project directory.
                             WARNING! This will overwrite any existing file.
+
   - toPortrait.bat       => Copies the file 'ssk\build.settings.portrait'
                             to the file 'build.settings' in the root of your 
                             project directory.
@@ -138,6 +145,6 @@ articles about SSKCorona features on my site:
 be sure to visit regularly or subscribe to my RSS feed to see these articles
 when they are published.
 
-- edo out!
+- The Roaming Gamer
 
 

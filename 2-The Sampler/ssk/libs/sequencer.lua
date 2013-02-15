@@ -42,17 +42,60 @@ function sequencer:new( )
 	local seq = {}
 
 	-- ==
-	--    func() - what it does
+	--    load() - what it does
 	-- ==
 	seq.load = function( self, fileName, base )
 		seq.data = table.load( fileName, base )
 	end
 
 	-- ==
-	--    func() - what it does
+	--    clear() - what it does
+	-- ==
+	seq.clear = function( self )
+		seq.data = {}
+	end
+
+	-- ==
+	--    get() - what it does
+	-- ==
+	seq.get = function( self )
+		return seq.data
+	end
+
+	-- ==
+	--    set() - what it does
 	-- ==
 	seq.set = function( self, seqTable )
-		seq.data = seqTable
+		seq.data = table.shallowCopy(seqTable)
+	end
+
+	-- ==
+	--    add() - what it does
+	-- ==
+	seq.add = function( self, entry )
+		if( not entry ) then
+			return false
+		end
+		
+		if( not seq.data ) then
+			seq.data = {}
+		end
+		
+		seq.data[#seq.data+1] = table.shallowCopy( entry )
+		
+		return true		
+	end
+
+	-- ==
+	--    stop() - what it does
+	-- ==
+	seq.stop = function( self )
+		print("Stop it")
+		if(self.nextAction) then
+			print("Stopping")
+			timer.cancel(self.nextAction)
+			self.nextAction = nil
+		end
 	end
 
 	-- ==
@@ -63,7 +106,7 @@ function sequencer:new( )
 
 
 		if( not isDisplayObject( obj ) ) then
-			print("ERROR: sequencer()  - Inavlid display object.  Cannot run!")
+			print("WARNING: sequencer()  - Inavlid display object.  Cannot run!")
 			return false
 		end
 
@@ -82,7 +125,7 @@ function sequencer:new( )
 		dprint(2, index, entry.action, entry.angle, time, shortest, system.getTimer() )
 
 		 -- == 
-		 --    ROTATE TO (ANGLE)
+		 --    ROTATE TO (ANGLE and VECTOR)
 		 -- == 
 		if(entry.action == "ROTT" or entry.action == "ROTTV") then
 			local time = 0			
@@ -93,6 +136,8 @@ function sequencer:new( )
 			elseif(entry.action == "ROTT" and entry.angle) then
 				angle = entry.angle
 			end
+
+			--print(angle)
 
 			if( entry.time ) then 
 				time = entry.time
@@ -119,10 +164,156 @@ function sequencer:new( )
 				end	
 			end
 
-			nextTime = entry.time
+			nextTime = time
 
 			transition.to( obj, { rotation = angle, time = time, easing = easing  } )
 					 
+		 -- == 
+		 --    MOVE TO
+		 -- == 
+		elseif(entry.action == "MOVT") then
+			local time = 0			
+			local vector = entry.vector or { x=0, y=0 }
+			
+			if( entry.time ) then 
+				time = entry.time
+			elseif( entry.speed ) then 
+				local dx,dy = ssk.math2d.sub( obj.x, obj.y, vector.x, vector.y )
+				local distance = ssk.math2d.length(dx,dy)
+				time = (distance / entry.speed) * 1000 -- Assumes speed in pixels-per-second
+			end
+
+			nextTime = time
+
+			transition.to( obj, { x = vector.x, y = vector.y, time = time, easing = easing  } )
+		
+
+		 -- == 
+		 --    TRANSLATE (TRNT)
+		 -- == 
+		elseif(entry.action == "TRNT") then
+			local time = 0			
+			local vector = entry.vector or { x=0, y=0 }
+
+			local tx,ty = ssk.math2d.add( obj, vector, true )
+			
+			if( entry.time ) then 
+				time = entry.time
+			elseif( entry.speed ) then 
+				local distance = ssk.math2d.length(vector)
+				time = (distance / entry.speed) * 1000 -- Assumes speed in pixels-per-second
+			end
+
+			nextTime = time
+
+			transition.to( obj, { x = tx, y = ty, time = time, easing = easing  } )
+
+
+		 -- == 
+		 --    LINEAR VELOCITY (LVEL)
+		 -- == 
+		elseif(entry.action == "LVEL") then
+			local vector = entry.vector or { x=0, y=0 }
+			nextTime = entry.time or 0
+			obj:setLinearVelocity( vector.x, vector.y )
+
+		 -- == 
+		 --    ANGULAR VELOCITY (AVEL)
+		 -- == 
+		elseif(entry.action == "AVEL") then
+			local angle = entry.angle or 0
+			nextTime = entry.time or 0
+			obj.angularVelocity = angle
+
+
+		 -- == 
+		 --    LINEAR IMPULSE (LIMP)
+		 -- == 
+		elseif(entry.action == "LIMP") then
+			local vector = entry.vector or { x=0, y=0 }
+			nextTime = entry.time or 0
+			obj:applyLinearImpulse( vector.x, vector.y, obj.x, obj.y )
+
+		 -- == 
+		 --    ANGULAR IMPULSE (AIMP)
+		 -- == 
+		elseif(entry.action == "AIMP") then
+			
+			local angle = entry.angle or 0
+			nextTime = entry.time or 0
+			obj:applyAngularImpulse( angle )
+
+		 -- == 
+		 --    STOP (STOP)
+		 -- == 
+		elseif(entry.action == "STOP") then
+			nextTime = entry.time or 0
+			obj:setLinearVelocity( 0, 0 )
+			obj.angularVelocity = 0
+
+
+		 -- == 
+		 --    METHOD (METHOD)
+		 -- == 
+		elseif(entry.action == "METHOD") then
+			local name = entry.name 
+			if(name and obj[name] and type(obj[name]) == "function") then
+				obj[name]( obj )
+			end
+			nextTime = entry.time or 0
+
+		 -- == 
+		 --    FUNCTION (FUNCTION)
+		 -- == 
+		elseif(entry.action == "FUNCTION") then
+			local name = entry.name 
+			if(name and obj[name] and type(obj[name]) == "function") then
+				obj[name]( )
+			end
+			nextTime = entry.time or 0
+
+		 -- == 
+		 --    GLOBAL FUNCTION (GFUNCTION)
+		 -- == 
+		elseif(entry.action == "GFUNCTION") then
+			local name = entry.name 
+			if(name and _G[name] and type(_G[name]) == "function") then
+				_G[name]( obj )
+			end
+			nextTime = entry.time or 0
+
+		 -- == 
+		 --    EVENT (EVENT)
+		 -- == 
+		elseif(entry.action == "EVENT") then
+			local name = entry.name 
+			if(event) then 
+				ssk.gem:post( name, { obj = obj } )
+			end
+			nextTime = entry.time or 0
+
+		 -- == 
+		 --    REPEAT
+		 -- == 
+		elseif(entry.action == "REPEAT") then
+			nextTime = entry.time or 0
+			count = entry.count or 1
+			if( self.repeatCount == nil ) then
+				self.repeatCount = 1
+				if(count >= self.repeatCount) then
+					index = 0
+				end
+			elseif( self.repeatCount < count ) then
+				self.repeatCount = self.repeatCount + 1
+				index = 0
+			else
+
+				self.repeatCount = nil
+			end
+		
+		 -- == 
+		 --    WAIT
+		 -- == 
 		elseif(entry.action == "WAIT") then
 			nextTime = entry.time or 1000
 		end		
@@ -131,7 +322,7 @@ function sequencer:new( )
 		 --    WAIT (DO NOTHING)
 		 -- == 
 		if(index < #self.data) then
-			timer.performWithDelay( nextTime, function() self:run( obj, index+1 )  end )
+			self.nextAction = timer.performWithDelay( nextTime, function() self:run( obj, index+1 )  end )
 		end
 
 		return true

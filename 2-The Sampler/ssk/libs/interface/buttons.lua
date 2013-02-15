@@ -272,6 +272,28 @@ if(buttonInstance.selRectEn) then
 			unselImgObj:setFillColor(r,g,b,a)
 		end
 
+		if(buttonInstance.strokeWidth) then
+			unselImgObj.strokeWidth = buttonInstance.strokeWidth
+		elseif(buttonInstance.selStrokeWidth) then
+			unselImgObj.strokeWidth = buttonInstance.selStrokeWidth
+		end
+
+		if(buttonInstance.unselStrokeColor) then
+			local r = fnn(buttonInstance.unselStrokeColor[1], 255)
+			local g = fnn(buttonInstance.unselStrokeColor[2], 255)
+			local b = fnn(buttonInstance.unselStrokeColor[3], 255)
+			local a = fnn(buttonInstance.unselStrokeColor[4], 255)
+			unselImgObj:setStrokeColor(r,g,b,a)
+
+		elseif(buttonInstance.strokeColor) then
+			local r = fnn(buttonInstance.strokeColor[1], 255)
+			local g = fnn(buttonInstance.strokeColor[2], 255)
+			local b = fnn(buttonInstance.strokeColor[3], 255)
+			local a = fnn(buttonInstance.strokeColor[4], 255)
+			unselImgObj:setStrokeColor(r,g,b,a)
+		end
+
+
 		buttonInstance:insert( unselImgObj, true )
 		unselImgObj.isVisible = true
 		buttonInstance.unsel = unselImgObj
@@ -288,6 +310,27 @@ if(buttonInstance.selRectEn) then
 			local b = fnn(buttonInstance.selImgFillColor[3], 255)
 			local a = fnn(buttonInstance.selImgFillColor[4], 255)
 			selImgObj:setFillColor(r,g,b,a)
+		end
+		
+		if(buttonInstance.strokeWidth) then
+			selImgObj.strokeWidth = buttonInstance.strokeWidth
+		elseif(buttonInstance.selStrokeWidth) then
+			selImgObj.strokeWidth = buttonInstance.selStrokeWidth
+		end
+		
+		if(buttonInstance.selStrokeColor) then
+			local r = fnn(buttonInstance.selStrokeColor[1], 255)
+			local g = fnn(buttonInstance.selStrokeColor[2], 255)
+			local b = fnn(buttonInstance.selStrokeColor[3], 255)
+			local a = fnn(buttonInstance.selStrokeColor[4], 255)
+			selImgObj:setStrokeColor(r,g,b,a)
+
+		elseif(buttonInstance.strokeColor) then
+			local r = fnn(buttonInstance.strokeColor[1], 255)
+			local g = fnn(buttonInstance.strokeColor[2], 255)
+			local b = fnn(buttonInstance.strokeColor[3], 255)
+			local a = fnn(buttonInstance.strokeColor[4], 255)
+			selImgObj:setStrokeColor(r,g,b,a)
 		end
 
 		buttonInstance:insert( selImgObj, true )
@@ -730,6 +773,112 @@ function buttons:quickHorizSlider( x,y,w,h,imageBase,onEvent,onRelease,knobImg, 
 	return tmpButton, sliderKnob
 end
 
+
+
+-- ============= quickHorizSlider() -- Quick slider creator
+-- ==
+--    ssk.buttons:quickHorizSlider( x, y, w, h, imageBase, onEvent or nil , onRelease or nil , knobImg, kw, kh, parentGroup )
+--
+--    Create a new radio-button based on a previously configured preset (settings table).
+--
+--    Note: To work properly, associated radio buttons should be placed in their own display group without 
+--    other un-related radios buttons.
+--
+--            x,y - <x,y> position to place slider bar at.
+--            w,h - Width and height of slider bar.
+--      imageBase - File path and name base for normal and Over textures. i.e. If a slider uses two textures sliderBar.png and sliderBarOver.png, the imageBase is "slideBar".
+--        onEvent - (optional) Callback to execute when slider is moved.
+--      onRelease - (optional) Callback to execute when slider is released.
+--        knobImg - Path and filname of image file to use for knob.
+--          kw,kh - Width and height of slider knob.
+--    parentGroup - Display group to store slider in.
+--
+--    Returns a handle to a new sliderInstance.
+-- ==
+function buttons:quickHorizSlider2( x,y,w,h,imageBase,onEvent,onRelease,knobImgBase, kw,kh, parentGroup)
+	local tmpParams = 
+	{ 
+		w = w,
+		h = h,
+		x = x,
+		y = y,
+		unselImgSrc = imagesDir .. imageBase .. ".png",
+		selImgSrc   = imagesDir .. imageBase .. "Over.png",
+		buttonType = "push",
+		pressSound = buttonSound,
+		onEvent = onEvent,
+		onRelease = onRelease,
+		emboss = true,
+	}
+	local tmpButton = self:new( parentGroup, tmpParams )
+
+	local sliderKnob = display.newGroup()
+
+	sliderKnob.unsel = display.newImageRect(sliderKnob, knobImgBase .. ".png", kw, kh )
+	sliderKnob.sel   = display.newImageRect(sliderKnob, knobImgBase .. "Over.png", kw, kh )
+	sliderKnob.sel.isVisible = false
+
+	sliderKnob.x = tmpButton.x - tmpButton.width/2  + tmpButton.width/2
+	sliderKnob.y = tmpButton.y
+	tmpButton.myKnob = sliderKnob
+	tmpButton.value = 0
+
+	parentGroup:insert(sliderKnob)
+
+	-- ==
+	--    sliderInstance:getValue( ) - Get the current value for the slider.
+	--    
+	--    Returns a floating-point value in the range [ 0.0 , 1.0 ] representing the left-to-right position of the slider.
+	-- ==
+	function tmpButton:getValue()
+		return  tonumber(string.format("%1.2f", self.value))
+	end
+
+	-- ==
+	--    sliderInstance:setValue( val ) - Sets the current value of the slider and updates the knob-position.
+	--    
+	--    val - A floating-point value in the range [ 0.0 , 1.0 ] representing the left-to-right position of the slider.
+	-- ==
+	function tmpButton:setValue( val )
+		local knob = self.myKnob
+		local left = (self.x - self.width/2) + knob.width/2
+		local right = (self.x + self.width/2)  - knob.width/2
+		local width = right-left
+
+		if(val < 0) then
+			self.value = 0
+		elseif( val > 1 ) then
+			self.value = 1
+		else
+			self.value = tonumber(string.format("%1.2f", val))
+		end
+
+		knob.x = left + (width * self.value)
+	end
+
+	-- ==
+	--    sliderInstance:disable( ) - Disables the slider and makes is translucent.  
+	-- ==
+	function tmpButton:disable( ) 
+		self.isEnabled = false
+		self.sel.alpha = 0.3
+		self.unsel.alpha = 0.3
+		self.myKnob.alpha = 0.3
+	end
+
+	-- ==
+	--    sliderInstance:enable( ) - Enables the slider and makes is opaque.  
+	-- ==
+	function tmpButton:enable( ) 
+		self.isEnabled = true
+		self.sel.alpha = 1.0
+		self.unsel.alpha = 1.0
+		self.myKnob.alpha = 1.0		
+	end
+
+	return tmpButton, sliderKnob
+end
+
 -- ============= touch() -- Touch handler for all button types (INTERNAL ONLY)
 function buttons:touch( params )
 	--for k,v in pairs(params) do print(k,v) end
@@ -748,7 +897,10 @@ function buttons:touch( params )
 	local pressSound     = theButton.pressSound
 	local releaseSound   = theButton.releaseSound
 	local forceInBounds  = params.forceInBounds
-	
+
+	local theKnob = theButton.myKnob
+
+
 	-- If not enabled, exit immediately
 	if(theButton.isEnabled == false) then
 		return result
@@ -757,6 +909,12 @@ function buttons:touch( params )
 	local buttonEvent = params -- For passing to callbacks
 
 	if(phase == "began") then
+		
+		if(theKnob and theKnob.sel) then -- This is a slider
+			theKnob.sel.isVisible = true
+			theKnob.unsel.isVisible = false
+		end
+
 		theButton:setHighlight(true)
 		display.getCurrentStage():setFocus( theButton, id )
 		theButton.isFocus = true
@@ -806,7 +964,13 @@ function buttons:touch( params )
 			------------------------------------------------------
 			if(buttonType == "push") then -- PUSH BUTTON
 			------------------------------------------------------
-				--print "push button ended"				
+				--print "push button ended"	
+				
+				if(theKnob and theKnob.sel) then -- This is a slider
+					theKnob.sel.isVisible   = false
+					theKnob.unsel.isVisible = true
+				end
+							
 				theButton:setHighlight(false)
 				--sel.isVisible   = false
 				--unsel.isVisible = true

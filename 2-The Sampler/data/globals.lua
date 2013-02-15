@@ -16,15 +16,14 @@
 --  Modify global settings here, and not in "ssk/globals.lua".
 --
 -- =============================================================
-_G.debugLevel = 1
+_G.debugLevel  = 1
+
+_G.imagesDir = "images/"
+_G.soundsDir = "sounds/"
 
 _G.myAppName = "SSKCorona Recipes"
 
 _G.liteVersion = false
 _G.releaseDate = "26 DEC 2012"
 
-_G.usesPhysics = false
-_G.gravityVector = { 0, 9.8 }
-_G.physicsRenderMode = "normal" -- "normal", "debug", "hybrid"
 
-_G.enableMultiTouch = true

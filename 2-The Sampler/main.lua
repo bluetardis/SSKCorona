@@ -23,20 +23,16 @@ print("****************************************************************\n\n")
 --	1.							GLOBALS								--
 ----------------------------------------------------------------------
 local globals = require( "ssk.globals" ) -- Load Standard Globals
+local globals = require( "data.globals" ) -- Load Standard Globals
 
 ----------------------------------------------------------------------
 -- 2. LOAD MODULES													--
 ----------------------------------------------------------------------
--- STORYBOARD
 local storyboard = require "storyboard"
-
--- PHYSICS
 local physics = require("physics")
 
--- SSKCorona Libraries
 require("ssk.loadSSK")
 
--- Game Specific Modules
 sampleManager = require("sampleMgr")
 
 ----------------------------------------------------------------------
@@ -52,7 +48,7 @@ display.setStatusBar(display.HiddenStatusBar)
 system.activate("multitouch")
 
 physics.start()
---physics.setGravity(0,0)
+--physics.setGravity(0,9.8)
 --physics.setDrawMode( "hybrid" )
 
 system.setTapDelay(0.5)
@@ -70,7 +66,7 @@ require("ssk.presets.buttons")
 ----------------------------------------------------------------------
 -- 5. PRINT USEFUL DEBUG INFORMATION (BEFORE STARTING APP)			--
 ----------------------------------------------------------------------
-ssk.debug.dumpScreenMetrics()
+--ssk.debug.dumpScreenMetrics()
 --ssk.debug.dumpFonts()
 --ssk.debug.printLuaVersion()
 --ssk.debug.monitorMem()

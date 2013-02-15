@@ -43,6 +43,8 @@ require( "ssk.libs.extensions.table")
 --    Core (i.e. Used a lot and often by other SSK Classes)
 -- ==
 require( "ssk.libs.core.math2d" )				-- 2D (vector) Math 
+--require( "ssk.libs.core.math2d_intersects" )	-- 2D (vector) Math (Intersect Tests ++)
+
 require( "ssk.libs.core.collisionCalculator" )	-- Collision Calculator 
 require( "ssk.libs.core.debug" )  				-- Debugging Tools & Utilities
 require( "ssk.libs.core.gem")					-- Game Event Manager
@@ -54,23 +56,34 @@ require( "ssk.libs.core.sounds" )				-- Sounds Manager
 -- ==
 --    Actions
 -- ==
-require( "ssk.libs.actions.actions" )	-- Actions (execute one 'action' on a display object)
+require( "ssk.libs.actions.aiming" )			-- Aims (and auto-aims) objects.
+require( "ssk.libs.actions.facing" )			-- Facing using angles-per-second (not time).
+require( "ssk.libs.actions.moving" )			-- Moving using pixels-per-second (not time).
+--require( "ssk.libs.actions.pathing" )			-- Path following (offline)
+require( "ssk.libs.actions.seeking" )			-- Target seeking (movement and aiming combined).
 
 -- ==
 --    Components
 -- ==
-require( "ssk.libs.components.components" )		-- Misc Game Components (Mechanics, etc.)
-require( "ssk.libs.components.components2" )	-- More Misc Game Components (Mechanics, etc.)
-require( "ssk.libs.components.components3" )	-- More Misc Game Components (Mechanics, etc.)
-require( "ssk.libs.components.components4" )	-- More Misc Game Components (Mechanics, etc.)
-require( "ssk.libs.components.components5" )	-- More Misc Game Components (Mechanics, etc.)
+require( "ssk.libs.components.addDrag" )		-- Adds basic or physics-based dragging in one step.
+require( "ssk.libs.components.hasForce" )		-- Adds a single continuous (and controllable) force to an object.
+require( "ssk.libs.components.hasForces" )		-- Adds multiple continuous (and controllable) forces to an object.
+require( "ssk.libs.components.movesForward" )	-- Adds a single continuous (and controllable) forward force to an object.
+												-- (A forward force always pushes in the direction the object is facing.)
 
 -- ==
 --    Display Objects
 -- ==
-require( "ssk.libs.display.display" )	-- Extended display objects
-require( "ssk.libs.display.display2" )  -- More Extended display objects
-require( "ssk.libs.display.display3" )  -- More Extended display objects
+require( "ssk.libs.display.extended" )			-- 'Extended' versions of display.newCircle, .newImageRect, and .newRect
+
+require( "ssk.libs.display.layers" )			-- (Quick) Layering System
+require( "ssk.libs.display.quitButton" )		-- Simple Quit Button (Used in many SSKCorona demos; Eventually I'll move this or phase this out.)
+require( "ssk.libs.display.backImage" )			-- Easy Background Image Maker (Used in many SSKCorona demos; Eventually I'll move this or phase this out.)
+
+require( "ssk.libs.display.arcs_ellipses" )		-- Arcs and Ellipses
+require( "ssk.libs.display.lines" )				-- Various line builders
+require( "ssk.libs.display.arrows" )			-- Various arrow builders
+
 
 -- ==
 --    External Libraries (Stuff Made By Others)
@@ -89,9 +102,13 @@ require( "ssk.libs.interface.labels" )					-- Labels
 require( "ssk.libs.interface.standardButtonCallbacks" )	-- Standard Button & Slider Callbacks
 
 -- ==
---    Input 'Devices'
+--    (Virtual) Input 'Devices'
 -- ==
-require( "ssk.libs.inputs.inputs" )			-- Joysticks and Self-Centering Sliders 
+require( "ssk.libs.inputs.joystick" )		-- Joysticks/DPads
+require( "ssk.libs.inputs.horizSnap" )		-- Horizontal Snap Slider (WARNING: IMPROVEMENTS ARE BEING MADE)
+require( "ssk.libs.inputs.vertSnap" )		-- Vertical Snap Slider   (WARNING: IMPROVEMENTS ARE BEING MADE)
+
+--require( "ssk.libs.inputs.inputs" )			-- Joysticks and Self-Centering Sliders 
 
 -- ==
 --    Miscellaneous

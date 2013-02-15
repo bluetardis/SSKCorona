@@ -41,6 +41,20 @@ local default_params =
 }
 mgr:addPreset( "default", default_params )
 
+
+-- ============================
+-- ======= Default Check/Radio Box
+-- ============================
+local params = 
+{ 
+	unselImgSrc  = imagesDir .. "interface/check.png",
+	selImgSrc    = imagesDir .. "interface/checkOver.png",
+	strokeWidth        = 1,
+    strokeColor        = {1,1,1,128},
+}
+mgr:addPreset( "defaultcheck", params )
+
+
 -- ============================
 -- ================== RG BUTTON
 -- ============================

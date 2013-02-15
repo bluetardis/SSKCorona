@@ -86,7 +86,13 @@ function gameLogic:createScene( screenGroup )
 
 	ssk.gem:add("myJoystickEvent", joystickListener)
 
-	ssk.inputs:createJoystick( centerX+140, centerY, 60, 30, 20, "myJoystickEvent", layers.interfaces )
+	ssk.inputs:createJoystick( layers.interfaces, centerX+140, centerY, 
+	--						   { eventName = "myJoystickEvent" } )
+							   { eventName = "myJoystickEvent",  inputObj = backImage,
+								 inUseAlpha = 1, notInUseAlpha = 0.05, useAlphaFadeTime = 250,
+							     outerStrokeColor = _WHITE_, outerAlpha = 0.5,
+							     stickImg = "images/interface/dpad.png", stickRadius = 65 } )
+	--						   { eventName = "myJoystickEvent", inputObj = backImage } )
 end
 
 -- =======================

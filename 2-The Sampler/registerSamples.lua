@@ -34,6 +34,8 @@ enableAutoLoad = true
 enableAutoLoad = false
 -- ================= OPEN CLOSE TESTING (END)
 
+--sampleManager:addSample("SSKCorona Feature Testing", "Inputs - Joystick (Normal)", "featureTesting.inputs.joystick1_logic" )
+--sampleManager:addSample("SSKCorona Feature Testing", "Sequencer", "featureTesting.sequencer.template1", true ) -- SMALL SCREEN BUTTONS
 
 -- TEMPLATES
 --sampleManager:addSample("Template", "Template 1", "_templates.template1", true ) -- SMALL SCREEN BUTTONS
@@ -41,6 +43,7 @@ enableAutoLoad = false
 --sampleManager:addSample("Template", "Template 3", "_templates.template3", true )  -- Nearly Empty Shell
 --sampleManager:addSample("Template", "Benchmark Template 1: Operations Per Second", "_templates.template3_benchmark_OPS", true ) 
 --sampleManager:addSample("Template", "Benchmark Template 2: Operation vs. Operation", "_templates.template4_benchmark_OPVS", true ) 
+--sampleManager:addSample("Template", "Template 5 - Code Samples", "_templates.template5_CodeSamples", true )  -- Nearly Empty Shell
 
 
 -- WORKS IN PROGRESS (WIP)

@@ -44,8 +44,16 @@ function gamepiece:new( group, x, y, params )
 	--table.dump(params)
 
 	-- visual Params
-	thePiece.w             = params.w or params.size or 40
-	thePiece.h             = params.h or params.size or 40
+	if( params.imagePaths ) then  -- Allow pieces with using images to have nil width/height
+		print("In imagepaths")
+		thePiece.w             = params.w or params.size
+		thePiece.h             = params.h or params.size
+	else
+		print("Not in imagepaths")
+
+		thePiece.w             = params.w or params.size or 40
+		thePiece.h             = params.h or params.size or 40
+	end
 	thePiece.baseEn        = params.baseEn
 	thePiece.imagePaths    = params.imagePaths
 	thePiece.spriteSheet   = params.spriteSheet
@@ -53,8 +61,17 @@ function gamepiece:new( group, x, y, params )
 	thePiece.maskImage     = params.maskImage
 	thePiece.maskWidth     = params.maskWidth or params.w or params.size or 40
 	thePiece.maskHeight    = params.maskHeight or params.h or params.size or 40
-	thePiece._maskScaleX   = params.maskXScale or thePiece.w/thePiece.maskWidth -- Can't set early, so precalculate and use later
-	thePiece._maskScaleY   = params.maskYScale or thePiece.h/thePiece.maskHeight -- Can't set early, so precalculate and use later
+	if(thePiece.w) then
+		thePiece._maskScaleX   = params.maskXScale or thePiece.w/thePiece.maskWidth -- Can't set early, so precalculate and use later
+	else
+		thePiece._maskScaleX   = params.maskXScale or 1
+	end
+	if(thePiece.h) then
+		thePiece._maskScaleY   = params.maskYScale or thePiece.h/thePiece.maskHeight -- Can't set early, so precalculate and use later
+	else
+		thePiece._maskScaleY   = params.maskYScale or 1
+	end
+	
 
 	-- callback Params
 	thePiece.onBegan     = params.onBegan
@@ -77,13 +94,20 @@ function gamepiece:new( group, x, y, params )
 		thePiece.images = images
 		
 		for k,v in pairs(imagePaths) do
-			images[k] = display.newImageRect( thePiece, imagePaths[k], thePiece.w, thePiece.h )
+			-- If the height or width is not specified, use newImage() instead.
+			if( thePiece.w == nil or thePiece.h == nil ) then
+				images[k] = display.newImage( thePiece, imagePaths[k] )
+			else
+				images[k] = display.newImageRect( thePiece, imagePaths[k], thePiece.w, thePiece.h )
+			end
+
 			images[k]:setReferencePoint( display.CenterReferencePoint )				
-			images[k].x = thePiece.w/2
-			images[k].y = thePiece.h/2
+			images[k].x = images[k].contentWidth/2
+			images[k].y = images[k].contentHeight/2
 			images[k].isVisible = false
 		end
 	end
+	
 	-- Sprite
 	if(thePiece.spriteSheet and thePiece.sequenceData) then
 		local spriteSheet  = thePiece.spriteSheet
@@ -111,8 +135,10 @@ function gamepiece:new( group, x, y, params )
 	end
 
 	-- Attach touch listener to this piece
-	thePiece.touch = touch
-	thePiece:addEventListener( "touch" , thePiece)
+	if( thePiece.onBegan or thePiece.onMoved or thePiece.onEnded ) then
+		thePiece.touch = touch
+		thePiece:addEventListener( "touch" , thePiece)
+	end
 
 	-------------------------------------------------
 	-- METHODS

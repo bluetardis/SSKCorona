@@ -120,10 +120,10 @@ createSliders = function ( )
 	-- Horizontal Slider
 	buttonX = centerX + 40
 	buttonY = screenBot - 50
-	tmpButton = ssk.buttons:quickHorizSlider( centerX, centerY, 300, 11, 
+	tmpButton = ssk.buttons:quickHorizSlider2( centerX, centerY, 300, 11, 
 											  "interface/trackHoriz",
 											  ssk.sbc.horizSlider2Table_CB, nil,
-											  imagesDir .. "interface/thumbHoriz.png", 40, 20,
+											  imagesDir .. "interface/thumbHoriz", 40, 20,
 											  layers.content )
 
 end
