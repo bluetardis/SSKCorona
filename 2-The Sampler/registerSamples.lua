@@ -156,7 +156,7 @@ sampleManager:addSample("SSKCorona Feature Testing", "Inputs - Vertical Snap (Vi
 -- ==
 -- Image Sheet Mgr
 -- ==
-sampleManager:addSample("SSKCorona Feature Testing", "Image Sheet Manager", "featureTesting.imageSheets.imgSheetMgr" )
+--EFM sampleManager:addSample("SSKCorona Feature Testing", "Image Sheet Manager", "featureTesting.imageSheets.imgSheetMgr" )
 
 -- ==
 -- IO

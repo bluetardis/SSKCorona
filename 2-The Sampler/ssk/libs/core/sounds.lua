@@ -22,7 +22,6 @@ if( not _G.ssk.sounds ) then
 	_G.ssk.sounds.effectsVolume = 0.8
 	_G.ssk.sounds.musicVolume   = 0.8
 	_G.ssk.sounds.musicChannel   = audio.findFreeChannel() 
-	_G.ssk.sounds.effectsChannel = _G.ssk.sounds.musicChannel + 1
 end
 
 sounds = _G.ssk.sounds
@@ -83,7 +82,6 @@ function sounds:setEffectsVolume( value )
 	self.effectsVolume = fnn(value or 1.0)
 	if(self.effectsVolume < 0) then self.effectsVolume = 0 end
 	if(self.effectsVolume > 1) then self.effectsVolume = 1 end
-	audio.setVolume( sounds.effectsVolume, {channel = self.effectsChannel} )
 	return self.effectsVolume
 end
 
@@ -137,8 +135,9 @@ function sounds:play( name )
 	end
 
 	if(entry.isEffect) then
-		audio.setVolume( sounds.effectsVolume, {channel = self.effectsChannel} )
-		audio.play( entry.handle, {channel = self.effectsChannel} )
+		local channel = audio.findFreeChannel(_G.ssk.sounds.musicChannel + 1) 
+		audio.setVolume( sounds.effectsVolume, {channel = channel} )
+		audio.play( entry.handle, {channel = channel} )
 	else
 		audio.setVolume( sounds.musicVolume, {channel = self.musicChannel} )
 		audio.play( entry.handle, {channel = self.musicChannel, loops = -1, fadein=entry.fadein} )
@@ -160,7 +159,8 @@ function sounds:stop( name )
 	end
 
 	if(entry.isEffect) then
-		audio.stop( self.effectsChannel )
+		-- Do nothing, can't stop sound effects
+		-- Note: Sound effects should not be long.
 	else
 		audio.stop( self.musicChannel )
 	end

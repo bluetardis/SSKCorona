@@ -29,7 +29,6 @@ _G.ssk = ssk
 -- ==
 require( "ssk.libs.global" )		-- Various global functions
 require( "ssk.libs.debugPrint" )	-- Level based debug printer
-require( "ssk.libs.advanced" )		-- Advanced stuff (dig at your own peril; comments and criticisms welcomed)
 
 -- ==
 --    Extensions (To existing Lua Classes)
@@ -38,6 +37,8 @@ require( "ssk.libs.extensions.io")
 require( "ssk.libs.extensions.math")
 require( "ssk.libs.extensions.string")
 require( "ssk.libs.extensions.table")
+require( "ssk.libs.extensions.timer")
+require( "ssk.libs.extensions.transition_color")
 
 -- ==
 --    Core (i.e. Used a lot and often by other SSK Classes)
@@ -48,28 +49,9 @@ require( "ssk.libs.core.math2d" )				-- 2D (vector) Math
 require( "ssk.libs.core.collisionCalculator" )	-- Collision Calculator 
 require( "ssk.libs.core.debug" )  				-- Debugging Tools & Utilities
 require( "ssk.libs.core.gem")					-- Game Event Manager
-require( "ssk.libs.core.imageSheets" )			-- Image Sheets Manager
-require( "ssk.libs.core.networking" )			-- Easy networking (layered on top of M.Y. Developer AutoLan)
 require( "ssk.libs.core.points" )				-- Simple Points 
 require( "ssk.libs.core.sounds" )				-- Sounds Manager
 
--- ==
---    Actions
--- ==
-require( "ssk.libs.actions.aiming" )			-- Aims (and auto-aims) objects.
-require( "ssk.libs.actions.facing" )			-- Facing using angles-per-second (not time).
-require( "ssk.libs.actions.moving" )			-- Moving using pixels-per-second (not time).
---require( "ssk.libs.actions.pathing" )			-- Path following (offline)
-require( "ssk.libs.actions.seeking" )			-- Target seeking (movement and aiming combined).
-
--- ==
---    Components
--- ==
-require( "ssk.libs.components.addDrag" )		-- Adds basic or physics-based dragging in one step.
-require( "ssk.libs.components.hasForce" )		-- Adds a single continuous (and controllable) force to an object.
-require( "ssk.libs.components.hasForces" )		-- Adds multiple continuous (and controllable) forces to an object.
-require( "ssk.libs.components.movesForward" )	-- Adds a single continuous (and controllable) forward force to an object.
-												-- (A forward force always pushes in the direction the object is facing.)
 
 -- ==
 --    Display Objects
@@ -83,15 +65,16 @@ require( "ssk.libs.display.backImage" )			-- Easy Background Image Maker (Used i
 require( "ssk.libs.display.arcs_ellipses" )		-- Arcs and Ellipses
 require( "ssk.libs.display.lines" )				-- Various line builders
 require( "ssk.libs.display.arrows" )			-- Various arrow builders
+require( "ssk.libs.display.chain" )				-- Chain Builder
 
 
 -- ==
 --    External Libraries (Stuff Made By Others)
 -- ==
-ssk.ascii85     = require( "ssk.libs.external.SatheeshJM.ascii85" ) -- ASCI85 Encoding Utility
+--ssk.ascii85     = require( "ssk.libs.external.SatheeshJM.ascii85" ) -- ASCI85 Encoding Utility
 --ssk.cbe			= require( "ssk.libs.CBEffects.Library" )				-- CBEffects Particle System
-ssk.ggchart		= require( "ssk.libs.external.GlitchGames.GGChart" )	-- Glitch Games Charts
-ssk.ggcolor		= require( "ssk.libs.external.GlitchGames.GGColour" ):new()	-- Glitch Games Colour Codes
+--ssk.ggchart		= require( "ssk.libs.external.GlitchGames.GGChart" )	-- Glitch Games Charts
+--ssk.ggcolor		= require( "ssk.libs.external.GlitchGames.GGColour" ):new()	-- Glitch Games Colour Codes
 
 -- ==
 --    Interface Building Stuff (Buttons, Labels, ... )
@@ -113,19 +96,9 @@ require( "ssk.libs.inputs.vertSnap" )		-- Vertical Snap Slider   (WARNING: IMPRO
 -- ==
 --    Miscellaneous
 -- ==
-require( "ssk.libs.dbmgr" )					-- (Rudimentary) DB Manager 
 require( "ssk.libs.gamePiece")				-- Game Piece 
+require( "ssk.libs.portableRandom" )			-- Portable Random Number Generator
 require( "ssk.libs.miscellaneous" )			-- Miscellaneous Utilities
-require( "ssk.libs.sequencer" )				-- Movement++ Sequencer
-
-
--- ==
---    Configuration Work (REQUIRED)
--- ==
-
--- ==
---    Slated for removal.... so don't use this stuff
--- ==
-ssk.behaviors = require( "ssk.libs.behaviors" )				-- Image Sheets Manager
-
+require( "ssk.libs.transitionImproved" )	-- Improved transition library
+require( "ssk.libs.xml" )					-- XML parser
 

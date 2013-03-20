@@ -69,13 +69,9 @@ This kit contains the following:
 |                  - Miscellaneous code snippets
 |                  - and more ...
 |
-|--\3-Game Frame-SP => Single Player Game Frame using SSK and Corona's Framework library.
+|--\3-Preset Packs => Additional button, label and sound presets.
 |
-|--\4-Game Frame-MP => Multi-Player Game Frame using SSK and Corona's Framework library.
-|
-|--\98-Preset Packs => Additional button, label and sound presets.
-|
-|--\99-TheResources => Free art and sound resources.
+|--\4-Resources => Free art and sound resources.
 |
 |--\others? => Stuff I use to maintain the library.
 
