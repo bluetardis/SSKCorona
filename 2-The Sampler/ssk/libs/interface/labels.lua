@@ -107,7 +107,7 @@ function labels:new( params, screenGroup )
 		else
 			labelInstance._old_setText = labelInstance.setText
 			function labelInstance:setText( text )
-				labelInstance._old_setText( text )				
+				labelInstance:_old_setText( text )				
 				self.text = text
 				return self.text
 			end
