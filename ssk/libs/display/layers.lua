@@ -42,13 +42,13 @@ function displayExtended.quickLayers( parentGroup, ... )
 
 	local lastGroup
 
-	dprint(1,"\\ (parentGroup)")
+	dprint(2,"\\ (parentGroup)")
 	
 	for i = 1, #arg do
 		local theArg = arg[i]
 			
 		if(type(theArg) == "string") then
-			dprint(1,"|--\\ " .. theArg)
+			dprint(2,"|--\\ " .. theArg)
 			local group = display.newGroup()
 			lastGroup = group
 			layers._db[#layers._db+1] = group 
@@ -58,7 +58,7 @@ function displayExtended.quickLayers( parentGroup, ... )
 		else -- Must be a table -- ALLOW UP TO 'ONE' ADDITIONAL LEVEL OF DEPTH
 			for j = 1, #theArg do
 				local theArg2 = theArg[j]
-				dprint(1,"   |--\\ " .. theArg2)
+				dprint(2,"   |--\\ " .. theArg2)
 				if(type(theArg2) == "string") then
 					local group = display.newGroup()
 					layers._db[#layers._db+1] = group 

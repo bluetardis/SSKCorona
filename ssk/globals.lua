@@ -69,6 +69,7 @@ _G._LIGHTGREY_ = {192, 192, 192, 255}; _G.colorNames[_LIGHTGREY_] = "LIGHTGREY";
 _G._RED_   = {255,   0,   0, 255}; _G.colorNames[_RED_] = "RED";_G.allColors[#_G.allColors+1] = _G._RED_
 _G._GREEN_ = {  0, 255,   0, 255}; _G.colorNames[_GREEN_] = "GREEN";_G.allColors[#_G.allColors+1] = _G._GREEN_
 _G._BLUE_  = {  0,   0, 255, 255}; _G.colorNames[_BLUE_] = "BLUE";_G.allColors[#_G.allColors+1] = _G._BLUE_
+_G._CYAN_  = {  0,   255, 255, 255}; _G.colorNames[_CYAN_] = "CYAN";_G.allColors[#_G.allColors+1] = _G._CYAN_
 
 _G._YELLOW_       = {0xff, 0xff,    0, 255}; _G.colorNames[_YELLOW_] = "YELLOW";_G.allColors[#_G.allColors+1] = _G._YELLOW_
 _G._ORANGE_       = {0xff, 0x66,    0, 255}; _G.colorNames[_ORANGE_] = "ORANGE";_G.allColors[#_G.allColors+1] = _G._ORANGE_
