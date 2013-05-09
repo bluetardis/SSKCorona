@@ -2,20 +2,18 @@ SSKCorona
 ============
 SSKCorona is a collection of Lua scripts designed to simplify and speed up the development of games and applications with the Corona SDK.
 
-##### Note
+Note
 'Corona' as used below and throughout SSK refers to the "Corona SDK" a product wholly owned and affiliated with Corona Labs Inc. 
 
-Table of Contents
-=================
+##### Table of Contents
+--------------------------
  * Latest News
  * Short and Sweet License 
- * Basic Usage
- 
+ * Basic Usage 
 
 
 ##### Latest News
-==============
-
+--------------------------
 As of 09 May 2013, the SSKCorona download has been reduced to the library ONLY.
 
 I am temporarily taking the sampler, preset packs, resources, etc. offline as I prepare to put out a new Corona SDK tutorial series.
@@ -27,8 +25,7 @@ So, apologies in advance, but SSK Corona (the library) is still fully functional
 
 
 ##### Short and Sweet License 
-==========================
-
+--------------------------
 1. You MAY use anything you find in SSKCorona to:
   * make applications for free or for profit ($).
   * make games for free or for profit ($).  
