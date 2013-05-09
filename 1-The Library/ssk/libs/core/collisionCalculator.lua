@@ -65,6 +65,14 @@ function ccmgr:newCalculator()
 		return true
 	end
 
+	function collisionsCalculator:addNames( ... )
+		for key, value in ipairs(arg) do
+        	self:addName( value )
+			--print("Added name:", value)
+		end
+	end
+
+
 	-- PRIVATE - DO NOT USE IN YOUR GAME CODE
 	function collisionsCalculator:configureCollision( colliderNameA, colliderNameB )
 		--

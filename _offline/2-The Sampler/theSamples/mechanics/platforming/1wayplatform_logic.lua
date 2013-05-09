@@ -160,7 +160,7 @@ createPlayer = function ( x, y, size )
 	player  = ssk.display.rect( layers.content, centerX, screenBot-20-size, 
 		{ size = size, myName = "thePlayer", fill = _BLUE_, stroke = _WHITE_, strokeWidth = 2, },
 		{ isFixedRotation = false, friction = 1.0, bounce = 0.0, 
-		  linearDamping=0.45, bodyType = "dynamic",
+		  linearDamping=0.45, bodyType = "dynamic", density = 1,
 		  colliderName = "player", calculator= myCC } )
 	return player
 end

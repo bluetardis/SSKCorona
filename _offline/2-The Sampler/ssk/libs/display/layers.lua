@@ -53,7 +53,7 @@ function displayExtended.quickLayers( parentGroup, ... )
 			lastGroup = group
 			layers._db[#layers._db+1] = group 
 			layers[theArg] = group 
-			parentGroup:insert( group )
+			layers:insert( group )
 
 		else -- Must be a table -- ALLOW UP TO 'ONE' ADDITIONAL LEVEL OF DEPTH
 			for j = 1, #theArg do

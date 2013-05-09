@@ -15,7 +15,7 @@
 -- Docs: https://github.com/roaminggamer/SSKCorona/wiki
 -- =============================================================
 
---local debugLevel = 1 -- Comment out to get global debugLevel from main.cs
+--local debugLevel = 2 -- Comment out to get global debugLevel from main.cs
 local dp = ssk.debugPrinter.newPrinter( debugLevel )
 local dprint = dp.print
 
@@ -228,22 +228,44 @@ function sbc.horizSlider2Table_CB( event )
 	local chainedCB  = target._chainedCB
 
 	local retVal = true
-
-	local newX = event.x
-
 	local left = (target.x - target.width/2) + myKnob.width/2
 	local right = (target.x + target.width/2) - myKnob.width/2
+	local top = (target.y - target.width/2) + myKnob.width/2
+	local bot = (target.y + target.width/2) - myKnob.width/2
+	local height = bot-top
 	local width = right-left
 
+	local newX = event.x
 	if(newX < left) then
 		newX = left
 	elseif(newX > right) then
 		newX = right
 	end
 
-	myKnob.x = newX
+	local newY = event.y
+	if(newY < top) then
+		newY = top
+	elseif(newY > bot) then
+		newY = bot
+	end
 
-	target.value = (newX-left) / width
+	if( myKnob.rotation == 0 ) then
+		myKnob.x = newX
+		target.value = (newX-left) / width
+
+	elseif( myKnob.rotation == 90 ) then
+			myKnob.y = newY
+			target.value = (newY-top) / height
+	
+	elseif( myKnob.rotation == 180 or myKnob.rotation == -180 ) then
+		myKnob.x = newX
+		target.value = (width-(newX-left)) / width
+
+	elseif( myKnob.rotation == 270 or myKnob.rotation == -90 ) then
+			myKnob.y = newY
+			target.value = (height-(newY-top)) / height
+	end
+
 	target.value = tonumber(string.format("%1.2f", target.value))
 
 	dprint(2, tostring(entryName) .. " Knob value == " .. target.value)

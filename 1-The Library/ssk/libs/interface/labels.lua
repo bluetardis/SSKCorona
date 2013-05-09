@@ -95,46 +95,58 @@ function labels:new( params, screenGroup )
 
 	-- 5. Assign methods based on embossed or not
 	if(labelInstance.emboss) then
-
-		function labelInstance:setText( text )
-			self.label.text = text
-			self.highlight.text = text
-			self.shadow.text = text
-			self.text = text
-			return self.text
+		
+		if(not labelInstance.setText) then
+			function labelInstance:setText( text )
+				self.label.text = text
+				self.highlight.text = text
+				self.shadow.text = text
+				self.text = text
+				return self.text
+			end
+		else
+			labelInstance._old_setText = labelInstance.setText
+			function labelInstance:setText( text )
+				labelInstance:_old_setText( text )				
+				self.text = text
+				return self.text
+			end
 		end
 
 		-- ==
 		--    myLabel:setLabelTextColor( textColor ) - Changes the text color of the label (works for embossed and regular text).
 		-- ==
 		function labelInstance:setLabelTextColor( textColor )
+			local label = self._label or self.label
 			local r = textColor[1] or 255
 			local g = textColor[2] or 255
 			local b = textColor[3] or 255
 			local a = textColor[4] or 255
-			self.label:setTextColor(r,g,b,a)
+			label:setTextColor(r,g,b,a)
 		end
 
 		-- ==
 		--    myLabel:setHighlightTextColor( textColor ) - Changes the embossed text highlight color of the label.
 		-- ==
 		function labelInstance:setHighlightTextColor( textColor )
+			local highlight = self._highlight or self.highlight
 			local r = textColor[1] or 255
 			local g = textColor[2] or 255
 			local b = textColor[3] or 255
 			local a = textColor[4] or 255
-			self.highlight:setTextColor(r,g,b,a)
+			highlight:setTextColor(r,g,b,a)
 		end
 
 		-- ==
 		--    myLabel:setShadowTextColor( textColor ) - Changes the embossed text shadow color of the label.
 		-- ==
 		function labelInstance:setShadowTextColor( textColor )
+			local shadow = self._shadow or self.shadow
 			local r = textColor[1] or 255
 			local g = textColor[2] or 255
 			local b = textColor[3] or 255
 			local a = textColor[4] or 255
-			self.shadow:setTextColor(r,g,b,a)
+			shadow:setTextColor(r,g,b,a)
 		end
 
 		-- ==

@@ -20,6 +20,7 @@ function io.exists( fileName, base )
 	if( base ) then
 		fileName = system.pathForFile( fileName, base )
 	end
+	if not fileName then return false end
 	local f=io.open(fileName,"r")
 	if (f == nil) then 
 		return false

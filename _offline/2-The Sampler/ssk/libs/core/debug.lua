@@ -42,13 +42,18 @@ end
 -- ==
 --    func() - what it does
 -- ==
-debug.monitorMem = function()
+debug.monitorMem = function( mainMemLabel, textureMemLabel )
+    
+	collectgarbage()
 
-    collectgarbage()
-    print( "MemUsage: " .. round(collectgarbage("count"),4))
+	local mainMenuUsage = "Main Memory: " .. round(collectgarbage("count"),2)  .. " KB"
+	local textMem = "Texture Memory:   " .. round(system.getInfo( "textureMemoryUsed" ) / (1024 * 1024),2) .. " MB"
 
-    local textMem = system.getInfo( "textureMemoryUsed" ) / (1024 * 1024)
-    print( "TexMem:   " .. textMem )
+    print(mainMenuUsage)
+	print(textMem)
+    
+    if(mainMemLabel) then mainMemLabel.text = mainMenuUsage end
+	if(textureMemLabel) then textureMemLabel.text = textMem end
 end
 
 

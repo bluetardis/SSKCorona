@@ -21,7 +21,7 @@ if( not _G.ssk.sounds ) then
 	_G.ssk.sounds.soundsCatalog = {}
 	_G.ssk.sounds.effectsVolume = 0.8
 	_G.ssk.sounds.musicVolume   = 0.8
-	_G.ssk.sounds.musicChannel   = audio.findFreeChannel() 
+	_G.ssk.sounds.musicChannels = {}
 end
 
 sounds = _G.ssk.sounds
@@ -99,7 +99,11 @@ function sounds:setMusicVolume( value )
 	self.musicVolume = fnn(value or 1.0)
 	if(self.musicVolume < 0) then self.musicVolume = 0 end
 	if(self.musicVolume > 1) then self.musicVolume = 1 end
-	audio.setVolume( sounds.musicVolume, {channel = self.musicChannel} )
+
+	for k,v in pairs( self.musicChannels ) do
+		--print(k,v)
+		audio.setVolume( sounds.musicVolume, {channel = v } )
+	end
 	return self.musicVolume
 end
 
@@ -135,12 +139,31 @@ function sounds:play( name )
 	end
 
 	if(entry.isEffect) then
-		local channel = audio.findFreeChannel(_G.ssk.sounds.musicChannel + 1) 
+		local channel = audio.findFreeChannel() 
+		
+		local oldName = self.musicChannels[channel]
+		
+		if( oldName ) then
+			self.musicChannels[oldName] = nil
+			self.musicChannels[channel] = nil
+		end
+		
 		audio.setVolume( sounds.effectsVolume, {channel = channel} )
 		audio.play( entry.handle, {channel = channel} )
 	else
-		audio.setVolume( sounds.musicVolume, {channel = self.musicChannel} )
-		audio.play( entry.handle, {channel = self.musicChannel, loops = -1, fadein=entry.fadein} )
+		local channel = self.musicChannels[name]
+		if( channel ) then
+			audio.setVolume( sounds.musicVolume, {channel = channel} )
+		else
+			local channel = audio.findFreeChannel() 
+			self.musicChannels[channel] = channel
+			self.musicChannels[name] = channel
+			audio.setVolume( sounds.musicVolume, {channel = channel} )
+			audio.play( entry.handle, {channel = channel, loops = -1, fadein=entry.fadein} )
+		end
+
+		--print("PLAYED MUSIC",self.musicChannels[name], channel)
+		--table.dump(self.musicChannels)
 	end
 
 	return true
@@ -158,11 +181,19 @@ function sounds:stop( name )
 		return false
 	end
 
+
 	if(entry.isEffect) then
 		-- Do nothing, can't stop sound effects
 		-- Note: Sound effects should not be long.
 	else
-		audio.stop( self.musicChannel )
+		
+		local channel = self.musicChannels[name]
+		if( channel ) then
+			audio.stop(channel)
+			self.musicChannels[name] = nil
+			self.musicChannels[channel] = nil
+			--print("STOPPED MUSIC")
+		end
 	end
 
 	return true

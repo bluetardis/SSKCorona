@@ -43,6 +43,45 @@ function buttons:addPreset( presetName, params )
 	local entry = {}
 	self.presetsCatalog[presetName] = entry
 
+	local copyParams = { "x", "y", "w", "h", "rotation",
+						 "kw", "kh", "unselKnobImg", "selKnobImg",
+	                     "touchMask",  "touchOffset", 
+						 "selRectFillColor", "unselRectFillColor",
+						 "selRectGradient", "unselRectGradient",
+						 "strokeWidth", "strokeColor", 
+						 "unselStrokeWidth", "unselStrokeColor", "selStrokeWidth", "selStrokeColor", 
+						 "unselImgSrc", "selImgSrc", "selImgFillColor", "unselImgFillColor", 
+						 "buttonOverlayRectColor", "buttonOverlayImgSrc",
+						 "onPress", "onRelease", "onEvent", "buttonType", 
+						 "pressSound", "releaseSound", "sound",
+					   }
+
+	for i = 1, #copyParams do
+		local paramName = copyParams[i]
+		entry[paramName] = params[paramName]
+	end
+
+	if( params.touchMask and not params.touchMaskW) then
+		local maskInfo = ssk.pnglib.getPngInfo( params.touchMask ) 
+		entry.touchMaskW     = maskInfo.width
+		entry.touchMaskH     = maskInfo.height
+	else
+		entry.touchMaskW     = params.touchMaskW
+		entry.touchMaskH     = params.touchMaskH
+	end
+
+	entry.unselRectEn  = fnn(params.unselRectEn, not params.unselImgSrc)
+	entry.selRectEn    = fnn(params.selRectEn, not params.selImgSrc)
+	entry.buttonType   = fnn(params.buttonType, "push" )
+	entry.text         = fnn(params.text, "")
+	entry.fontSize     = fnn(params.fontSize, 20)
+	entry.textColor    = fnn(params.textColor, {255,255,255,255})
+	entry.selTextColor = fnn(params.selTextColor, entry.textColor)
+	entry.textFont     = fnn(params.textFont, native.systemFontBold)
+	entry.textOffset   = fnn(params.textOffset, {0,0})
+    entry.emboss       = fnn(params.emboss, false)
+
+--[[
 	entry.x      = params.x
 	entry.y      = params.y
 	entry.w      = params.w
@@ -59,8 +98,7 @@ function buttons:addPreset( presetName, params )
 		entry.touchMaskH     = params.touchMaskH
 	end
 
-	entry.touchOffset    = params.touchOffset
-	
+	entry.touchOffset    = params.touchOffset	
 
 	entry.unselRectEn     = fnn(params.unselRectEn, not params.unselImgSrc)
 	entry.selRectEn       = fnn(params.selRectEn, not params.selImgSrc)
@@ -79,7 +117,6 @@ function buttons:addPreset( presetName, params )
 	entry.unselStrokeColor  = params.unselStrokeColor
 	entry.selStrokeWidth    = params.selStrokeWidth
 	entry.selStrokeColor    = params.selStrokeColor
-
 
 	entry.unselImgSrc     = params.unselImgSrc
 	entry.selImgSrc       = params.selImgSrc
@@ -106,6 +143,7 @@ function buttons:addPreset( presetName, params )
 	entry.releaseSound = params.releaseSound
 	entry.sound        = params.sound
     entry.emboss       = fnn(params.emboss, false)
+--]]
 
 end
 
@@ -118,13 +156,15 @@ end
 --    Returns handle to a new buttonInstance.
 -- ==
 function buttons:new( parentGroup, params )
+
+	local parentGroup = parentGroup or display.currentStage
 	local buttonInstance = display.newGroup()
 
 	-- 1. Check for catalog entry option and apply FIRST 
 	-- (allows us to override by passing params too)
 	buttonInstance.presetName = params.presetName
 	local presetCatalogEntry  = self.presetsCatalog[buttonInstance.presetName]
-
+		
 	if(presetCatalogEntry) then
 		for k,v in pairs(presetCatalogEntry) do
 			buttonInstance[k] = v
@@ -674,6 +714,300 @@ function buttons:presetRadio( parentGroup, presetName, x,y,w,h, text,onRelease, 
 	return tmpButton
 end
 
+function buttons:presetSlider( parentGroup, presetName, x,y,w,h, onEvent, onRelease, overrideParams)
+	local parentGroup = parentGroup or display.currentStage
+	local presetName = presetName or "default"
+	
+	local tmpParams = 
+	{ 
+		presetName = presetName,
+		w = w,
+		h = h,
+		x = x,
+		y = y,
+		buttonType = "slider",
+		text = text,
+		onEvent = onEvent,
+		onRelease = onRelease,
+	}
+
+	if(overrideParams) then
+		for k,v in pairs(overrideParams) do
+			tmpParams[k] = v
+		end
+	end
+
+	local tmpButton = self:new( parentGroup, tmpParams )
+
+	local sliderKnob = display.newGroup()
+
+	parentGroup:insert( sliderKnob )
+
+	sliderKnob.unsel = display.newImageRect(sliderKnob, tmpButton.unselKnobImg, tmpButton.kw, tmpButton.kh )
+	sliderKnob.sel   = display.newImageRect(sliderKnob, tmpButton.selKnobImg, tmpButton.kw, tmpButton.kh )
+	sliderKnob.sel.isVisible = false
+
+	sliderKnob.x = tmpButton.x - tmpButton.width/2  + tmpButton.width/2
+	sliderKnob.y = tmpButton.y
+	tmpButton.myKnob = sliderKnob
+	tmpButton.value = 0
+
+	sliderKnob.rotation = tmpButton.rotation
+
+	parentGroup:insert(sliderKnob)
+
+	-- ==
+	--    sliderInstance:getValue( ) - Get the current value for the slider.
+	--    
+	--    Returns a floating-point value in the range [ 0.0 , 1.0 ] representing the left-to-right position of the slider.
+	-- ==
+	function tmpButton:getValue()
+		return  tonumber(string.format("%1.2f", self.value))
+	end
+
+	-- ==
+	--    sliderInstance:setValue( val ) - Sets the current value of the slider and updates the knob-position.
+	--    
+	--    val - A floating-point value in the range [ 0.0 , 1.0 ] representing the left-to-right position of the slider.
+	-- ==
+	function tmpButton:setValue( val )
+		local knob = self.myKnob
+		local left = (self.x - self.width/2) + knob.width/2
+		local right = (self.x + self.width/2) - knob.width/2
+		local top = (self.y - self.width/2) + knob.width/2
+		local bot = (self.y + self.width/2) - knob.width/2
+		local height = bot-top
+		local width = right-left
+
+		if(val < 0) then
+			self.value = 0
+		elseif( val > 1 ) then
+			self.value = 1
+		else
+			self.value = tonumber(string.format("%1.2f", val))
+		end
+
+		if( knob.rotation == 0 ) then
+			knob.x = left + (width * self.value)
+
+		elseif( knob.rotation == 90 ) then
+			knob.y = top + (width * self.value)
+	
+		elseif( knob.rotation == 180 or knob.rotation == -180 ) then
+			knob.x = right - (width * self.value)
+
+		elseif( knob.rotation == 270 or knob.rotation == -90 ) then
+			knob.y = bot - (width * self.value)
+		end
+
+	end
+
+	-- ==
+	--    sliderInstance:disable( ) - Disables the slider and makes is translucent.  
+	-- ==
+	function tmpButton:disable( ) 
+		self.isEnabled = false
+		self.sel.alpha = 0.3
+		self.unsel.alpha = 0.3
+		self.myKnob.alpha = 0.3
+	end
+
+	-- ==
+	--    sliderInstance:enable( ) - Enables the slider and makes is opaque.  
+	-- ==
+	function tmpButton:enable( ) 
+		self.isEnabled = true
+		self.sel.alpha = 1.0
+		self.unsel.alpha = 1.0
+		self.myKnob.alpha = 1.0		
+	end
+
+	return tmpButton, sliderKnob
+end
+
+-- ============= touch() -- Touch handler for all button types (INTERNAL ONLY)
+function buttons:touch( params )
+	--for k,v in pairs(params) do print(k,v) end
+	local result         = true
+	local id		     = params.id 
+	local theButton      = params.target 
+	local phase          = params.phase
+	local sel            = theButton.sel
+	local unsel          = theButton.unsel
+	local onPress        = theButton.onPress
+	local onRelease      = theButton.onRelease
+	local onEvent        = theButton.onEvent
+	local buttonType     = theButton.buttonType
+	local parent         = theButton.parent
+	local sound          = theButton.sound
+	local pressSound     = theButton.pressSound
+	local releaseSound   = theButton.releaseSound
+	local forceInBounds  = params.forceInBounds
+
+	local theKnob = theButton.myKnob
+
+
+	-- If not enabled, exit immediately
+	if(theButton.isEnabled == false) then
+		return result
+	end
+
+	local buttonEvent = params -- For passing to callbacks
+
+	if(phase == "began") then
+		
+		if(theKnob and theKnob.sel) then -- This is a slider
+			theKnob.sel.isVisible = true
+			theKnob.unsel.isVisible = false
+		end
+
+		theButton:setHighlight(true)
+		display.getCurrentStage():setFocus( theButton, id )
+		theButton.isFocus = true
+
+		-- Only Pushbutton fires event here
+		if(buttonType == "push" or buttonType == "slider") then
+			-- PUSH BUTTON
+			--print("push button began")
+			theButton.isPressed = true
+			if( sound ) then audio.play( sound ) end
+			if( pressSound ) then audio.play( pressSound ) end
+			if( onPress ) then result = result and onPress( buttonEvent ) end
+			if( onEvent ) then result = result and onEvent( buttonEvent ) end
+		end
+
+	elseif theButton.isFocus then
+		local bounds = theButton.stageBounds
+		local x,y = params.x, params.y
+		local isWithinBounds = 
+			bounds.xMin <= x and bounds.xMax >= x and bounds.yMin <= y and bounds.yMax >= y
+
+		if( forceInBounds == true ) then
+			isWithinBounds = true
+		end
+
+		if( phase == "moved") then
+			if(buttonType == "push" or buttonType == "slider") then
+				theButton:setHighlight(isWithinBounds)
+				--sel.isVisible   = isWithinBounds
+				--unsel.isVisible = not isWithinBounds
+				if( onEvent ) then result = result and onEvent( buttonEvent ) end
+			elseif(buttonType == "toggle") then
+				if( not isWithinBounds ) then
+					theButton:setHighlight(theButton.isPressed)
+					--sel.isVisible   = theButton.isPressed
+					--unsel.isVisible = not theButton.isPressed					
+				else
+					theButton:setHighlight(true)
+				end
+			elseif(buttonType == "radio") then
+			end
+
+		elseif(phase == "ended" or phase == "cancelled") then
+			--print("buttonType " .. buttonType )
+			------------------------------------------------------
+			if(buttonType == "push" or buttonType == "slider") then -- PUSH BUTTON
+			------------------------------------------------------
+				--print "push button ended"	
+				
+				if(theKnob and theKnob.sel) then -- This is a slider
+					theKnob.sel.isVisible   = false
+					theKnob.unsel.isVisible = true
+				end
+							
+				theButton:setHighlight(false)
+
+				theButton.isPressed = false
+
+				if isWithinBounds or buttonType == "slider" then
+					if( sound ) then audio.play( sound ) end
+					if( releaseSound ) then audio.play( releaseSound ) end
+					if( onRelease ) then result = result and onRelease( buttonEvent ) end
+					if( onEvent ) then result = result and onEvent( buttonEvent ) end
+				end
+			
+			------------------------------------------------------
+			elseif(buttonType == "toggle") then -- TOGGLE BUTTON				
+			------------------------------------------------------
+				--print( "\ntoggle button ended -- " .. buttonEvent.phase )
+				if isWithinBounds then
+					if(theButton.isPressed == true) then
+						theButton.isPressed = false
+						if( sound ) then audio.play( sound ) end
+						if( releaseSound ) then audio.play( releaseSound ) end
+						if( onRelease ) then result = result and onRelease( buttonEvent ) end
+						if( onEvent ) then result = result and onEvent( buttonEvent ) end
+					else
+						theButton.isPressed = true
+						buttonEvent.phase = "began"
+						if( sound ) then audio.play( sound ) end
+						if( pressSound ) then audio.play( pressSound ) end
+						if( onPress ) then result = result and onPress( buttonEvent ) end
+						if( onEvent ) then result = result and onEvent( buttonEvent ) end
+					end					
+				end
+				theButton:setHighlight(theButton.isPressed)
+			------------------------------------------------------
+			elseif(buttonType == "radio") then -- RADIO BUTTON
+			------------------------------------------------------
+				--print "radio button ended" 
+				if isWithinBounds then
+					--print( "parent.currentRadio ==> " .. tostring(parent.currentRadio))
+					if( not parent.currentRadio ) then
+						--print("First radio press")
+					 
+					elseif( parent.currentRadio ~= theButton ) then
+						local oldRadio = parent.currentRadio
+						if( oldRadio ) then
+							oldRadio.isPressed = false
+							oldRadio:setHighlight(false)
+						end
+					end
+						
+					parent.currentRadio = theButton
+					buttonEvent.theButton = theButton
+
+					theButton.isPressed = true
+					--buttonEvent.phase = "ended"
+					if( sound ) then audio.play( sound ) end
+					if( onEvent ) then result = result and onEvent( buttonEvent ) end
+
+					if( releaseSound ) then audio.play( releaseSound ) end
+					if( onRelease ) then result = result and onRelease( buttonEvent ) end
+
+
+				end
+				
+				theButton:setHighlight(theButton.isPressed)
+			end
+			
+			-- Allow touch events to be sent normally to the objects they "hit"
+			display.getCurrentStage():setFocus( theButton, nil )
+			theButton.isFocus = false
+
+
+		end
+	end
+	return result
+end
+
+
+
+
+
+--- ===================================================================================================
+--- ===================================================================================================
+--- ===================================================================================================
+--- ===================================================================================================
+--- ===================================================================================================
+--- ===================================================================================================
+--- ===================================================================================================
+--- ===================================================================================================
+--- ===================================================================================================
+--- ===================================================================================================
+--- ===================================================================================================
+
+--[[
 -- ============= quickHorizSlider() -- Quick slider creator
 -- ==
 --    ssk.buttons:quickHorizSlider( x, y, w, h, imageBase, onEvent or nil , onRelease or nil , knobImg, kw, kh, parentGroup )
@@ -695,14 +1029,15 @@ end
 --    Returns a handle to a new sliderInstance.
 -- ==
 function buttons:quickHorizSlider( x,y,w,h,imageBase,onEvent,onRelease,knobImg, kw,kh, parentGroup)
+	local parentGroup = parentGroup or display.currentStage
 	local tmpParams = 
 	{ 
 		w = w,
 		h = h,
 		x = x,
 		y = y,
-		unselImgSrc = imagesDir .. imageBase .. ".png",
-		selImgSrc   = imagesDir .. imageBase .. "Over.png",
+		unselImgSrc = imageBase .. ".png",
+		selImgSrc   = imageBase .. "Over.png",
 		buttonType = "push",
 		pressSound = buttonSound,
 		onEvent = onEvent,
@@ -775,7 +1110,7 @@ end
 
 
 
--- ============= quickHorizSlider() -- Quick slider creator
+-- ============= quickHorizSlider2() -- Quick slider creator
 -- ==
 --    ssk.buttons:quickHorizSlider( x, y, w, h, imageBase, onEvent or nil , onRelease or nil , knobImg, kw, kh, parentGroup )
 --
@@ -796,26 +1131,30 @@ end
 --    Returns a handle to a new sliderInstance.
 -- ==
 function buttons:quickHorizSlider2( x,y,w,h,imageBase,onEvent,onRelease,knobImgBase, kw,kh, parentGroup)
+	local parentGroup = parentGroup or display.currentStage
 	local tmpParams = 
 	{ 
 		w = w,
 		h = h,
 		x = x,
 		y = y,
-		unselImgSrc = imagesDir .. imageBase .. ".png",
-		selImgSrc   = imagesDir .. imageBase .. "Over.png",
+		unselImgSrc = imageBase .. ".png",
+		selImgSrc   = imageBase .. "Over.png",
 		buttonType = "push",
 		pressSound = buttonSound,
 		onEvent = onEvent,
 		onRelease = onRelease,
 		emboss = true,
 	}
+
 	local tmpButton = self:new( parentGroup, tmpParams )
 
 	local sliderKnob = display.newGroup()
 
 	sliderKnob.unsel = display.newImageRect(sliderKnob, knobImgBase .. ".png", kw, kh )
 	sliderKnob.sel   = display.newImageRect(sliderKnob, knobImgBase .. "Over.png", kw, kh )
+	sliderKnob.unsel.rotation = sliderKnob.rotation
+	sliderKnob.sel.rotation = sliderKnob.rotation
 	sliderKnob.sel.isVisible = false
 
 	sliderKnob.x = tmpButton.x - tmpButton.width/2  + tmpButton.width/2
@@ -1053,3 +1392,4 @@ function buttons:touch( params )
 	return result
 end
 
+--]]
