@@ -117,7 +117,7 @@ createSliders = function ( )
 	local dummyTable = { testValue = 0.25, testValue2 = 0.75 }
 
 	-- Horizontal Slider (Corona Sample Style Art)
-	local tmp,knob = ssk.buttons:presetSlider( layers.sliders, "defaultslider", 
+	local tmp,knob = ssk.buttons:presetSlider( layers.content, "defaultslider", 
 										  centerX, centerY - 50, 300, 11, 
 										  ssk.sbc.horizSlider2Table_CB, nil, { rotation = 0 } )
 
@@ -125,7 +125,7 @@ createSliders = function ( )
 
 
 	-- Horizontal Slider (Gel)
-	local tmp,knob = ssk.buttons:presetSlider( layers.sliders, "bluegelslider", 
+	local tmp,knob = ssk.buttons:presetSlider( layers.content, "bluegelslider", 
 										  centerX, centerY + 50, 300, 11, 
 										  ssk.sbc.horizSlider2Table_CB, nil, { rotation = 0 } )
 	ssk.sbc.prep_horizSlider2Table( tmp, dummyTable, "testValue2", pbCB )
