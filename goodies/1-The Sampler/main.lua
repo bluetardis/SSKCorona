@@ -59,6 +59,7 @@ helpFont = native.systemFont -- "Courier New"
 -- Load Presets (after setting gameFont and helpFont)
 require("data.rg_basicButtons.presets")
 require("data.rg_basicLabels.presets")
+require("data.rg_bluegelButtons.presets")
 require("data.rg_basicSounds.presets")
 
 ----------------------------------------------------------------------

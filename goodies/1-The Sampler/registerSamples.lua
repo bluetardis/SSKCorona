@@ -59,6 +59,7 @@ sampleManager:addSample("SSKCorona Feature Testing", "Toggle Buttons", "featureT
 sampleManager:addSample("SSKCorona Feature Testing", "Radio Buttons", "featureTesting.buttons.radioButtonsTest_logic" )
 sampleManager:addSample("SSKCorona Feature Testing", "Sliders", "featureTesting.buttons.slidersTest_logic" )
 sampleManager:addSample("SSKCorona Feature Testing", "Standard Button Callbacks", "featureTesting.buttons.buttonCallbacksTest_logic" )
+sampleManager:addSample("SSKCorona Feature Testing", "All Together", "featureTesting.buttons.alltogether_logic", true )
 
 -- ==
 -- Label Factory Tests

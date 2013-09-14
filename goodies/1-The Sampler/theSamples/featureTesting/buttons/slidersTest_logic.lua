@@ -109,23 +109,26 @@ createSliders = function ( )
 	local function pbCB( event )
 		local target = event.target
 		local phase  = event.phase
-		local myText = target:getText()
+		local myValue = target:getValue()
 
-		print(myText .. " ==> " .. phase)
+		print(myValue .. " ==> " .. phase)
 	end
 
+	local dummyTable = { testValue = 0.25, testValue2 = 0.75 }
+
 	-- Horizontal Slider (Corona Sample Style Art)
-	tmpButton = ssk.buttons:quickHorizSlider( layers.content, centerX, centerY - 50, 300, 11, 
-											  "images/interface/trackHoriz",
-											  ssk.sbc.horizSlider2Table_CB, nil,
-											  imagesDir .. "interface/thumbHoriz", 40, 20)
+	local tmp,knob = ssk.buttons:presetSlider( layers.sliders, "defaultslider", 
+										  centerX, centerY - 50, 300, 11, 
+										  ssk.sbc.horizSlider2Table_CB, nil, { rotation = 0 } )
+
+	ssk.sbc.prep_horizSlider2Table( tmp, dummyTable, "testValue", pbCB )
 
 
 	-- Horizontal Slider (Gel)
-	tmpButton = ssk.buttons:quickHorizSlider( layers.content, centerX, centerY + 50, 300, 11, 
-											  "images/interface/trackGelHoriz",
-											  ssk.sbc.horizSlider2Table_CB, nil,
-											  imagesDir .. "interface/thumbGelHoriz", 40, 20)
+	local tmp,knob = ssk.buttons:presetSlider( layers.sliders, "bluegelslider", 
+										  centerX, centerY + 50, 300, 11, 
+										  ssk.sbc.horizSlider2Table_CB, nil, { rotation = 0 } )
+	ssk.sbc.prep_horizSlider2Table( tmp, dummyTable, "testValue2", pbCB )
 
 end
 

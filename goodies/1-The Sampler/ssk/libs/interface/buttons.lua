@@ -725,7 +725,7 @@ function buttons:presetSlider( parentGroup, presetName, x,y,w,h, onEvent, onRele
 		h = h,
 		x = x,
 		y = y,
-		buttonType = "slider",
+		buttonType = "push",
 		text = text,
 		onEvent = onEvent,
 		onRelease = onRelease,
@@ -866,7 +866,7 @@ function buttons:touch( params )
 		theButton.isFocus = true
 
 		-- Only Pushbutton fires event here
-		if(buttonType == "push" or buttonType == "slider") then
+		if(buttonType == "push") then
 			-- PUSH BUTTON
 			--print("push button began")
 			theButton.isPressed = true
@@ -887,7 +887,7 @@ function buttons:touch( params )
 		end
 
 		if( phase == "moved") then
-			if(buttonType == "push" or buttonType == "slider") then
+			if(buttonType == "push") then
 				theButton:setHighlight(isWithinBounds)
 				--sel.isVisible   = isWithinBounds
 				--unsel.isVisible = not isWithinBounds
@@ -906,7 +906,7 @@ function buttons:touch( params )
 		elseif(phase == "ended" or phase == "cancelled") then
 			--print("buttonType " .. buttonType )
 			------------------------------------------------------
-			if(buttonType == "push" or buttonType == "slider") then -- PUSH BUTTON
+			if(buttonType == "push") then -- PUSH BUTTON
 			------------------------------------------------------
 				--print "push button ended"	
 				
@@ -919,7 +919,7 @@ function buttons:touch( params )
 
 				theButton.isPressed = false
 
-				if isWithinBounds or buttonType == "slider" then
+				if isWithinBounds then
 					if( sound ) then audio.play( sound ) end
 					if( releaseSound ) then audio.play( releaseSound ) end
 					if( onRelease ) then result = result and onRelease( buttonEvent ) end
