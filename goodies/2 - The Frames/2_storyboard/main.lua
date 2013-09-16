@@ -35,12 +35,6 @@ require "ssk.loadSSK"
 require("build_settings")
 --table.print_r(build_settings)
 
-_G.ifc_Splash   = require "modules.ifc_Splash"
-_G.ifc_MainMenu = require "modules.ifc_MainMenu"
-_G.ifc_Options  = require "modules.ifc_Options"
-_G.ifc_Credits  = require "modules.ifc_Credits"
-_G.ifc_PlayGUI  = require "modules.ifc_PlayGUI"
-
 require( "sounds.sounds" )
 
 
@@ -50,6 +44,25 @@ require( "sounds.sounds" )
 
 io.output():setvbuf("no") -- Don't use buffer for console messages
 display.setStatusBar(display.HiddenStatusBar)  -- Hide that pesky bar
+
+-- Load the saved 'options' table if it exists, otherwise create one.
+if( io.exists( "options.txt", system.DocumentsDirectory ) ) then
+	print("Loading OPTIONS file" )
+	_G.options  = table.load( "options.txt" )
+end
+
+if( not options ) then
+	print("Creating OPTIONS file" )
+	_G.options = 
+		{ 
+		   effectsVolume = 0.25, 
+		   musicVolume = 0.25, 
+		   difficulty = "Normal",
+		   debugEn = true,
+   	   }
+	table.save( options, "options.txt" )		
+end
+
 
 ssk.gem:post(  "EFFECTS_VOLUME_CHANGE" ) -- Fake volume change to update the effects volume
 ssk.gem:post(  "MUSIC_VOLUME_CHANGE" )   -- Fake volume change to update the sound volume and start the soundtrack if neccesary

@@ -85,36 +85,3 @@ local params =
     strokeColor  = {0,0,0,0},
 }
 mgr:addPreset( "bluegelslider", params )
-
--- ============================
--- ================== RG BUTTON
--- ============================
-local params = 
-{ 
-	unselImgSrc  = imagesDir .. "badges/rg.png",
-	selImgSrc    = imagesDir .. "badges/rg.png",
-}
-mgr:addPreset( "RGButton", params )
-
--- ============================
--- ======= Corona  BADGE/BUTTON 150 x 144
--- ============================
-local params = 
-{ 
-	unselImgSrc  = imagesDir .. "badges/coronaBadge_smallt.png",
-	selImgSrc    = imagesDir .. "badges/coronaBadge_smallt.png",
-}
-mgr:addPreset( "CoronaButton", params )
-
-
--- ============================
--- ======= Corona  BADGE/BUTTON 75 x 72
--- ============================
-params.buttonOverlayRectColor = nil
-params.unselImgSrc = imagesDir .. "badges/coronaBadge_tinyt.png"
-params.selImgSrc   = imagesDir .. "badges/coronaBadge_tinyt.png"
-params.unselRectEn = false
-params.selRectEn   = false
-params.strokeWidth = 0
-mgr:addPreset( "CoronaButtonTiny", params )
-

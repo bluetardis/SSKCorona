@@ -12,27 +12,6 @@ local scene      = storyboard.newScene()
 local dp = ssk.debugPrinter.newPrinter( debugLevel )
 local dprint = dp.print
 
-----------------------------------------------------------------------
---	Initialization
-----------------------------------------------------------------------
--- Load the saved 'options' table if it exists, otherwise create one.
-if( io.exists( "options.txt", system.DocumentsDirectory ) ) then
-	print("Loading OPTIONS file" )
-	_G.options  = table.load( "options.txt" )
-end
-
-if( not options ) then
-	print("Creating OPTIONS file" )
-	_G.options = 
-		{ 
-		   effectsVolume = 0.25, 
-		   musicVolume = 0.25, 
-		   difficulty = "Normal",
-		   debugEn = true,
-   	   }
-	table.save( options, "options.txt" )		
-end
-
 
 ----------------------------------------------------------------------
 --								LOCALS								--

@@ -1,0 +1,28 @@
+--
+-- The problem
+--
+local function printIt( enable )
+	local enable = enable or true
+	print(" printIt() " )
+end
+
+printIt( false ) -- Doesn't work as expected
+
+
+
+
+
+
+
+
+
+
+--
+-- The solution
+--
+local function printIt( enable )
+	local enable = fnn(enable, true )
+	print(" printIt() " )
+end
+
+printIt( false ) -- Doesn't work as expected
