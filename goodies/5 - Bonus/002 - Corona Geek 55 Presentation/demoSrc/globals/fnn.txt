@@ -3,13 +3,14 @@
 --
 local function printIt( enable )
 	local enable = enable or true
-	print(" printIt() " )
+
+	if( enable ) then
+		print(" printIt() " )
+	end
+
 end
 
 printIt( false ) -- Doesn't work as expected
-
-
-
 
 
 
@@ -22,7 +23,11 @@ printIt( false ) -- Doesn't work as expected
 --
 local function printIt( enable )
 	local enable = fnn(enable, true )
-	print(" printIt() " )
+
+	if( enable ) then
+		print(" printIt() " )
+	end
+
 end
 
-printIt( false ) -- Doesn't work as expected
+printIt( false ) -- Works properly now.

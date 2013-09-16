@@ -17,6 +17,7 @@ myCircle = nil
 
 
 
+
 --
 -- A Solution
 --
@@ -24,8 +25,8 @@ myCircle = nil
 local myCircle = display.newCircle( 100, 100, 20 )
 
 local function removeIt(  )
-	if( not isDisplayObject( myCircle )
-		then return
+	if( not isDisplayObject( myCircle ) ) then
+		return
 	end
 	
 	myCircle:removeSelf()
