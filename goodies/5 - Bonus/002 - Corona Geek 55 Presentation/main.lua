@@ -89,12 +89,10 @@ _G.sceneCrossFadeTime = 300
 --storyboard.gotoScene( "s_Globals" )
 --storyboard.gotoScene( "s_Extensions" )
 --storyboard.gotoScene( "s_Goodies" )
-storyboard.gotoScene( "s_Classes3" )
+--storyboard.gotoScene( "s_Classes3" )
 
 
 --storyboard.gotoScene( "s_SplashLoading" )
---storyboard.gotoScene( "s_MainMenu" )
+storyboard.gotoScene( "s_MainMenu" )
 --storyboard.gotoScene( "s_Credits" )
 --storyboard.gotoScene( "s_PlayGUI" )
-
-ssk.debug.monitorMem()
