@@ -1,6 +1,25 @@
+
 SSKCorona
 ============
 SSKCorona is a collection of Lua scripts designed to simplify and speed up the development of games and applications with the Corona SDK.  'Corona' as used below and throughout SSK refers to the 'Corona SDK' a product wholly owned and affiliated with Corona Labs Inc. 
+
+Notice! (21 DEC 2013)
+============
+SSKCorona is getting split up.  I am currently splitting it into separate smaller components.  I am doing this because maintaining the whole library and ensuring it stays up-to-date is getting too time consuming for me.  Also, many folks only use a sub-set of the kit, so why install it all!?
+
+
+
+
+Graphics 1.0
+============
+This version is compatible with OLD Corona. i.e. Graphics 1.0 Corona
+
+
+Graphics 2.0
+============
+This is a one-time quick update (to graphics 2.0) for people using the whole SSK package.  It comes with no guarantees.  Instead, all future versions of SSK will be distributed as discrete libraries.  (See notice above.)
+
+
 
 ##### Docs (Wiki)
 --------------------------
