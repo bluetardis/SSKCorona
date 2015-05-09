@@ -1,6 +1,6 @@
 
 SSKCorona
 ============
-This repository has moved, please go here:
+I'm preparing to re-release SSK, the sampler, and demos.  Stay tuned!
 
-https://github.com/roaminggamer/RG_FreeStuff
+09 MAY 2015
