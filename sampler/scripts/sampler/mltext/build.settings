@@ -1,0 +1,16 @@
+settings = 
+{
+	orientation = 
+	{
+		--default = "portrait",
+		default = "landscapeRight",
+		supported = 
+		{
+            --"portrait", "portraitUpsideDown",
+			"landscapeRight", "landscapeLeft",
+		},
+					
+	},
+
+}
+	
