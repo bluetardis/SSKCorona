@@ -323,7 +323,7 @@ createHelpButton = function (  group )
 		'<font size="18" color="SteelBlue">Installing SSK and using it in your projects.</font><br><br>' ..
 		'Besides desmonstrating the how and why of using SSK, the sampler is here to encourage<br>'..
 		'you to use SSK.  This document will show you how:<br>' ..
-		'<a href = "VIDEO_URL">Please click here to download a PDF.</a><br><br>' ..
+		'<a href = "https://github.com/roaminggamer/SSKCorona/raw/master/docs/SSK_UserGuide.pdf">Please click here to download a PDF.</a><br><br>' ..
 
 		'<font size="18" color="SteelBlue">Thank You</font><br><br>' ..
 		'Thank you very much for downloading and using the sampler.  If you want to give me<br>'..
