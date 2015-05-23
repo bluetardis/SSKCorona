@@ -1,0 +1,27 @@
+settings = 
+{
+	orientation =  { default = "landscapeRight", supported =  { "landscapeRight", "landscapeLeft",},},
+
+	iphone =
+	{
+		plist =
+		{
+			UIAppFonts = { 
+				-- REMEMBER OTF/TTF EXTENSION HERE
+				"OpenSans Bold.ttf",
+				"OpenSans Bold Italic.ttf",
+
+				"AvenirLTStd-Light.ttf",
+				"AvenirNextLTPro-Regular.ttf",
+				"AvenirNextLTPro-BoldIt.ttf",
+
+				"Open Sans Condensed.ttf",
+				"Open Sans.ttf",
+				"Oswald.otf",
+
+
+			},
+		},
+	},
+}
+	

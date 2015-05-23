@@ -3,14 +3,10 @@
 -- =============================================================
 local public = {}
 
-local game = require "samples.AskEd.wordLookup.app"
-
 function public.init( group )
-	game.init( group )
 end
 
 function public.cleanup( )
-	game.cleanup( )
 end
 
 function public.run( group )
@@ -23,16 +19,13 @@ function public.run( group )
 	local mRand 		= math.random
 
 	-- Lua and Corona Forward Declarations
-	local mRand 			= math.random
-	local getTimer 			= system.getTimer
+	local mRand 		= math.random
+	local getTimer 		= system.getTimer
 
-	game.run( group )
+	local getTimer 		= system.getTimer
 
-
-	local getTimer = system.getTimer
-
-	local sqlDB 		= require "samples.AskEd.wordLookup.sqlDB"
-	local tableDB 		= require "samples.AskEd.wordLookup.tableDB"
+	local sqlDB 		= require "samples.askEd.wordLookup.sqlDB"
+	local tableDB 		= require "samples.askEd.wordLookup.tableDB"
 
 	collectgarbage( "collect" )
 	local count1 = collectgarbage("count")
@@ -41,22 +34,28 @@ function public.run( group )
 	tableDB.initDB( "images/asked/words_81k.tbl" )
 	local count3 = collectgarbage("count")
 
+	local startY = centerY - 50
 
-	easyIFC:quickLabel( group, " words_81k.db memory size => " .. count2 - count1 .. " KB", centerX, top + 20 , "Consolas", 10, _W_ )
-	easyIFC:quickLabel( group, "words_81k.tbl memory size => " .. count3 - count2 .. " KB", centerX, top + 40 , "Consolas", 10, _W_ )
+
+	easyIFC:quickLabel( group, " words_81k.db memory size => " .. count2 - count1 .. " KB", centerX, startY + 20 , "Consolas", 12, _W_ )
+	easyIFC:quickLabel( group, "words_81k.tbl memory size => " .. count3 - count2 .. " KB", centerX, startY + 40 , "Consolas", 12, _W_ )
 	--print( " words_81k.db memory size => " .. count2 - count1 .. " KB")
 	--print( "words_81k.tbl memory size => " .. count3 - count2 .. " KB")
 
+	local searchMult = onSimulator and 100 or 5
+
+
+
 	local function runTest1()
-		sqlDB.test(group, top + 60, 1000)
+		sqlDB.test(group, startY + 60, 5 * searchMult)
 	end
 
 	local function runTest2()
-		tableDB.test(group, top + 80, 1000)
+		tableDB.test(group, startY + 80, 5  * searchMult)
 	end
 
 	local function runTest3()
-		tableDB.test(group, top + 100, 100000)
+		tableDB.test(group, startY + 100, 10000 * searchMult)
 	end
 
 	nextFrame(function() runTest1()  

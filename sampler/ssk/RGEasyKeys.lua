@@ -126,7 +126,7 @@ onKey = function( event )
 
 	event.name = nil
 
-	if( debugLevel >= 2) then
+	if( debugLevel >= 2 ) then
 		print("BOOYA")
 		post( "ON_KEY", event, 2 )
 	else

@@ -57,7 +57,7 @@ function buttons:addButtonPreset( presetName, params )
 						 "strokeWidth", "strokeColor", 
 						 "unselStrokeWidth", "unselStrokeColor", "selStrokeWidth", "selStrokeColor", 
 						 "unselImgSrc", "selImgSrc", "selImgFillColor", "unselImgFillColor",  "selKnobImgFillColor", "unselKnobImgFillColor", 
-						 "buttonOverlayRectColor", "buttonOverlayImgSrc",
+						 "buttonOverlayRectColor", "buttonOverlayImgSrc", "buttonOverlayFillColor",
 						 "onPress", "onRelease", "onEvent", "buttonType", 
 						 "pressSound", "releaseSound", "sound", "cornerRadius", "labelHorizAlign" 
 					   }
@@ -342,6 +342,16 @@ function buttons:newButton( parentGroup, params )
 		local overlayImage = display.newImageRect( buttonInstance.buttonOverlayImgSrc, buttonInstance.w, buttonInstance.h)
 		buttonInstance:insert( overlayImage, false )
 		buttonInstance.overlayImage = overlayImage
+		
+
+		if(buttonInstance.buttonOverlayFillColor ) then
+			local r = fnn(buttonInstance.buttonOverlayFillColor[1], 1)
+			local g = fnn(buttonInstance.buttonOverlayFillColor[2], 1)
+			local b = fnn(buttonInstance.buttonOverlayFillColor[3], 1)
+			local a = fnn(buttonInstance.buttonOverlayFillColor[4], 1)
+			buttonInstance.overlayImage:setFillColor(r,g,b,a)
+		end
+		
 	end
 
 	-- BUTTON TEXT

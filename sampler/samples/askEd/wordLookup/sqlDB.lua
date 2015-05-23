@@ -81,9 +81,9 @@ local function testSearchSpeed( group, y, iterations )
 	local endTime = system.getTimer()
 	--print( endTime )
 
-	local result = "Did " .. iterations .. " searches in " .. endTime - startTime .. " ms"
+	local result = "Did " .. iterations .. " SQL searches in " .. round(endTime - startTime,6) .. " ms"
 	print(result)
-	easyIFC:quickLabel( group, result, centerX, y, "Consolas", 10, _W_ )
+	easyIFC:quickLabel( group, result, centerX, y, "Consolas", 12, _W_ )
 
 	--local t = display.newText(result, 10, 140, null, 24)
 	--t.anchorX = 0

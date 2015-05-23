@@ -1,0 +1,2 @@
+require "golden"
+--require "graph"

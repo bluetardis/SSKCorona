@@ -41,7 +41,7 @@ function public.run( group )
 
 	public.isRunning = true		
 
-	local ballTrail = require "samples.AskEd.ballTrail.ballTrail"
+	local ballTrail = require "samples.askEd.ballTrail.ballTrail"
 
 	-- Localizations
 	local newCircle 	= ssk.display.newCircle

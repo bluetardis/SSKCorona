@@ -13,7 +13,7 @@ local easyIFC   	= ssk.easyIFC
 local function initDB( dbfile )
 	print("\n**** DBMGR: initDB() -> " .. dbfile .. "\n")
 	db = table.load( dbfile, system.ResourceDirectory )
-	print("\n**** DBMGR: initDB() - Completed")		
+	print("\n**** DBMGR: initDB() - Completed", db)
 	local len = 0
 	for k,v in pairs(db) do len = len + 1 end
 	print("DB entries: " .. len)	
@@ -53,8 +53,8 @@ local function testSearchSpeed( group, y, iterations )
 	end
 	local endTime = system.getTimer()
 
-	local result = "Did " .. iterations .. " searches in " .. endTime - startTime .. " ms"
-	easyIFC:quickLabel( group, result, centerX, y, "Consolas", 10, _W_ )
+	local result = "Did " .. iterations .. " TABLE searches in " .. round(endTime - startTime,6) .. " ms"
+	easyIFC:quickLabel( group, result, centerX, y, "Consolas", 12, _W_ )
 	print(result)
 
 end

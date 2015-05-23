@@ -41,7 +41,7 @@ newRect( layers.background, centerX, centerY, { w = fullw, h = fullh, fill = hex
 -- Discover Samples and Draw Menu & Interface
 --
 local sampleMgr =  require "scripts.sampler.manager"
-sampleMgr.autoUpdate = true
+--sampleMgr.autoUpdate = true
 sampleMgr.discover()
 
 local mlText = require "scripts.sampler.mltext.mltext"
@@ -265,6 +265,7 @@ createBuyButton = function( group, x , y, buyLink  )
 	display.remove( buyButton )
 	buyButton = easyIFC:presetPush( group, "buy_button", x, y, 25, 25, "$", onBuy, { labelSize = 12 } )
 	buyButton.buyLink = buyLink
+	buyButton.isVisible = false
 end
 
 createRunButton = function (  group, x, y )
@@ -301,29 +302,32 @@ createHelpButton = function (  group )
 		'<font size="18" color="SteelBlue">About The Sampler</font><br><br>' ..
 		'The sampler can be run in the (OS X and Windows) simulators as well as on Android<br>' .. 
 		'and iOS devices.<br>' ..
-		'The samples themselves have been split into four categories:<br><br>' ..
+		'The samples themselves have been split into five categories:<br><br>' ..
 		'1. <font color="ForestGreen">askEd</font>These are samples derived from my answers to interesting forums questions.<br><br>' ..
+		
 		'2. <font color="ForestGreen">core</font>These samples provide usage examples for core SSK features.  If you are trying<br>' ..
 		'to learn how to use SSK, you should take a look at these.<br><br>' ..
+		
 		'3. <font color="ForestGreen">demos</font>These samples demonstrate free and paid modules developed solve specific<br>' ..
 		'app & game development problems.<br><br>' ..
+		
 		'4. <font color="ForestGreen">game_guts</font>These samples show how to make interesting game mechanics.  This<br>' ..
 		'set of samples will grow over time, so be sure to check back!<br><br>' ..
-
+		
 		'Within each category you will find an ever growing list of samples.<br><br>' ..
 
 		'<font size="18" color="SteelBlue">Running The Sampler</font><br><br>' ..
-		'<a href = "http://youtu.be/SEQPPeP0vsQ?hd=1">Please click here to watch an (external) video that talks about how the sampler works.</a><br><br>' ..
+		'<a href = "http://bit.ly/ssk_run_sampler">Please click here to watch an (external) video that talks about how the sampler works.</a><br><br>' ..
 
 		'<font size="18" color="SteelBlue">Extracting SSK Sampler Code</font><br><br>' ..
 		'You should feel free to extract code from the SSK samples and to use it in your own<br>' ..
 		'apps and games.  This video will show you how:<br>' ..
-		'<a href = "VIDEO_URL">Please click here to watch an (external) video that talks about how to extract sample code.</a><br><br>' ..
+		'<a href = "http://bit.ly/ssk_extracting_samples">Please click here to watch an (external) video that talks about how to extract sample code.</a><br><br>' ..
 
 		'<font size="18" color="SteelBlue">Installing SSK and using it in your projects.</font><br><br>' ..
 		'Besides desmonstrating the how and why of using SSK, the sampler is here to encourage<br>'..
 		'you to use SSK.  This document will show you how:<br>' ..
-		'<a href = "https://github.com/roaminggamer/SSKCorona/raw/master/docs/SSK_UserGuide.pdf">Please click here to download a PDF.</a><br><br>' ..
+		'<a href = "http://bit.ly/ssk_users_guide">Please click here to download a PDF.</a><br><br>' ..
 
 		'<font size="18" color="SteelBlue">Thank You</font><br><br>' ..
 		'Thank you very much for downloading and using the sampler.  If you want to give me<br>'..
@@ -431,10 +435,12 @@ easyIFC:quickLabel( layers.menu, "by: Roaming Gamer, LLC." , centerX, centerY - 
 
 local function onKey( event )
 	--table.dump(event)
-	if( event.phase == "up" and event.descriptor == "r" ) then
+	if( event.phase == "up" and event.descriptor == "r" and not event.isCtrlDown ) then
 		onRunLast()
 	end
-end; listen( "ON_KEY", onKey )
+end; 
+
+nextFrame( function() listen( "ON_KEY", onKey ) end, 30 )
 
 display.setStatusBar( display.HiddenStatusBar )
 

@@ -26,6 +26,7 @@ local strFormat 	= string.format
 local mFloor		= math.floor
 local angle2Vector	= ssk.math2d.angle2Vector
 local scaleVec		= ssk.math2d.scale
+local isValid 		= display.isValid
 
 -- ==
 --		noErrorAlerts(	) - Turns off those annoying error popups! :)
@@ -644,6 +645,25 @@ function misc.protoDim( group, obj, fontSize, color  )
 	--if( obj.anchorY == 0 ) then tmp.x = tmp.x + ch/2 end
 	nextFrame( function() tmp:toFront() end, 500 )
 end
+
+function misc.aboveY( obj, params )
+	if skip(obj) then return end 
+	local x,y = obj.parent:localToContent( obj.x, obj.y )
+	if( y < params.y ) then 
+		post(params.eventName, { y = y } )
+		--print("POSTING", params.eventName)
+	end
+end
+
+function misc.belowY( obj, params )
+	if( not isValid( obj ) ) then return end
+	local x,y = obj.parent:localToContent( obj.x, obj.y )
+	if( y > params.y ) then 
+		post(params.eventName, { y = y } )
+		--print("POSTING", params.eventName)
+	end
+end
+
 
 
 -- ========================================================================

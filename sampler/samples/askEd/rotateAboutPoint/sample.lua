@@ -3,7 +3,7 @@
 -- =============================================================
 local public = {}
 
-local rotateAbout = require "samples.AskEd.rotateAboutPoint.rotateAbout"
+local rotateAbout = require "samples.askEd.rotateAboutPoint.rotateAbout"
 
 function public.init( group )
 end

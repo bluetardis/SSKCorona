@@ -3,7 +3,7 @@
 -- =============================================================
 local public = {}
 
-local game = require "samples.AskEd.template.app"
+local game = require "samples.askEd.template.app"
 
 function public.init( group )
 	game.init( group )
@@ -18,9 +18,9 @@ function public.run( group )
 end
 
 function public.about()
-	local altName = "AskEdTemplate"
+	local altName = "askEdTemplate"
 	local description = 
-	'<font size="22" color="SteelBlue">AskEdTemplate</font><br><br><br>' ..
+	'<font size="22" color="SteelBlue">askEdTemplate</font><br><br><br>' ..
     'Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum. <br><br><br>' ..
     'Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum. <br>' ..
     'Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum. <br>'

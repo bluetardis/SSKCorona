@@ -44,7 +44,7 @@ function public.run( group )
 
 	easyIFC:quickLabel( group, "Animated Sprite In One Line Using SSK", centerX, centerY - 50, gameFont, 14 )
 
-	local tmp = newSprite( group, centerX, centerY - 10, "images/test/kenney_numbers.png", 
+	local tmp = newSprite( group, centerX, centerY - 10, "images/asked/kenney_numbers.png", 
 		                   {  frames = { 1,2,3,4,5,6,7,8,9,10 }, time = 1000, loopCount = 0 }, { autoPlay = true, scale = 2 } )
 
 
@@ -84,7 +84,7 @@ function public.run( group )
 
 	for i = 1, #sequenceData do
 		local tmp = newSprite( group, centerX - 90 + (i-1) * 30, centerY + 100, 
-			                   "images/test/kenney_numbers.png", sequenceData,
+			                   "images/asked/kenney_numbers.png", sequenceData,
 		                       { autoPlay = true, sequence = i, scale = 1.5 } )
 	end
 

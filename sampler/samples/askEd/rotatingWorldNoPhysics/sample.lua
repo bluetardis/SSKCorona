@@ -3,7 +3,7 @@
 -- =============================================================
 local public = {}
 
-local game = require "samples.AskEd.rotatingWorldNoPhysics.app"
+local game = require "samples.askEd.rotatingWorldNoPhysics.app"
 
 function public.init( group )
 	game.init( group )

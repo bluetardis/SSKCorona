@@ -40,8 +40,8 @@ end
 function public.run( group )
 	public.isRunning = true		
 
-	local integerIndexed = require "samples.AskEd.compare_iterators.integer"
-	local pairsIndexed = require "samples.AskEd.compare_iterators.pairs"
+	local integerIndexed = require "samples.askEd.compare_iterators.integer"
+	local pairsIndexed = require "samples.askEd.compare_iterators.pairs"
 
 	-- Localizations
 	local newCircle 	= ssk.display.newCircle

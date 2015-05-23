@@ -32,45 +32,10 @@ gameFont = "Prime"
 
 
 require "ssk.loadSSK"
+
 --require "rgmeter.create"
 require "presets.kenney.presets"
 
+local sampleMgr =  require "scripts.sampler.manager"
+sampleMgr.autoUpdate = false
 require "scripts.sampler.menu"
-
---[[
-
---local full = ssk.display.newImageRect( nil, centerX, centerY, "images/asked/alcatraz.png", { w = 300, h = 240 } )
-
-local function onTouch( self, event )
-	if( event.phase == "began" ) then
-		self:setFillColor(unpack(_G_))
-		self.x0 = self.x 
-		self.y0 = self.y
-		self.isFocus = true
-		display.currentStage:setFocus( self )
-		self:toFront()
-	elseif( self.isFocus ) then
-		if( event.phase == "moved" ) then 
-			self.x = self.x0 + event.x - event.xStart
-			self.y = self.y0 + event.y - event.yStart
-		else
-			self:setFillColor(unpack(_W_))
-			self.x = self.x0 
-			self.y = self.y0
-			self.isFocus = false
-			display.currentStage:setFocus( nil )
-		end
-	else
-		return false
-	end
-	return true
-end
-
-
-for i = 1, 6 do
-	local piece = ssk.display.newImageRect( nil, centerX, centerY, "images/asked/alcatraz.png", { w = 300, h = 240, touch = onTouch } )
-	local mask = graphics.newMask( "images/asked/puzzleA_mask" .. i .. ".png" )
-	piece:setMask( mask )
-end
---]]
-
