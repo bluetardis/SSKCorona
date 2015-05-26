@@ -43,7 +43,7 @@ function app.run( group )
 
 	-- Initialize 'input'
 	--
-	twoStick.create( group, { debugEn = debugEn, joyParams = { doNorm = true } } )
+	twoStick.create( group, { debugEn = true, joyParams = { doNorm = true } } )
 
 
 	-- Create a room and a 'ball' in the room

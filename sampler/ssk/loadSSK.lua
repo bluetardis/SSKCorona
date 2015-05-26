@@ -18,7 +18,7 @@
 -- =============================================================
 -- Create ssk global if needed
 _G.ssk = _G.ssk or {}
-ssk.getVersion = function() return "22 MAY 2015" end
+ssk.getVersion = function() return "26 MAY 2015" end
 
 local runningCoronaViewer 	= false 	-- Some features conflict with viewer and must be disabled
 ssk.__measureSSK			= true 		-- Show how much memory is used by each module and all of SSK

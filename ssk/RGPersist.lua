@@ -23,13 +23,18 @@ _G.ssk.persist = persist
 local fileCache = {}
 
 persist.get = function( fileName, fieldName, params )
-	params		= params or {}
-	local record = fileCache[fileName] 
+	params			= params or {}
+	local record 	= fileCache[fileName] 
 	if( not record ) then
-		record = table.load( fileName, params.base ) or {}		
-		table.save( record, fileName, params.base )
+		record = table.load( fileName, params.base ) or { defaults = {} }
+		if( record[fieldName] == nil ) then
+			record[fieldName] = record.defaults[fieldName]
+		end
 	end
-	return record[fieldName]
+	if( tonumber(record[fieldName]) ) then
+		return tonumber(record[fieldName])
+	end
+	return record[fieldName] 
 end
 
 persist.set = function( fileName, fieldName, value, params )
@@ -38,10 +43,26 @@ persist.set = function( fileName, fieldName, value, params )
 
 	local record = fileCache[fileName] 
 	if( not record ) then
-		record = table.load( fileName, params.base ) or {}
+		record = table.load( fileName, params.base ) or { defaults = {} }
 	end
 
 	record[fieldName] = value
+
+	if(save) then 
+		table.save( record, fileName, params.base )
+	end
+end
+
+persist.setDefault = function( fileName, fieldName, value, params )
+	params		= params or {}
+	local save	= (params.save == nil) and true or params.save
+
+	local record = fileCache[fileName] 
+	if( not record ) then
+		record = table.load( fileName, params.base ) or { defaults = {} }
+	end
+
+	record.defaults[fieldName] = value
 
 	if(save) then 
 		table.save( record, fileName, params.base )

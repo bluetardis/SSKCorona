@@ -30,7 +30,6 @@ io.output():setvbuf("no") -- Don't use buffer for console messages
 gameFont = "Prime"
 --gameFont = "Aileron Thin"
 
-
 require "ssk.loadSSK"
 
 --require "rgmeter.create"
@@ -38,4 +37,6 @@ require "presets.kenney.presets"
 
 local sampleMgr =  require "scripts.sampler.manager"
 sampleMgr.autoUpdate = false
+--sampleMgr.startIn = "experiments"
+--sampleMgr.startIn = "askEd"
 require "scripts.sampler.menu"

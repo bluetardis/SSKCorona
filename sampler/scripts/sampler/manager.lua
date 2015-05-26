@@ -7,7 +7,7 @@ local sampleMgr = {}
 
 local samplesDB
 
-sampleMgr.autoUpdate = false and onSimulator
+sampleMgr.autoUpdate = false
 
 function sampleMgr.discover()
 	samplesDB = table.load( "samplesDB.json", system.ResourceDirectory ) or  {}

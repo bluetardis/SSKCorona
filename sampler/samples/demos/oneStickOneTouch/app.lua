@@ -6,14 +6,18 @@ local app = {}
 local physics 		= require "physics"
 
 -- Localizations
-local newCircle 	= ssk.display.newCircle
-local newRect 		= ssk.display.newRect
-local newImageRect 	= ssk.display.newImageRect
-local easyIFC   	= ssk.easyIFC
-local mRand 		= math.random
-local isValid		= display.isValid
-local getTimer		= system.getTimer
-local oneStick 		= ssk.easyInputs.oneStick
+local newCircle 		= ssk.display.newCircle
+local newRect 			= ssk.display.newRect
+local newImageRect 		= ssk.display.newImageRect
+local easyIFC   		= ssk.easyIFC
+local mRand 			= math.random
+local isValid			= display.isValid
+local getTimer			= system.getTimer
+local oneStickOneTouch 	= ssk.easyInputs.oneStickOneTouch
+local angle2Vec 		= ssk.math2d.angle2Vector
+local normVec 			= ssk.math2d.normalize
+local scaleVec  		= ssk.math2d.scale
+local addVec 			= ssk.math2d.add
 
 -- Initialize the app
 --
@@ -43,7 +47,7 @@ function app.run( group )
 
 	-- Initialize 'input'
 	--
-	oneStick.create( group, { debugEn = true, joyParams = { doNorm = true } } )
+	oneStickOneTouch.create( group, { debugEn = true, joyParams = { doNorm = true } } )
 
 
 	-- Create a room and a 'ball' in the room
@@ -78,16 +82,32 @@ function app.run( group )
 			return 
 		end
 		if( event.state == "on" ) then
-			self.forceX = 15 * event.nx
-			self.forceY = 15 * event.ny
 			self.rotation = event.angle
 		elseif( event.state == "off" ) then
+		end
+		return false
+	end; listen( "onJoystick", ball )
+
+	ball.onOneTouch = function( self, event )
+		if( not app.isRunning ) then
+			ignore( "onOneTouch", self )
+			return 
+		end
+		local vec = angle2Vec( self.rotation, true )
+		vec = normVec( vec )
+
+
+		if( event.phase == "began" ) then
+			self.forceX = 15 * vec.x
+			self.forceY = 15 * vec.y
+		
+		elseif( event.phase == "ended" ) then
 			self.forceX = 0
 			self.forceY = 0
 
 		end
 		return false
-	end; listen( "onJoystick", ball )
+	end; listen( "onOneTouch", ball )
 
 end
 

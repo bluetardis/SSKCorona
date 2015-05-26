@@ -495,3 +495,12 @@ memMeter.enterFrame = function(self)
 end; listen("enterFrame", memMeter)
 memMeter.isVisible = false
 
+
+if( sampleMgr.startIn ) then
+	local text = sampleMgr.startIn
+	categoryButton:setText(text)
+	local samples = sampleMgr.getSamples( text )
+	createSampleButton( categoryButton.parent, centerX, centerY + 5, samples )
+	categoryLabel.text = table.indexOf(categoryButton.categories, text) .. " of " .. #categoryButton.categories
+	if( samplePathLabel ) then samplePathLabel:update() end
+end

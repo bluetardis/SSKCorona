@@ -132,17 +132,17 @@ settings = {
 			UIPrerenderedIcon = true,
 			UIApplicationExitsOnSuspend = false,
 			--FacebookAppID = FacebookAppID,
-			MinimumOSVersion = "5.1.0",
+			--MinimumOSVersion = "5.1.0",
 			-- CFBundleURLTypes = { { CFBundleURLSchemes = { "fb" .. FacebookAppID, }, }, },
 
          	CFBundleIconFiles = 
 			{
 				"Icon-72.png",
 				"Icon-72@2x.png",
-				"Icon-Small-20.png",
-				"Icon-Small-20@2x.png",
-				"Icon-Small-30.png",
-				"Icon-Small-30@2x.png",
+				--"Icon-Small-20.png",
+				--"Icon-Small-20@2x.png",
+				--"Icon-Small-30.png",
+				--"Icon-Small-30@2x.png",
 				"Icon-Small-50.png",
 				"Icon-Small-50@2x.png",
 				"Icon-Small.png",
