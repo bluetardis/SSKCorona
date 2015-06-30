@@ -67,6 +67,11 @@ local function calcMeasurementSpacing()
 	_G.left 			= (left>=0) and math.abs(left) or left
 	_G.top 				= (top>=0) and math.abs(top) or top
 	
+
+	--PB added Vars for convenience 
+	_G.sbHeight			= display.statusBarHeight 	--status bar
+	_G.tbHeight			= 50				--generic tabbar
+
 	if( debugEn ) then
 		print("\n---------- calcMeasurementSpacing() @ " .. system.getTimer() )	
 		print( "w       = " 	.. w )
@@ -79,6 +84,8 @@ local function calcMeasurementSpacing()
 		print( "right   = " 	.. right )
 		print( "top     = " 	.. top )
 		print( "bottom  = " 	.. bottom )
+		print( "sbHeight= "	.. sbHeight) 	--PB
+		print( "tbHeight= "	.. tbHeight) 	--PB added
 		print("---------------\n\n")
 	end
 end
